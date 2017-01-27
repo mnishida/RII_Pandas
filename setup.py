@@ -1,6 +1,6 @@
 from os import path
 from setuptools import setup, find_packages
-import pyoptmat
+import rii_pandas
 
 here = path.abspath(path.dirname(__file__))
 
@@ -10,7 +10,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 
 setup(name='rii_pandas',
-      version=pyoptmat.__version__,
+      version=rii_pandas.__version__,
       description=('Python 3 + Pandas wrapper ' +
                    'for the refractiveindex.info database.'),
       long_description=long_description,
@@ -25,10 +25,10 @@ setup(name='rii_pandas',
           "Topic :: Software Development :: Libraries :: Python Modules",
       ],
       keywords='refractive index, dielectric constant, optical material',
-      author=pyoptmat.__author__,
+      author=rii_pandas.__author__,
       author_email='mnishida@hiroshima-u.ac.jp',
-      url='https://github.com/mnishida/refractiveindex.info-database',
-      license=pyoptmat.__license__,
+      url='https://github.com/mnishida/RII_Pandas',
+      license=rii_pandas.__license__,
       packages=find_packages(exclude=['contrib', 'docs', 'tests']),
       include_package_data=True,
       test_requires=['Nose'],
@@ -38,7 +38,7 @@ setup(name='rii_pandas',
           'numpy',
           'scipy',
           'pandas',
-          'yaml'
+          'pyyaml'
       ],
       entry_points="""
       # -*- Entry points: -*-
