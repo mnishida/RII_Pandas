@@ -8,7 +8,6 @@ Pandas DataFrame creation was made with modified versions of `dboperations.py` f
 
 ## Usage
 pip install 
-Just copy the `refractivesqlite` folder to your project, and you are ready. For more information, see the [Tutorial notebook](Tutorial.ipynb)
 
 ## Dependencies
 - python 3
