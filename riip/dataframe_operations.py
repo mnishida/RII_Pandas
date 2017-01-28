@@ -4,21 +4,25 @@ from logging import getLogger
 import os
 from math import nan
 from typing import NewType, Iterable, Any
+import git
 import yaml
 import pandas as pd
 import numpy as np
-from rii_pandas.dispersion_formulas import DispersionFormula
+from riip.dispersion_formulas import DispersionFormula
 
 __all__ = ['RiiDataFrame', 'csv_to_df']
 logger = getLogger(__package__)
 PandasDataFrame = NewType('PandasDataFrame', pd.DataFrame)
 
 _dirname = os.path.dirname(os.path.dirname(__file__))
-_db_directory = os.path.join(
-    _dirname, os.path.normpath('refractiveindex.info-database/database'))
+_ri_database = os.path.join(
+    _dirname, 'data', 'refractiveindex.info-database')
+_db_directory = os.path.join(_ri_database, 'database')
 _catalog_file = os.path.join(_dirname, 'data', 'catalog.csv')
 _raw_data_file = os.path.join(_dirname, 'data', 'raw_data.csv')
 _grid_data_file = os.path.join(_dirname, 'data', 'grid_data.csv')
+_ri_database_repo = ("https://github.com/mnishida/" +
+                    "refractiveindex.info-database.git")
 
 
 class RiiDataFrame:
@@ -47,6 +51,7 @@ class RiiDataFrame:
             grid_data_file: The filename of the grid wl-nk data csv file.
         """
         self.db_path = db_path
+        self._ri_database = os.path.dirname(self.db_path)
         self.catalog_file = catalog_file
         self.raw_data_file = raw_data_file
         self.grid_data_file = grid_data_file
@@ -54,28 +59,36 @@ class RiiDataFrame:
         # Preparing catalog
         if not os.path.isfile(self.catalog_file):
             logger.warning("Catalog file not found.")
+            if not os.path.isfile(os.path.join(self.db_path, 'library.yml')):
+                logger.warning("Cloning Repository.")
+                git.Repo.clone_from(_ri_database_repo, self._ri_database,
+                                    branch='master')
+                logger.warning("Cloned.")
             self.create_catalog()
+            logger.warning("Catalog file has been created.")
         else:
             logger.info("Catalog file found at {}".format(self.catalog_file))
         self.catalog = csv_to_df(self.catalog_file)
 
         # Preparing raw_data
         if not os.path.isfile(self.raw_data_file):
-            logger.warning("Raw data file not found.")
+            logger.warning("Raw-data file not found.")
             self.create_raw_data()
+            logger.warning("Raw-data file has been created.")
         else:
             logger.info(
-                "Raw data file found at {}".format(self.raw_data_file))
+                "Raw-data file found at {}".format(self.raw_data_file))
         self.catalog = csv_to_df(self.catalog_file)
         self.raw_data = csv_to_df(self.raw_data_file)
 
         # Preparing grid_data
         if not os.path.isfile(self.grid_data_file):
-            logger.warning("Grid data file not found.")
+            logger.warning("Grid-data file not found.")
             self.create_grid_data()
+            logger.warning("Grid-data file has been created.")
         else:
             logger.info(
-                "Grid data file found at {}".format(self.grid_data_file))
+                "Grid-data file found at {}".format(self.grid_data_file))
         self.grid_data = csv_to_df(self.grid_data_file)
 
     def extract_entry(self) -> Iterable[Any]:
@@ -84,7 +97,9 @@ class RiiDataFrame:
         reference_path = os.path.normpath(self.db_path)
         library_file = os.path.join(reference_path, "library.yml")
         with open(library_file, "r", encoding='utf-8') as f:
+            logger.debug(library_file)
             catalog = yaml.safe_load(f)
+            logger.debug("loaded.")
         idx = 0
         for sh in catalog:
             shelf = sh['SHELF']

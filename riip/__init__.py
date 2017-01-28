@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from rii_pandas.dataframe_operations import *
-from rii_pandas.dispersion_formulas import DispersionFormula
+from riip.dataframe_operations import *
+from riip.dispersion_formulas import DispersionFormula
 
 __author__ = "Munehiro Nishida"
 __version__ = "1.0.0"

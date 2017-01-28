@@ -4,7 +4,7 @@ import unittest
 from math import nan
 import numpy as np
 import pandas as pd
-from rii_pandas import DispersionFormula
+from riip import DispersionFormula
 
 
 class KnownValues(unittest.TestCase):

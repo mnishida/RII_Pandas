@@ -1,6 +1,6 @@
 from os import path
 from setuptools import setup, find_packages
-import rii_pandas
+import riip
 
 here = path.abspath(path.dirname(__file__))
 
@@ -9,13 +9,13 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 
-setup(name='rii_pandas',
-      version=rii_pandas.__version__,
+setup(name='riip',
+      version=riip.__version__,
       description=('Python 3 + Pandas wrapper ' +
                    'for the refractiveindex.info database.'),
       long_description=long_description,
       classifiers=[
-          "Development Status :: 4 - Beta",
+          "Development Status :: 3 - Alpha",
           "Intended Audience :: Developers",
           "Intended Audience :: Science/Research",
           "Programming Language :: Python",
@@ -25,20 +25,27 @@ setup(name='rii_pandas',
           "Topic :: Software Development :: Libraries :: Python Modules",
       ],
       keywords='refractive index, dielectric constant, optical material',
-      author=rii_pandas.__author__,
+      author=riip.__author__,
       author_email='mnishida@hiroshima-u.ac.jp',
-      url='https://github.com/mnishida/RII_Pandas',
-      license=rii_pandas.__license__,
-      packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+      url='https://github.com/mnishida/Riip',
+      license=riip.__license__,
+      # packages=find_packages(exclude=['contrib']),
+      packages=['riip', 'tests', 'examples'],
       include_package_data=True,
-      test_requires=['Nose'],
+      data_files=[('data',
+                   [path.join('data', 'catalog.csv'),
+                    path.join('data', 'grid_data.csv'),
+                    path.join('data', 'raw_data.csv')]),
+                  ('examples',
+                   [path.join('examples', 'tutorial.ipynb')])],
       zip_safe=False,
       install_requires=[
           'setuptools',
           'numpy',
           'scipy',
           'pandas',
-          'pyyaml'
+          'pyyaml',
+          'gitpython'
       ],
       entry_points="""
       # -*- Entry points: -*-
