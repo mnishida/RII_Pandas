@@ -62,23 +62,27 @@ class DispersionFormula:
             n = k = nan
         else:
             if formula == formula:
-                n = self.formulas[formula](x, self.exp_data['cs'].values)
+                n = self.formulas[int(formula)](x, self.exp_data['c'].values)
             elif 'n' in tabulated:
-                wls_n = self.exp_data['wls_n']
-                ns = self.exp_data['ns']
+                wls_n = self.exp_data['wl_n'].values
+                ns = self.exp_data['n'].values
                 if len(ns) == 1:
-                    n = ns.values[0] * np.ones_like(x)
+                    n = ns * np.ones_like(x)
                 else:
-                    n = interp1d(wls_n, ns, assume_sorted=True)(x)
+                    n = interp1d(
+                        wls_n, ns, kind='linear', bounds_error=False,
+                        fill_value=(ns[0], ns[-1]), assume_sorted=True)(x)
             else:
                 n = nan
             if 'k' in tabulated:
-                wls_k = self.exp_data['wls_k']
-                ks = self.exp_data['ks']
+                wls_k = self.exp_data['wl_k'].values
+                ks = self.exp_data['k'].values
                 if len(ks) == 1:
-                    k = ks.values[0] * np.ones_like(x)
+                    k = ks.values * np.ones_like(x)
                 else:
-                    k = interp1d(wls_k, ks, assume_sorted=True)(x)
+                    k = interp1d(
+                        wls_k, ks, kind='linear', bounds_error=False,
+                        fill_value=(ks[0], ks[-1]), assume_sorted=True)(x)
             else:
                 k = nan
         return n, k

@@ -4,5 +4,5 @@ from riip.dataframe_operations import *
 from riip.dispersion_formulas import DispersionFormula
 
 __author__ = "Munehiro Nishida"
-__version__ = "1.0.0"
+__version__ = "0.1.0"
 __license__ = "GPLv3"

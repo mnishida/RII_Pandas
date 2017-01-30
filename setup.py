@@ -1,5 +1,5 @@
 from os import path
-from setuptools import setup, find_packages
+from setuptools import setup
 import riip
 
 here = path.abspath(path.dirname(__file__))
@@ -29,7 +29,6 @@ setup(name='riip',
       author_email='mnishida@hiroshima-u.ac.jp',
       url='https://github.com/mnishida/Riip',
       license=riip.__license__,
-      # packages=find_packages(exclude=['contrib']),
       packages=['riip', 'tests', 'examples'],
       include_package_data=True,
       data_files=[('data',

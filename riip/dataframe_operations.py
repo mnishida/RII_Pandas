@@ -21,8 +21,8 @@ _db_directory = os.path.join(_ri_database, 'database')
 _catalog_file = os.path.join(_dirname, 'data', 'catalog.csv')
 _raw_data_file = os.path.join(_dirname, 'data', 'raw_data.csv')
 _grid_data_file = os.path.join(_dirname, 'data', 'grid_data.csv')
-_ri_database_repo = ("https://github.com/mnishida/" +
-                    "refractiveindex.info-database.git")
+_ri_database_repo = ("https://github.com/polyanskiy/" +
+                     "refractiveindex.info-database.git")
 
 
 class RiiDataFrame:
@@ -55,6 +55,12 @@ class RiiDataFrame:
         self.catalog_file = catalog_file
         self.raw_data_file = raw_data_file
         self.grid_data_file = grid_data_file
+        self._catalog_columns = ('id', 'shelf', 'shelf_name', 'division',
+                                 'book', 'book_name', 'page', 'path', 'formula',
+                                 'tabulated', 'wl_min', 'wl_max', 'wl_f_min',
+                                 'wl_f_max')
+        self._raw_data_columns = ('id', 'c', 'wl_n', 'n', 'wl_k', 'k')
+        self._grid_data_columns = ('id', 'wl', 'n', 'k')
 
         # Preparing catalog
         if not os.path.isfile(self.catalog_file):
@@ -97,49 +103,58 @@ class RiiDataFrame:
         reference_path = os.path.normpath(self.db_path)
         library_file = os.path.join(reference_path, "library.yml")
         with open(library_file, "r", encoding='utf-8') as f:
-            logger.debug(library_file)
             catalog = yaml.safe_load(f)
-            logger.debug("loaded.")
         idx = 0
-        for sh in catalog:
-            shelf = sh['SHELF']
-            if shelf == '3d':  # This shelf does not seem to contain new data.
-                break
-            shelf_name = sh['name']
-            division = None
-            for b in sh['content']:
-                if 'DIVIDER' in b:
-                    division = b['DIVIDER']
-                else:
-                    if division is None:
-                        raise Exception(
-                            "'DIVIDER' is missing in 'library.yml'.")
-                    if 'DIVIDER' not in b['content']:
-                        page_class = ''
-                    for p in b['content']:
-                        if 'DIVIDER' in p:
-                            # This DIVIDER specifies the phase of the material
-                            # such as gas, liquid or solid, so it is added to
-                            # the book and book_name with parentheses.
-                            page_class = " ({})".format(p['DIVIDER'])
-                        else:
-                            book = ''.join([b['BOOK'], page_class])
-                            book_name = ''.join([b['name'], page_class])
-                            page = p['PAGE']
-                            path = os.path.normpath(p['path'])
-                            logger.info("{0} {1} {2}".format(idx, book, page))
-                            yield [idx, shelf, shelf_name, division, book,
-                                   book_name, page, path, '', '', '', '', '',
-                                   '']
-                            idx += 1
+        shelf = 'main'
+        book = 'Ag (Experimental data)'
+        page = 'Johnson'
+        try:
+            for sh in catalog:
+                shelf = sh['SHELF']
+                if shelf == '3d':
+                    # This shelf does not seem to contain new data.
+                    break
+                shelf_name = sh['name']
+                division = None
+                for b in sh['content']:
+                    if 'DIVIDER' in b:
+                        division = b['DIVIDER']
+                    else:
+                        if division is None:
+                            raise Exception(
+                                "'DIVIDER' is missing in 'library.yml'.")
+                        if 'DIVIDER' not in b['content']:
+                            page_class = ''
+                        for p in b['content']:
+                            if 'DIVIDER' in p:
+                                # This DIVIDER specifies the phase of the
+                                #  material such as gas, liquid or solid, so it
+                                #  is added to the book and book_name with
+                                #  parentheses.
+                                page_class = " ({})".format(p['DIVIDER'])
+                            else:
+                                book = ''.join([b['BOOK'], page_class])
+                                book_name = ''.join([b['name'], page_class])
+                                page = p['PAGE']
+                                path = os.path.normpath(p['path'])
+                                logger.info("{0} {1} {2}".format(
+                                    idx, book, page))
+                                yield [idx, shelf, shelf_name, division, book,
+                                       book_name, page, path,
+                                       '', '', '', '', '', '']
+                                idx += 1
+        except Exception as e:
+            message = (
+                "There seems to be some inconsistency in the library.yml " +
+                "around id={}, shelf={}, book={}, page={}.".format(
+                    idx, shelf, book, page))
+            raise Exception(message) from e
 
     def create_catalog(self) -> None:
         """Create catalog DataFrame from library.yml."""
         logger.info("Creating catalog...")
-        columns = ['id', 'shelf', 'shelf_name', 'division', 'book', 'book_name',
-                   'page', 'path', 'formula', 'tabulated', 'wl_min', 'wl_max',
-                   'wl_f_min', 'wl_f_max']
-        df = pd.DataFrame(self.extract_entry(), columns=columns)
+        df = pd.DataFrame(self.extract_entry(),
+                          columns=self._catalog_columns)
         df.set_index('id', inplace=True, drop=True)
         df.to_csv(self.catalog_file)
         logger.info("Done.")
@@ -237,16 +252,14 @@ class RiiDataFrame:
         self.catalog.loc[idx, 'wl_min'] = wl_min
         self.catalog.loc[idx, 'wl_max'] = wl_max
         df = pd.DataFrame(
-            {'id': idx, 'cs': cs,
-             'wls_n': wls_n, 'ns': ns, 'wls_k': wls_k, 'ks': ks})
-        columns = ['id', 'cs', 'wls_n', 'ns', 'wls_k', 'ks']
-        return df.ix[:, columns]
+            {key: val for key, val in
+             zip(self._raw_data_columns, [idx, cs, wls_n, ns, wls_k, ks])})
+        return df.ix[:, self._raw_data_columns]
 
     def create_raw_data(self) -> None:
         """Create a DataFrame for experimental data."""
         logger.info("Creating raw data...")
-        columns = ['id', 'cs', 'wls_n', 'ns', 'wls_k', 'ks']
-        df = pd.DataFrame(columns=columns)
+        df = pd.DataFrame(columns=self._raw_data_columns)
         for idx in self.catalog.index:
             logger.info("{}: {}".format(idx, self.catalog.loc[idx, 'path']))
             df = df.append(self.extract_raw_data(idx),
@@ -261,7 +274,7 @@ class RiiDataFrame:
     def create_grid_data(self) -> None:
         """Create a DataFrame for the wl-nk data."""
         logger.info("Creating grid data...")
-        columns = ['id', 'wl', 'n', 'k']
+        columns = self._grid_data_columns
         df = pd.DataFrame(columns=columns)
         for idx in set(self.raw_data['id']):
             catalog = self.catalog.loc[idx]
@@ -271,13 +284,39 @@ class RiiDataFrame:
             wls = np.linspace(wl_min, wl_max, 129)
             func = DispersionFormula(catalog, data)
             ns, ks = func(wls)
-            df = df.append(pd.DataFrame(
-                {'id': idx, 'wl': wls, 'n': ns, 'k': ks}).ix[:, columns],
-                           ignore_index=True)
+            data = {key: val for key, val in zip(columns, [idx, wls, ns, ks])}
+            df = df.append(pd.DataFrame(data).ix[:, columns], ignore_index=True)
         df['id'] = df['id'].astype(int)
         df.set_index('id', inplace=True, drop=True)
         df.to_csv(self.grid_data_file)
         logger.info("Done.")
+
+    def update_db(self) -> None:
+        if not os.path.isfile(os.path.join(self.db_path, 'library.yml')):
+            logger.warning("Cloning Repository.")
+            git.Repo.clone_from(_ri_database_repo, self._ri_database,
+                                branch='master')
+            logger.warning("Cloned.")
+        else:
+            logger.warning("Pulling Repository.")
+            repo = git.Repo(self._ri_database)
+            repo.remotes.origin.pull()
+            logger.warning("Pulled.")
+            self.create_catalog()
+            logger.warning("Catalog file has been created.")
+        logger.warning("Updating catalog file.")
+        self.create_catalog()
+        self.catalog = csv_to_df(self.catalog_file)
+        logger.warning("Catalog file has been updated.")
+        logger.warning("Updating raw-data file.")
+        self.create_raw_data()
+        self.raw_data = csv_to_df(self.raw_data_file)
+        logger.warning("Raw-data file has been updated.")
+        logger.warning("Updating grid-data file.")
+        self.create_grid_data()
+        self.grid_data = csv_to_df(self.grid_data_file)
+        logger.warning("Updating grid-data file.")
+        logger.warning("Done.")
 
 
 def csv_to_df(csv_file: str) -> PandasDataFrame:
@@ -303,3 +342,6 @@ if __name__ == '__main__':
     print(rii_df.catalog.loc[0])
     print(rii_df.catalog.index)
     print(rii_df.raw_data.head)
+
+    rii_df.update_db()
+    # rii_df.create_grid_data()
