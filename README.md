@@ -11,7 +11,7 @@ Pandas DataFrame creation was made with modified versions of `dboperations.py` f
 ```
 git clone https://github.com/mnishida/RII_Pandas.git
 cd RII_Pandas
-python setup.py develop
+python setup.py install
 ```
 
 ## Usage
