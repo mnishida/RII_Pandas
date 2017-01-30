@@ -54,7 +54,7 @@ class KnownValues(unittest.TestCase):
         for i, (formula, cs, wl, result) in enumerate(self.known_values):
             catalog = pd.DataFrame({'formula': [formula], 'tabulated': [''],
                                     'wl_min': [0.25], 'wl_max': [2.0]}).loc[0]
-            data = pd.DataFrame({'cs': cs})
+            data = pd.DataFrame({'c': cs})
             func = DispersionFormula(catalog, data)
             n, k = func(wl)
             self.assertAlmostEqual(n, result)
@@ -69,7 +69,7 @@ class KnownValues(unittest.TestCase):
             ks = wlnk[:, 2]
             catalog = pd.DataFrame({'formula': [formula], 'tabulated': ['nk'],
                                     'wl_min': [0.25], 'wl_max': [2.0]}).loc[0]
-            data = pd.DataFrame({'wls_n': wls, 'ns': ns,'wls_k': wls, 'ks': ks})
+            data = pd.DataFrame({'wl_n': wls, 'n': ns,'wl_k': wls, 'k': ks})
             func = DispersionFormula(catalog, data)
             self.assertAlmostEqual(func(wl), result)
 
