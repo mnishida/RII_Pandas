@@ -5,6 +5,8 @@ Pandas DataFrame creation was made with modified versions of `dboperations.py` f
 
 ## Features
 - Create Pandas DataFrame by parsing yml files cloned from Polyanskiy's  [GitHub repository](https://github.com/polyanskiy/refractiveindex.info-database).
+- Drude-Lorentz model (formula 21) and Brendel-Bormann model (formula 22) are available to describe metal dielectric function.
+
 
 ## Install
 I highly recommend to install [Anaconda](https://www.continuum.io/downloads) that has all required python packages.

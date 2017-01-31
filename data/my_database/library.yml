@@ -1,0 +1,48 @@
+- SHELF: DL
+  name: "DL - Drude Lorentz model"
+  content:
+    - DIVIDER: "Ag - Silver"
+    - BOOK: Ag
+      name: "Ag (Silver)"
+      content:
+        - PAGE: Rakic
+          name: "Rakić 1998: Drude-Lorentz model"
+          path: "DL/Ag/Rakic.yml"
+    - DIVIDER: "Al - Aluminium"
+    - BOOK: Al
+      name: "Al (Aluminium)"
+      content:
+        - PAGE: Rakic
+          name: "Rakić 1998: Drude-Lorentz model"
+          path: "DL/Al/Rakic.yml"
+    - DIVIDER: "Au - Gold"
+    - BOOK: Au
+      name: "Au (Gold)"
+      content:
+        - PAGE: Rakic
+          name: "Rakić 1998: Drude-Lorentz model"
+          path: "DL/Au/Rakic.yml"
+- SHELF: BB
+  name: "BB - Brendel-Bormann model"
+  content:
+    - DIVIDER: "Ag - Silver"
+    - BOOK: Ag
+      name: "Ag (Silver)"
+      content:
+        - PAGE: Rakic
+          name: "Rakić 1998: Brendel-Bormann model"
+          path: "BB/Ag/Rakic.yml"
+    - DIVIDER: "Al - Aluminium"
+    - BOOK: Al
+      name: "Al (Aluminium)"
+      content:
+        - PAGE: Rakic
+          name: "Rakić 1998: Brendel-Bormann model"
+          path: "BB/Al/Rakic.yml"
+    - DIVIDER: "Au - Gold"
+    - BOOK: Au
+      name: "Au (Gold)"
+      content:
+        - PAGE: Rakic
+          name: "Rakić 1998: Brendel-Bormann model"
+          path: "BB/Au/Rakic.yml"
