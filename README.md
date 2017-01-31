@@ -4,8 +4,8 @@ Python 3 + Pandas wrapper for the [refractiveindex.info database](http://refract
 Pandas DataFrame creation was made with modified versions of `dboperations.py` from [refractiveindex.info-sqlite package](https://github.com/HugoGuillen/refractiveindex.info-sqlite) developed by [Hugo Guillén](https://github.com/HugoGuillen).
 
 ## Features
-- Create Pandas DataFrame by parsing yml files cloned from Polyanskiy's  [GitHub repository](https://github.com/polyanskiy/refractiveindex.info-database).
-- Drude-Lorentz model (formula 21) and Brendel-Bormann model (formula 22) are available to describe metal dielectric function.
+- Create Pandas DataFrame by parsing database files cloned from Polyanskiy's  [GitHub repository](https://github.com/polyanskiy/refractiveindex.info-database).
+- Drude-Lorentz model (formula 21) and Brendel-Bormann model (formula 22) are available to describe metallic dielectric function.
 
 
 ## Install

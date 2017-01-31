@@ -1693,8 +1693,26 @@
 1691,1691,other,OTHER - miscellaneous materials,Other,acetylene_soot,Acetylene soot,Dlazell,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/refractiveindex.info-database/database/other/other/soot/acetylene soot - Dalzell.yml,0,nk,13,13,0.4358,10.0,0.4358,10.0
 1692,1692,other,OTHER - miscellaneous materials,Other,propane_soot,Propanee soot,Dlazell,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/refractiveindex.info-database/database/other/other/soot/propane soot - Dalzell.yml,0,nk,13,13,0.4358,10.0,0.4358,10.0
 1693,1692,DL,DL - Drude Lorentz model,Ag - Silver,Ag,Ag (Silver),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/DL/Ag/Rakic.yml,21,,0,0,0.2066,12.4,0.0,inf
-1694,1693,DL,DL - Drude Lorentz model,Al - Aluminium,Al,Al (Aluminium),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/DL/Al/Rakic.yml,21,,0,0,0.2066,12.4,0.0,inf
-1695,1694,DL,DL - Drude Lorentz model,Au - Gold,Au,Au (Gold),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/DL/Au/Rakic.yml,21,,0,0,0.2066,12.4,0.0,inf
-1696,1695,BB,BB - Brendel-Bormann model,Ag - Silver,Ag,Ag (Silver),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/BB/Ag/Rakic.yml,22,,0,0,0.2066,12.4,0.0,inf
-1697,1696,BB,BB - Brendel-Bormann model,Al - Aluminium,Al,Al (Aluminium),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/BB/Al/Rakic.yml,22,,0,0,0.2066,12.4,0.0,inf
-1698,1697,BB,BB - Brendel-Bormann model,Au - Gold,Au,Au (Gold),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/BB/Au/Rakic.yml,22,,0,0,0.2066,12.4,0.0,inf
+1694,1693,DL,DL - Drude Lorentz model,Ag - Silver,Ag,Ag (Silver),Vial,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/DL/Ag/Vial.yml,21,,0,0,0.4,1.0,0.0,inf
+1695,1694,DL,DL - Drude Lorentz model,Al - Aluminium,Al,Al (Aluminium),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/DL/Al/Rakic.yml,21,,0,0,0.2066,12.4,0.0,inf
+1696,1695,DL,DL - Drude Lorentz model,Au - Gold,Au,Au (Gold),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/DL/Au/Rakic.yml,21,,0,0,0.2066,12.4,0.0,inf
+1697,1696,DL,DL - Drude Lorentz model,Au - Gold,Au,Au (Gold),Stewart,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/DL/Au/Stewart.yml,21,,0,0,0.4,2.0,0.0,inf
+1698,1697,DL,DL - Drude Lorentz model,Cu - Copper,Cu,Cu (Copper),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/DL/Cu/Rakic.yml,21,,0,0,0.2066,12.4,0.0,inf
+1699,1698,DL,DL - Drude Lorentz model,Be - Beryllium,Be,Be (Beryllium),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/DL/Be/Rakic.yml,21,,0,0,0.2066,12.4,0.0,inf
+1700,1699,DL,DL - Drude Lorentz model,Cr - Chromium,Cr,Cr (Chromium),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/DL/Cr/Rakic.yml,21,,0,0,0.2066,12.4,0.0,inf
+1701,1700,DL,DL - Drude Lorentz model,Ni - Nickel,Ni,Ni (Nickel),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/DL/Ni/Rakic.yml,21,,0,0,0.2066,12.4,0.0,inf
+1702,1701,DL,DL - Drude Lorentz model,Pd - Palladium,Pd,Pd (Palladium),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/DL/Pd/Rakic.yml,21,,0,0,0.2066,12.4,0.0,inf
+1703,1702,DL,DL - Drude Lorentz model,Pt - Platinum,Pt,Pt (Platinum),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/DL/Pt/Rakic.yml,21,,0,0,0.2066,12.4,0.0,inf
+1704,1703,DL,DL - Drude Lorentz model,Ti - Titanium,Ti,Ti (Titanium),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/DL/Ti/Rakic.yml,21,,0,0,0.2066,12.4,0.0,inf
+1705,1704,DL,DL - Drude Lorentz model,W - Tungsten,W,W (Tungsten),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/DL/W/Rakic.yml,21,,0,0,0.2066,12.4,0.0,inf
+1706,1705,BB,BB - Brendel-Bormann model,Ag - Silver,Ag,Ag (Silver),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/BB/Ag/Rakic.yml,22,,0,0,0.2066,12.4,0.0,inf
+1707,1706,BB,BB - Brendel-Bormann model,Al - Aluminium,Al,Al (Aluminium),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/BB/Al/Rakic.yml,22,,0,0,0.2066,12.4,0.0,inf
+1708,1707,BB,BB - Brendel-Bormann model,Au - Gold,Au,Au (Gold),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/BB/Au/Rakic.yml,22,,0,0,0.2066,12.4,0.0,inf
+1709,1708,BB,BB - Brendel-Bormann model,Cu - Copper,Cu,Cu (Copper),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/BB/Cu/Rakic.yml,22,,0,0,0.2066,12.4,0.0,inf
+1710,1709,BB,BB - Brendel-Bormann model,Be - Beryllium,Be,Be (Beryllium),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/BB/Be/Rakic.yml,22,,0,0,0.2066,12.4,0.0,inf
+1711,1710,BB,BB - Brendel-Bormann model,Cr - Chromium,Cr,Cr (Chromium),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/BB/Cr/Rakic.yml,22,,0,0,0.2066,12.4,0.0,inf
+1712,1711,BB,BB - Brendel-Bormann model,Ni - Nickel,Ni,Ni (Nickel),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/BB/Ni/Rakic.yml,22,,0,0,0.2066,12.4,0.0,inf
+1713,1712,BB,BB - Brendel-Bormann model,Pd - Palladium,Pd,Pd (Palladium),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/BB/Pd/Rakic.yml,22,,0,0,0.2066,12.4,0.0,inf
+1714,1713,BB,BB - Brendel-Bormann model,Pt - Platinum,Pt,Pt (Platinum),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/BB/Pt/Rakic.yml,22,,0,0,0.2066,12.4,0.0,inf
+1715,1714,BB,BB - Brendel-Bormann model,Ti - Titanium,Ti,Ti (Titanium),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/BB/Ti/Rakic.yml,22,,0,0,0.2066,12.4,0.0,inf
+1716,1715,BB,BB - Brendel-Bormann model,W - Tungsten,W,W (Tungsten),Rakic,/home/mnishida/usr/lib/site-packages/RII_Pandas/data/my_database/BB/W/Rakic.yml,22,,0,0,0.2066,12.4,0.0,inf

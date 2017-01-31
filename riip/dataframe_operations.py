@@ -286,7 +286,7 @@ class RiiDataFrame:
         wls_k = np.array(wls_k + [nan] * (num - num_k), dtype=np.float64)
         ks = np.array(ks + [nan] * (num - num_k), dtype=np.float64)
 
-        # Obtained data are inserted to the catalog
+        # Rewrite catalog with the obtained data
         self.catalog.loc[idx, 'formula'] = formula
         self.catalog.loc[idx, 'tabulated'] = tabulated
         self.catalog.loc[idx, 'num_n'] = num_n
@@ -380,6 +380,7 @@ def csv_to_df(csv_file: str,
 
 
 def set_columns_dtype(df: PandasDataFrame, columns: Dict):
+    """Set data type of each column in the DataFrame."""
     for key, val in columns.items():
         df[key] = df[key].astype(val)
 

@@ -3,4 +3,4 @@ COMMENTS: "Fit of the experimental data from several sources to Brendel-Bormann 
 DATA:
   - type: formula 22
     range: 0.2066 12.40
-    coefficients: 1 0.526 14.98 0.047 0.213 0.163 0.312 0.013 0.060 1.561 0.315 0.042 0.182 1.827 1.587 0.256 0.014 4.495 2.145 1.735
+    coefficients: 1 0.526 0.047 14.98 0.213 0.312 0.163 0.013 0.060 0.315 1.561 0.042 0.182 1.587 1.827 0.256 0.014 2.145 4.495 1.735
