@@ -3,4 +3,4 @@ COMMENTS: "Fit of the experimental data from several sources to Drude-Lorentz (D
 DATA:
   - type: formula 21
     range: 0.2066 12.40
-    coefficients: 1 0.845 9.01 0.048 0.065 0.816 3.886 0.124 4.481 0.452 0.011 8.185 0.065 0.840 9.083 0.916 5.646 20.29 2.419
+    coefficients: 1 0.845 0.048 9.01 0.065 3.886 0.816 0.124 0.452 4.481 0.011 0.065 8.185 0.840 0.916 9.083 5.646 2.419 20.29

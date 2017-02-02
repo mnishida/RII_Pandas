@@ -4,7 +4,7 @@ import unittest
 from math import nan
 import numpy as np
 import pandas as pd
-from riip import DispersionFormula
+from riip import Material
 
 
 class KnownValues(unittest.TestCase):
@@ -56,7 +56,7 @@ class KnownValues(unittest.TestCase):
                                     'wl_n_min': [0.25], 'wl_n_max': [2.0],
                                     'wl_k_min': [0.25], 'wl_k_max': [2.0]}).loc[0]
             data = pd.DataFrame({'c': cs})
-            dispersion = DispersionFormula(catalog, data)
+            dispersion = Material(catalog, data)
             n = dispersion.func_n(wl)
             self.assertAlmostEqual(n, result)
 
@@ -73,7 +73,7 @@ class KnownValues(unittest.TestCase):
                                     'wl_n_min': [0.25], 'wl_n_max': [2.0],
                                     'wl_k_min': [0.25], 'wl_k_max': [2.0]}).loc[0]
             data = pd.DataFrame({'wl_n': wls, 'n': ns, 'wl_k': wls, 'k': ks})
-            dispersion = DispersionFormula(catalog, data)
+            dispersion = Material(catalog, data)
             self.assertAlmostEqual(
                 (dispersion.func_n(wl), dispersion.func_k(wl)), result)
 
@@ -82,7 +82,7 @@ class KnownValues(unittest.TestCase):
                                 'wl_n_min': [0.25], 'wl_n_max': [2.0],
                                 'wl_k_min': [0.25], 'wl_k_max': [2.0]}).loc[0]
         data = pd.DataFrame({'cs': list(range(17))})
-        dispersion = DispersionFormula(catalog, data)
+        dispersion = Material(catalog, data)
         with self.assertRaises(ValueError):
             dispersion.func_n(0.1)
         with self.assertRaises(ValueError):

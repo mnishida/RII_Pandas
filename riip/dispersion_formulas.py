@@ -5,42 +5,45 @@ import typing
 from collections import Sequence
 from itertools import islice
 import numpy as np
-import pandas as pd
+from pandas import DataFrame
 from scipy.interpolate import interp1d
 from scipy import constants
 from scipy.special import wofz
 
 logger = getLogger(__package__)
-PandasDataFrame = typing.NewType('PandasDataFrame', pd.DataFrame)
 FloatNdarray = typing.NewType(
-    'FloatNdarray', typing.Union[float, np.ndarray])
+    'FloatNdarray', typing.Union[complex, np.ndarray])
+ComplexNdarray = typing.NewType(
+    'ComplexNdarray', typing.Union[complex, np.ndarray])
 
 
-class DispersionFormula:
+class Material:
     """This class provide dispersion formula defined
      in refractiveindex.info database.
 
      Attributes:
-         exp_data (PandaDataFrame): The experimental data set.
+         exp_data: The experimental data set.
          formulas (dict[int, Callable]): A dict of functions for the formulas.
      """
 
-    def __init__(self, catalog: PandasDataFrame, exp_data: PandasDataFrame):
-        """Initialize DispersionFormula
+    def __init__(self, catalog: DataFrame, exp_data: DataFrame):
+        """Initialize Material
 
         Args:
             catalog: The catalog data set.
             exp_data: The experimental data set.
         """
-        self.catalog = catalog
-        self.exp_data = exp_data
+        self.catalog: DataFrame = catalog
+        self.exp_data: DataFrame = exp_data
         self.unit = constants.h * constants.c * 1e6 / constants.e
-        self.formulas = {1: self.formula_1, 2: self.formula_2,
-                         3: self.formula_3, 4: self.formula_4,
-                         5: self.formula_5, 6: self.formula_6,
-                         7: self.formula_7, 8: self.formula_8,
-                         9: self.formula_9,
-                         21: self.formula_21, 22: self.formula_22}
+        self.formulas: typing.Dict[int, typing.Callable[[FloatNdarray],
+                                                        FloatNdarray]] = {
+            1: self.formula_1, 2: self.formula_2,
+            3: self.formula_3, 4: self.formula_4,
+            5: self.formula_5, 6: self.formula_6,
+            7: self.formula_7, 8: self.formula_8,
+            9: self.formula_9,
+            21: self.formula_21, 22: self.formula_22}
 
     def func_n(self, x: FloatNdarray) -> FloatNdarray:
         """Return n for given wavelength
@@ -62,19 +65,21 @@ class DispersionFormula:
 
         formula = int(self.catalog['formula'])
         tabulated = self.catalog['tabulated']
-        if formula != 0:
-            return self.formulas[formula](x)
-        elif tabulated == tabulated:
-            if 'n' in tabulated:
-                num_n = self.catalog['num_n']
-                wls_n = self.exp_data['wl_n'].values[:num_n]
-                ns = self.exp_data['n'].values[:num_n]
-                if len(ns) == 1:
-                    return ns * np.ones_like(x)
-                else:
-                    return interp1d(
-                        wls_n, ns, kind='linear', bounds_error=False,
-                        fill_value=(ns[0], ns[-1]), assume_sorted=True)(x)
+        if formula > 0:
+            if formula <= 20:
+                return self.formulas[formula](x)
+            else:
+                return np.sqrt(self.formulas[formula](x)).real
+        elif 'n' in tabulated:
+            num_n = self.catalog['num_n']
+            wls_n = self.exp_data['wl_n'].values[:num_n]
+            ns = self.exp_data['n'].values[:num_n]
+            if len(ns) == 1:
+                return ns * np.ones_like(x)
+            else:
+                return interp1d(
+                    wls_n, ns, kind='linear', bounds_error=False,
+                    fill_value=(ns[0], ns[-1]), assume_sorted=True)(x)
         else:
             return np.empty_like(x)
 
@@ -96,7 +101,7 @@ class DispersionFormula:
                 'Wavelength is out of bounds [{} {}][um]'.format(
                     wl_k_min, wl_k_max))
         tabulated = self.catalog['tabulated']
-        if tabulated == tabulated:
+        if tabulated != 'f':
             if 'k' in tabulated:
                 num_k = self.catalog['num_k']
                 wls_k = self.exp_data['wl_k'].values[:num_k]
@@ -108,7 +113,11 @@ class DispersionFormula:
                         wls_k, ks, kind='linear', bounds_error=False,
                         fill_value=(ks[0], ks[-1]), assume_sorted=True)(x)
         else:
-            return np.empty_like(x)
+            formula = int(self.catalog['formula'])
+            if formula > 20:
+                return np.sqrt(self.formulas[formula](x)).imag
+            else:
+                return np.empty_like(x)
 
     def func_nk(self, x: FloatNdarray) \
             -> typing.Tuple[FloatNdarray, FloatNdarray]:
@@ -117,23 +126,66 @@ class DispersionFormula:
         Args:
             x: Wavelength.
         """
-        wl_n_min = self.catalog['wl_n_min']
-        wl_n_max = self.catalog['wl_n_max']
+        wl_min = self.catalog['wl_min']
+        wl_max = self.catalog['wl_max']
         if isinstance(x, (Sequence, np.ndarray)):
             x_min = min(x)
             x_max = max(x)
         else:
             x_min = x_max = x
-        if x_min < wl_n_min or x_max > wl_n_max:
+        if x_min < wl_min or x_max > wl_max:
             raise ValueError(
                 'Wavelength is out of bounds [{} {}][um]'.format(
-                    wl_n_min, wl_n_max))
+                    wl_min, wl_max))
 
         formula = int(self.catalog['formula'])
         tabulated = self.catalog['tabulated']
-        if formula < 21 or tabulated != '':
-            raise ValueError("'func_nk' can only be used for formula > 20")
-        return self.formulas[formula](x)
+        if formula > 20:
+            n, k = self.formulas[formula](x)
+        else:
+            if formula != 0:
+                n = self.formulas[formula](x)
+            elif 'n' in tabulated:
+                num_n = self.catalog['num_n']
+                wls_n = self.exp_data['wl_n'].values[:num_n]
+                ns = self.exp_data['n'].values[:num_n]
+                if len(ns) == 1:
+                    n = ns * np.ones_like(x)
+                else:
+                    n = interp1d(
+                        wls_n, ns, kind='linear', bounds_error=False,
+                        fill_value=(ns[0], ns[-1]), assume_sorted=True)(x)
+            else:
+                raise Exception("Lack of data for complex refractive index.")
+            if 'k' in tabulated:
+                num_k = self.catalog['num_k']
+                wls_k = self.exp_data['wl_k'].values[:num_k]
+                ks = self.exp_data['k'].values[:num_k]
+                if len(ks) == 1:
+                    k = ks * np.ones_like(x)
+                else:
+                    k = interp1d(
+                        wls_k, ks, kind='linear', bounds_error=False,
+                        fill_value=(ks[0], ks[-1]), assume_sorted=True)(x)
+            else:
+                k = np.zeros_like(x)
+        return n, k
+
+    def eps(self, x: FloatNdarray) -> ComplexNdarray:
+        """Return complex dielectric constant
+
+        Args:
+            x: Wavelength.
+        """
+        formula = int(self.catalog['formula'])
+        if formula > 20:
+            return self.formulas[formula](x)
+        else:
+            n, k = self.func_nk(x)
+            eps = np.zeros_like(x, dtype=complex)
+            eps.real = n ** 2 - k ** 2
+            eps.imag = 2 * n * k
+        return eps
 
     def formula_1(self, x: FloatNdarray) -> FloatNdarray:
         cs = self.exp_data['c'].values[:24]
@@ -207,14 +259,13 @@ class DispersionFormula:
         w = self.unit / x
         eb = cs[0]
         f0 = cs[1]
-        wp = cs[2]
-        g0 = cs[3]
+        g0 = cs[2]
+        wp = cs[3]
         eps = eb - f0 * wp ** 2 / (w ** 2 + 1j * w * g0)
-        for fj, wj, gj in zip(islice(cs, 4, None, 3), islice(cs, 5, None, 3),
+        for fj, gj, wj in zip(islice(cs, 4, None, 3), islice(cs, 5, None, 3),
                               islice(cs, 6, None, 3)):
-            eps += fj * wp ** 2 / (w ** 2 - wj ** 2 + 1j * w * gj)
-        ri = np.sqrt(eps)
-        return ri.real, ri.imag
+            eps -= fj * wp ** 2 / (w ** 2 - wj ** 2 + 1j * w * gj)
+        return eps
 
     def formula_22(self, x: FloatNdarray) \
             -> typing.Tuple[FloatNdarray, FloatNdarray]:
@@ -222,17 +273,17 @@ class DispersionFormula:
         w = self.unit / x
         eb = cs[0]
         f0 = cs[1]
-        wp = cs[2]
-        g0 = cs[3]
+        g0 = cs[2]
+        wp = cs[3]
         c = 1j * np.sqrt(np.pi) / (2 * np.sqrt(2))
         eps = eb - f0 * wp ** 2 / (w ** 2 + 1j * w * g0)
-        for fj, wj, gj, sj in zip(
+        for fj, gj, wj, sj in zip(
                 islice(cs, 4, None, 4), islice(cs, 5, None, 4),
                 islice(cs, 6, None, 4), islice(cs, 7, None, 4)):
             aj = np.sqrt(w * (w + 1j * w * gj))
-            eps += c * fj * wp ** 2 / (aj * sj) * (
-                wofz((aj - wj ** 2) / (np.sqrt(2) * sj)) +
-                wofz((aj + wj ** 2) / (np.sqrt(2) * sj))
+            sj_inv = 1 / sj if sj != 0 else 0
+            eps += c * fj * wp ** 2 / aj * sj_inv * (
+                wofz((aj - wj) / np.sqrt(2) * sj_inv) +
+                wofz((aj + wj) / np.sqrt(2) * sj_inv)
             )
-        ri = np.sqrt(eps)
-        return ri.real, ri.imag
+        return eps

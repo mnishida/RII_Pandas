@@ -2,19 +2,16 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
 import os
-from math import nan
 from collections import OrderedDict
-from typing import NewType, Iterable, Any, Union, Dict
+from typing import Iterable, Any, Union, Dict, Tuple, ClassVar, Sequence
 import git
 import yaml
 import pandas as pd
+from pandas import DataFrame
 import numpy as np
-from riip.dispersion_formulas import DispersionFormula
+from riip.dispersion_formulas import Material
 
-__all__ = ['RiiDataFrame', 'csv_to_df']
 logger = getLogger(__package__)
-PandasDataFrame = NewType('PandasDataFrame', pd.DataFrame)
-
 _dirname = os.path.dirname(os.path.dirname(__file__))
 _ri_database = os.path.join(
     _dirname, 'data', 'refractiveindex.info-database')
@@ -31,15 +28,29 @@ class RiiDataFrame:
     """This class provides a Pandas DataFrame for 'refractiveindex.info database'.
 
     Attributes:
-        db_path (str): The path to the refractiveindex.info-database/database.
-        my_db_path (str): The path to my_database.
-        catalog (DataFrame): The catalog.
-        catalog_file (str): The csv filename to store the catalog.
-        raw_data (DataFrame): The experimental data.
-        raw_data_file (str): The csv filename to store the raw_data.
-        grid_data (DataFrame): The grid wl-nk data.
-        grid_data_file (str): The csv filename to store the grid_data.
+        db_path: The path to the refractiveindex.info-database/database.
+        my_db_path: The path to my_database.
+        catalog: The catalog.
+        catalog_file: The csv filename to store the catalog.
+        raw_data: The experimental data.
+        raw_data_file: The csv filename to store the raw_data.
+        grid_data_file: The csv filename to store the grid_data.
     """
+    _catalog_columns: ClassVar[OrderedDict] = OrderedDict((
+        ('id', int), ('shelf', str), ('shelf_name', str), ('division', str),
+        ('book', str), ('book_name', str), ('page', str), ('path', str),
+        ('formula', int), ('tabulated', str), ('num_n', int),
+        ('num_k', int), ('wl_n_min', np.float64), ('wl_n_max', np.float64),
+        ('wl_k_min', np.float64), ('wl_k_max', np.float64),
+        ('wl_min', np.float64), ('wl_max', np.float64)))
+
+    _raw_data_columns: ClassVar[OrderedDict] = OrderedDict((
+        ('id', int), ('c', np.float64), ('wl_n', np.float64),
+        ('n', np.float64), ('wl_k', np.float64), ('k', np.float64)))
+
+    _grid_data_columns: ClassVar[OrderedDict] = OrderedDict((
+        ('id', int), ('wl', np.float64),
+        ('n', np.float64), ('k', np.float64)))
 
     def __init__(self, db_path: str = _db_directory,
                  catalog_file: str = _catalog_file,
@@ -55,26 +66,18 @@ class RiiDataFrame:
             raw_data_file: The filename of the experimental data csv file.
             grid_data_file: The filename of the grid wl-nk data csv file.
         """
-        self.db_path = db_path
-        self.my_db_path = my_db_path
-        self._ri_database = os.path.dirname(self.db_path)
-        self.catalog_file = catalog_file
-        self.raw_data_file = raw_data_file
-        self.grid_data_file = grid_data_file
-        self._catalog_columns = OrderedDict((
-            ('id', int), ('shelf', str), ('shelf_name', str), ('division', str),
-            ('book', str), ('book_name', str), ('page', str), ('path', str),
-            ('formula', int), ('tabulated', str), ('num_n', int),
-            ('num_k', int), ('wl_n_min', np.float64), ('wl_n_max', np.float64),
-            ('wl_k_min', np.float64), ('wl_k_max', np.float64)))
-        self._raw_data_columns = OrderedDict((
-            ('id', int), ('c', np.float64), ('wl_n', np.float64),
-            ('n', np.float64), ('wl_k', np.float64), ('k', np.float64)))
-        self._grid_data_columns = OrderedDict((
-            ('id', int), ('wl', np.float64),
-            ('n', np.float64), ('k', np.float64)))
+        self.db_path: str = db_path
+        self.my_db_path: str = my_db_path
+        self._ri_database: str = os.path.dirname(self.db_path)
+        self.catalog_file: str = catalog_file
+        self.raw_data_file: str = raw_data_file
+        self.grid_data_file: str = grid_data_file
+        _catalog, _raw_data = self.load_catalog_and_raw_data()
+        self.catalog: DataFrame = _catalog
+        self.raw_data: DataFrame = _raw_data
 
-        # Preparing catalog
+    def load_catalog_and_raw_data(self) -> Tuple[DataFrame, DataFrame]:
+        # Create csv files
         if not os.path.isfile(self.catalog_file):
             logger.warning("Catalog file not found.")
             if not os.path.isfile(os.path.join(self.db_path, 'library.yml')):
@@ -83,51 +86,37 @@ class RiiDataFrame:
                                     branch='master')
                 logger.warning("Done.")
             logger.warning("Creating catalog file...")
-            self.create_catalog()
-            self.add_my_db_to_catalog()
+            catalog = self.add_my_db_to_catalog(
+                self.create_catalog())
             logger.warning("Done.")
-        else:
-            logger.info("Catalog file found at {}".format(self.catalog_file))
-            self.catalog = csv_to_df(
-                self.catalog_file, dtype=self._catalog_columns)
 
-        # Preparing raw_data
-        if not os.path.isfile(self.raw_data_file):
-            logger.warning("Raw data file not found.")
+            # Preparing raw_data
             logger.warning("Creating raw data file...")
-            self.create_raw_data()
+            raw_data, catalog = self.create_raw_data_and_modify_catalog(catalog)
             logger.warning("Done.")
-        else:
-            logger.info(
-                "Raw data file found at {}".format(self.raw_data_file))
-            self.raw_data = csv_to_df(
-                self.raw_data_file, dtype=self._raw_data_columns)
 
-        # Preparing grid_data
-        if not os.path.isfile(self.grid_data_file):
-            logger.warning("Grid data file not found.")
-            logger.warning("Creating grid data file...")
-            self.create_grid_data()
+            # Preparing grid_data
+            logger.warning("Updating grid data file...")
+            self.create_grid_data(catalog, raw_data)
             logger.warning("Done.")
-        else:
-            logger.info(
-                "Grid data file found at {}".format(self.grid_data_file))
-            self.grid_data = csv_to_df(
-                self.grid_data_file, dtype=self._grid_data_columns)
+        catalog = load_csv(self.catalog_file, dtype=self._catalog_columns)
+        raw_data = load_csv(self.raw_data_file, dtype=self._raw_data_columns)
+        return catalog, raw_data
 
-    def extract_entry(self, db_path: str, start_id: int = 0) -> Iterable[Any]:
+    @staticmethod
+    def extract_entry(db_path: str, start_id: int = 0) -> Iterable[Any]:
         """Yield a single data set."""
 
         reference_path = os.path.normpath(db_path)
         library_file = os.path.join(reference_path, "library.yml")
         with open(library_file, "r", encoding='utf-8') as f:
-            catalog = yaml.safe_load(f)
+            library = yaml.safe_load(f)
         idx = start_id
         shelf = 'main'
         book = 'Ag (Experimental data)'
         page = 'Johnson'
         try:
-            for sh in catalog:
+            for sh in library:
                 shelf = sh['SHELF']
                 if shelf == '3d':
                     # This shelf does not seem to contain new data.
@@ -160,7 +149,7 @@ class RiiDataFrame:
                                     idx, book, page))
                                 yield [idx, shelf, shelf_name, division, book,
                                        book_name, page, path,
-                                       0, '', 0, 0, 0, 0, 0, 0]
+                                       0, 'f', 0, 0, 0, 0, 0, 0, 0, 0]
                                 idx += 1
         except Exception as e:
             message = (
@@ -169,36 +158,46 @@ class RiiDataFrame:
                     idx, shelf, book, page))
             raise Exception(message) from e
 
-    def create_catalog(self) -> None:
+    def create_catalog(self) -> DataFrame:
         """Create catalog DataFrame from library.yml."""
         logger.info("Creating catalog...")
-        self.catalog = pd.DataFrame(self.extract_entry(self.db_path),
-                                    columns=self._catalog_columns.keys())
-        set_columns_dtype(self.catalog, self._catalog_columns)
-        self.catalog.to_csv(self.catalog_file)
+        df = DataFrame(self.extract_entry(self.db_path),
+                       columns=self._catalog_columns.keys())
+        set_columns_dtype(df, self._catalog_columns)
+        df.to_csv(self.catalog_file, index=False)
         logger.info("Done.")
+        return df
 
-    def add_my_db_to_catalog(self) -> None:
+    def add_my_db_to_catalog(self, catalog) -> DataFrame:
         """Add data in my_database to catalog DataFrame."""
         logger.info("Adding my_db to catalog...")
-        start_id = self.catalog['id'].values[-1]
-        df = pd.DataFrame(
+        start_id = catalog['id'].values[-1] + 1
+        logger.debug(start_id)
+        df = DataFrame(
             self.extract_entry(self.my_db_path, start_id),
             columns=self._catalog_columns.keys())
-        for key, val in self._catalog_columns.items():
-            df[key] = df[key].astype(val)
-        self.catalog = self.catalog.append(df, ignore_index=True)
-        self.catalog.to_csv(self.catalog_file)
+        set_columns_dtype(df, self._catalog_columns)
+        df = catalog.append(df, ignore_index=True)
+        df.to_csv(self.catalog_file, index=False)
         logger.info("Done.")
+        return df
 
-    def extract_raw_data(self, idx: int) -> PandasDataFrame:
+    def load_raw_data(self) -> DataFrame:
+        # Load catalog and experimental data.
+        df = load_csv(
+            self.raw_data_file, dtype=self._raw_data_columns)
+        return df
+
+    def extract_raw_data(self, idx: int, catalog: DataFrame) \
+            -> Tuple[DataFrame, DataFrame]:
         """Yield a single raw data set.
 
         Some data are inserted into the catalog.
         Args:
+            catalog: The catalog.
             idx: The ID number of the data set.
         """
-        path = self.catalog.loc[idx, 'path']
+        path = catalog.loc[idx, 'path']
         with open(path, "r", encoding='utf-8') as f:
             data_list = yaml.safe_load(f)['DATA']
         wl_n_min = wl_k_min = 0
@@ -271,6 +270,11 @@ class RiiDataFrame:
             raise Exception("There is redundancy in n or k.")
         elif tabulated == 'kn':
             tabulated = 'nk'
+        elif tabulated == '':
+            tabulated = 'f'
+
+        wl_min = max(wl_n_min, wl_k_min)
+        wl_max = min(wl_n_max, wl_k_max)
 
         # The coefficients not included in the formula must be zero.
         num_c = len(cs)
@@ -280,70 +284,80 @@ class RiiDataFrame:
 
         # All the arrays must have the same length.
         num = max(num_n, num_k, num_c)
-        cs = np.array(cs + [nan] * (num - num_c), dtype=np.float64)
-        wls_n = np.array(wls_n + [nan] * (num - num_n), dtype=np.float64)
-        ns = np.array(ns + [nan] * (num - num_n), dtype=np.float64)
-        wls_k = np.array(wls_k + [nan] * (num - num_k), dtype=np.float64)
-        ks = np.array(ks + [nan] * (num - num_k), dtype=np.float64)
+        cs = np.array(cs + [0.0] * (num - num_c), dtype=np.float64)
+        wls_n = np.array(wls_n + [0.0] * (num - num_n), dtype=np.float64)
+        ns = np.array(ns + [0.0] * (num - num_n), dtype=np.float64)
+        wls_k = np.array(wls_k + [0.0] * (num - num_k), dtype=np.float64)
+        ks = np.array(ks + [0.0] * (num - num_k), dtype=np.float64)
 
         # Rewrite catalog with the obtained data
-        self.catalog.loc[idx, 'formula'] = formula
-        self.catalog.loc[idx, 'tabulated'] = tabulated
-        self.catalog.loc[idx, 'num_n'] = num_n
-        self.catalog.loc[idx, 'num_k'] = num_k
-        self.catalog.loc[idx, 'wl_n_min'] = wl_n_min
-        self.catalog.loc[idx, 'wl_n_max'] = wl_n_max
-        self.catalog.loc[idx, 'wl_k_min'] = wl_k_min
-        self.catalog.loc[idx, 'wl_k_max'] = wl_k_max
+        catalog.loc[idx, 'formula'] = formula
+        catalog.loc[idx, 'tabulated'] = tabulated
+        catalog.loc[idx, 'num_n'] = num_n
+        catalog.loc[idx, 'num_k'] = num_k
+        catalog.loc[idx, 'wl_n_min'] = wl_n_min
+        catalog.loc[idx, 'wl_n_max'] = wl_n_max
+        catalog.loc[idx, 'wl_k_min'] = wl_k_min
+        catalog.loc[idx, 'wl_k_max'] = wl_k_max
+        catalog.loc[idx, 'wl_min'] = wl_min
+        catalog.loc[idx, 'wl_max'] = wl_max
 
-        logger.debug("{} {} {}".format(len(cs), len(ns), len(ks)))
-
-        df = pd.DataFrame(
+        df = DataFrame(
             {key: val for key, val in
              zip(self._raw_data_columns.keys(),
                  [idx, cs, wls_n, ns, wls_k, ks])})
         # Arrange the columns according to the order of _raw_data_columns
         df = df.ix[:, self._raw_data_columns.keys()]
         set_columns_dtype(df, self._raw_data_columns)
-        return df
+        return df, catalog
 
-    def create_raw_data(self) -> None:
+    def create_raw_data_and_modify_catalog(self, catalog: DataFrame) \
+            -> Tuple[DataFrame, DataFrame]:
         """Create a DataFrame for experimental data."""
         logger.info("Creating raw data...")
-        self.raw_data = pd.DataFrame(columns=self._raw_data_columns)
-        for idx in self.catalog.index:
-            logger.debug("{}: {}".format(idx, self.catalog.loc[idx, 'path']))
-            self.raw_data = self.raw_data.append(self.extract_raw_data(idx),
-                                                 ignore_index=True)
-        set_columns_dtype(self.raw_data, self._raw_data_columns)
-        self.catalog.to_csv(self.catalog_file)
-        self.raw_data.to_csv(self.raw_data_file)
+        df = DataFrame(columns=self._raw_data_columns)
+        for idx in catalog.index:
+            logger.debug("{}: {}".format(idx, catalog.loc[idx, 'path']))
+            df_idx, catalog = self.extract_raw_data(idx, catalog)
+            df = df.append(df_idx, ignore_index=True)
+        set_columns_dtype(df, self._raw_data_columns)
+        catalog.to_csv(self.catalog_file, index=False)
+        df.to_csv(self.raw_data_file, index=False)
         logger.info("Done.")
+        return df, catalog
 
-    def create_grid_data(self) -> None:
+    def load_grid_data(self) -> DataFrame:
+        if not os.path.isfile(self.grid_data_file):
+            logger.warning("Grid data file not found.")
+            logger.warning("Creating grid data file...")
+            self.create_grid_data(self.catalog, self.raw_data)
+            logger.warning("Done.")
+        else:
+            logger.info(
+                "Grid data file found at {}".format(self.grid_data_file))
+        return load_csv(
+            self.grid_data_file, dtype=self._grid_data_columns)
+
+    def create_grid_data(
+            self, catalog: DataFrame, raw_data: DataFrame) -> None:
         """Create a DataFrame for the wl-nk data."""
         logger.info("Creating grid data...")
         columns = self._grid_data_columns.keys()
-        self.grid_data = pd.DataFrame(columns=columns)
-        for idx in set(self.raw_data['id']):
-            catalog = self.catalog.loc[idx]
-            data = self.raw_data[self.raw_data['id'] == idx]
-            dispersion = DispersionFormula(catalog, data)
-            wl_min = max(float(catalog.loc['wl_n_min']),
-                         float(catalog.loc['wl_k_min']))
-            wl_max = min(float(catalog.loc['wl_n_max']),
-                         float(catalog.loc['wl_k_max']))
-            wls = np.linspace(wl_min, wl_max, 257)
-            if int(catalog['formula']) < 21:
-                ns = dispersion.func_n(wls)
-                ks = dispersion.func_k(wls)
-            else:
-                ns, ks = dispersion.func_nk(wls)
+        df = DataFrame(columns=columns)
+        for idx in set(raw_data['id']):
+            a_catalog = catalog.loc[idx]
+            data = raw_data[raw_data['id'] == idx]
+            dispersion = Material(a_catalog, data)
+            wl_min = a_catalog.loc['wl_min']
+            wl_max = a_catalog.loc['wl_max']
+            wls = np.linspace(wl_min, wl_max, 100)
+            ns = dispersion.func_n(wls)
+            ks = dispersion.func_k(wls)
             data = {key: val for key, val in zip(columns, [idx, wls, ns, ks])}
-            self.grid_data = self.grid_data.append(
-                pd.DataFrame(data).ix[:, columns], ignore_index=True)
-        set_columns_dtype(self.grid_data, self._grid_data_columns)
-        self.grid_data.to_csv(self.grid_data_file)
+            df = df.append(
+                DataFrame(data).ix[:, columns], ignore_index=True)
+        set_columns_dtype(df, self._grid_data_columns)
+        df.to_csv(self.grid_data_file, index=False)
         logger.info("Done.")
 
     def update_db(self) -> None:
@@ -358,28 +372,39 @@ class RiiDataFrame:
             repo.remotes.origin.pull()
             logger.warning("Done.")
         logger.warning("Updating catalog file...")
-        self.create_catalog()
-        self.add_my_db_to_catalog()
+        catalog = self.add_my_db_to_catalog(self.create_catalog())
         logger.warning("Done.")
         logger.warning("Updating raw data file...")
-        self.create_raw_data()
+        self.raw_data, self.catalog = self.create_raw_data_and_modify_catalog(
+            catalog)
         logger.warning("Done.")
         logger.warning("Updating grid data file...")
-        self.create_grid_data()
+        self.create_grid_data(self.catalog, self.raw_data)
         logger.warning("Done.")
         logger.warning("All Done.")
 
+    def search_pages(self, name: str) -> DataFrame:
+        columns = ['shelf', 'book', 'page', 'formula', 'tabulated',
+                   'wl_min', 'wl_max']
+        df = self.catalog[self.catalog['book'].str.contains(name)]
+        return df.loc[:, columns]
 
-def csv_to_df(csv_file: str,
-              dtype: Union[None, Dict] = None) -> PandasDataFrame:
+    def show(self, idx: Union[int, Sequence[int]]) -> DataFrame:
+        columns = ['shelf', 'book', 'page', 'formula', 'tabulated',
+                   'wl_min', 'wl_max']
+        return self.catalog.loc[idx, columns]
+
+
+def load_csv(csv_file: str,
+             dtype: Union[None, Dict] = None) -> DataFrame:
     """Convert csv file to a DataFrame."""
     logger.info("Loading {}".format(os.path.basename(csv_file)))
-    df = pd.read_csv(csv_file, dtype=dtype)
+    df = pd.read_csv(csv_file, dtype=dtype, index_col='id')
     logger.info("Done.")
     return df
 
 
-def set_columns_dtype(df: PandasDataFrame, columns: Dict):
+def set_columns_dtype(df: DataFrame, columns: Dict):
     """Set data type of each column in the DataFrame."""
     for key, val in columns.items():
         df[key] = df[key].astype(val)
@@ -402,10 +427,9 @@ if __name__ == '__main__':
     # print(rii_df.raw_data.head)
 
     rii_df.update_db()
-    # rii_df.create_catalog()
-    # rii_df.add_my_db_to_catalog()
-    # rii_df.catalog = csv_to_df(rii_df.catalog_file)
-    # rii_df.create_raw_data()
+    # catalog = rii_df.add_my_db_to_catalog(
+    #     rii_df.create_catalog())
+    # raw_data, catalog = rii_df.create_raw_data_and_modify_catalog(catalog)
     # rii_df.catalog = csv_to_df(rii_df.catalog_file)
     # rii_df.create_raw_data()
     # rii_df.raw_data = csv_to_df(rii_df.raw_data_file)

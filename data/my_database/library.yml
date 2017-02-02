@@ -1,3 +1,27 @@
+- SHELF: main
+  name: "MAIN - simple inorganic materials"
+  content:
+    - DIVIDER: "Ag - Silver"
+    - BOOK: Ag
+      name: "Ag (Silver)"
+      content:
+        - PAGE: Palik
+          name: "Palik 1991: n,k 1.24e-4-9.919 µm"
+          path: "main/Ag/Palik.yml"
+    - DIVIDER: "Au - Gold"
+    - BOOK: Au
+      name: "Au (Gold)"
+      content:
+        - PAGE: Palik
+          name: "Palik 1991: n,k 1.25e-4-9.919 µm"
+          path: "main/Au/Palik.yml"
+    - DIVIDER: "Cu - Copper"
+    - BOOK: Cu
+      name: "Cu (Copper)"
+      content:
+        - PAGE: Palik
+          name: "Palik 1991: n,k 1.38e-4-9.537 µm"
+          path: "main/Cu/Palik.yml"
 - SHELF: DL
   name: "DL - Drude Lorentz model"
   content:
@@ -11,6 +35,9 @@
         - PAGE: Vial
           name: "Vial 2007: Drude-Lorentz model"
           path: "DL/Ag/Vial.yml"
+        - PAGE: Lee
+          name: "Lee 2005: Drude-Lorentz model"
+          path: "DL/Ag/Lee.yml"
     - DIVIDER: "Al - Aluminium"
     - BOOK: Al
       name: "Al (Aluminium)"
