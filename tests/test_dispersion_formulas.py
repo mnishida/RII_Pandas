@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import unittest
-from math import nan
 import numpy as np
 import pandas as pd
 from riip import Material
@@ -52,9 +51,10 @@ class KnownValues(unittest.TestCase):
     def test_dispersion_formula_known_values(self):
         """dispersion_formula should return function."""
         for i, (formula, cs, wl, result) in enumerate(self.known_values):
-            catalog = pd.DataFrame({'formula': [formula], 'tabulated': [''],
-                                    'wl_n_min': [0.25], 'wl_n_max': [2.0],
-                                    'wl_k_min': [0.25], 'wl_k_max': [2.0]}).loc[0]
+            catalog = pd.DataFrame(
+                {'formula': [formula], 'tabulated': [''],
+                 'wl_n_min': [0.25], 'wl_n_max': [2.0],
+                 'wl_k_min': [0.25], 'wl_k_max': [2.0]}).loc[0]
             data = pd.DataFrame({'c': cs})
             material = Material(catalog, data)
             n = material.n(wl)
@@ -68,10 +68,11 @@ class KnownValues(unittest.TestCase):
             wls = wlnk[:, 0]
             ns = wlnk[:, 1]
             ks = wlnk[:, 2]
-            catalog = pd.DataFrame({'formula': [formula], 'tabulated': ['nk'],
-                                    'num_n': 100, 'num_k': 100,
-                                    'wl_n_min': [0.25], 'wl_n_max': [2.0],
-                                    'wl_k_min': [0.25], 'wl_k_max': [2.0]}).loc[0]
+            catalog = pd.DataFrame(
+                {'formula': [formula], 'tabulated': ['nk'],
+                 'num_n': 100, 'num_k': 100,
+                 'wl_n_min': [0.25], 'wl_n_max': [2.0],
+                 'wl_k_min': [0.25], 'wl_k_max': [2.0]}).loc[0]
             data = pd.DataFrame({'wl_n': wls, 'n': ns, 'wl_k': wls, 'k': ks})
             material = Material(catalog, data)
             self.assertAlmostEqual(

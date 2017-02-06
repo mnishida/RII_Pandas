@@ -391,7 +391,8 @@ class RiiDataFrame:
                    'wl_min', 'wl_max']
         df = self.catalog[
             ((self.catalog['book'].str.contains(name)) |
-             (self.catalog['book_name'].str.contains(name)))]
+             (self.catalog['book_name'].str.replace(
+                 '<sub>', '').str.replace('</sub>', '').str.contains(name)))]
         return df.loc[:, columns]
 
     def select(self, cond: Dict) -> List[int]:

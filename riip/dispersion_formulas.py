@@ -59,7 +59,7 @@ class Material:
             x_max = max(x)
         else:
             x_min = x_max = x
-        if x_min < wl_n_min or x_max > wl_n_max:
+        if x_min < wl_n_min * 0.999 or x_max > wl_n_max * 1.001:
             raise ValueError(
                 'Wavelength is out of bounds [{} {}][um]'.format(
                     wl_n_min, wl_n_max))
@@ -80,7 +80,7 @@ class Material:
             else:
                 return interp1d(
                     wls_n, ns, kind='linear', bounds_error=False,
-                    fill_value=(ns[0], ns[-1]), assume_sorted=True)(x)
+                    fill_value='extrapolate', assume_sorted=True)(x)
         else:
             return np.nan * np.ones_like(x)
 
@@ -97,7 +97,7 @@ class Material:
             x_max = max(x)
         else:
             x_min = x_max = x
-        if x_min < wl_k_min or x_max > wl_k_max:
+        if x_min < wl_k_min * 0.999 or x_max > wl_k_max * 1.001:
             raise ValueError(
                 'Wavelength is out of bounds [{} {}][um]'.format(
                     wl_k_min, wl_k_max))
@@ -111,7 +111,7 @@ class Material:
                 else:
                     return interp1d(
                         wls_k, ks, kind='linear', bounds_error=False,
-                        fill_value=(ks[0], ks[-1]), assume_sorted=True)(x)
+                        fill_value='extrapolate', assume_sorted=True)(x)
         else:
             formula = int(self.catalog['formula'])
             if formula > 20:
@@ -133,7 +133,7 @@ class Material:
             x_max = max(x)
         else:
             x_min = x_max = x
-        if x_min < wl_min or x_max > wl_max:
+        if x_min < wl_min * 0.999 or x_max > wl_max * 1.001:
             raise ValueError(
                 'Wavelength is out of bounds [{} {}][um]'.format(
                     wl_min, wl_max))
@@ -141,7 +141,8 @@ class Material:
         formula = int(self.catalog['formula'])
         tabulated = self.catalog['tabulated']
         if formula > 20:
-            n, k = self.formulas[formula](x)
+            sqrt_eps = np.sqrt(self.formulas[formula](x))
+            n, k = sqrt_eps.real, sqrt_eps.imag
         else:
             if formula != 0:
                 n = self.formulas[formula](x)
@@ -154,7 +155,7 @@ class Material:
                 else:
                     n = interp1d(
                         wls_n, ns, kind='linear', bounds_error=False,
-                        fill_value=(ns[0], ns[-1]), assume_sorted=True)(x)
+                        fill_value='extrapolate', assume_sorted=True)(x)
             else:
                 raise Exception("Refractive indices are not provided.")
             if 'k' in tabulated:
@@ -208,19 +209,21 @@ class Material:
             ns = self.n(wls)
             plt.plot(wls, ns, fmt, label="{}".format(self.catalog['page']),
                      **kwargs)
+            plt.ylabel(r'$n$')
         elif comp == 'k':
             ks = self.k(wls)
             plt.plot(wls, ks, fmt, label="{}".format(self.catalog['page']),
                      **kwargs)
+            plt.ylabel(r'$k$')
         elif comp == 'eps':
             eps = self.eps(wls)
             line, = plt.plot(wls, eps.real, fmt,
                              label="{}".format(self.catalog['page']), **kwargs)
             kwargs.setdefault('color', line.get_color())
             plt.plot(wls, eps.imag, fmt, **kwargs)
+            plt.ylabel(r'$\varepsilon$')
         plt.xlim(min(wls), max(wls))
         plt.xlabel(r'$\lambda$ $[\mathrm{\mu m}]$')
-        plt.ylabel(r'$n$')
         plt.legend(loc='best')
 
     def formula_1(self, x: FloatNdarray) -> FloatNdarray:
@@ -316,7 +319,7 @@ class Material:
         for fj, gj, wj, sj in zip(
                 islice(cs, 4, None, 4), islice(cs, 5, None, 4),
                 islice(cs, 6, None, 4), islice(cs, 7, None, 4)):
-            aj = np.sqrt(w * (w + 1j * w * gj))
+            aj = np.sqrt(w * (w + 1j * gj))
             sj_inv = 1 / sj if sj != 0 else 0
             eps += c * fj * wp ** 2 / aj * sj_inv * (
                 wofz((aj - wj) / np.sqrt(2) * sj_inv) +
