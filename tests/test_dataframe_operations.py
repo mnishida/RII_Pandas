@@ -3,7 +3,6 @@
 import os
 import unittest
 from filecmp import cmp
-import numpy as np
 import pandas as pd
 from numpy.testing import assert_allclose
 import riip
@@ -46,7 +45,7 @@ class KnownValues(unittest.TestCase):
             material = self.ri.material(idx)
             ns = material.n(df['wl'].values)
             print(catalog.loc[idx, 'page'])
-            assert_allclose(df['n'].values, ns, rtol=1e-3, atol=1e-4)
+            assert_allclose(df['n'].values, ns, rtol=1e-5)
 
     def tearDown(self):
         os.remove(self.catalog_file)
