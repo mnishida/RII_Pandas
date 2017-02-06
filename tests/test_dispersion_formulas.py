@@ -56,8 +56,8 @@ class KnownValues(unittest.TestCase):
                                     'wl_n_min': [0.25], 'wl_n_max': [2.0],
                                     'wl_k_min': [0.25], 'wl_k_max': [2.0]}).loc[0]
             data = pd.DataFrame({'c': cs})
-            dispersion = Material(catalog, data)
-            n = dispersion.func_n(wl)
+            material = Material(catalog, data)
+            n = material.n(wl)
             self.assertAlmostEqual(n, result)
 
     def test_dispersion_formula_for_tabulated(self):
@@ -73,28 +73,28 @@ class KnownValues(unittest.TestCase):
                                     'wl_n_min': [0.25], 'wl_n_max': [2.0],
                                     'wl_k_min': [0.25], 'wl_k_max': [2.0]}).loc[0]
             data = pd.DataFrame({'wl_n': wls, 'n': ns, 'wl_k': wls, 'k': ks})
-            dispersion = Material(catalog, data)
+            material = Material(catalog, data)
             self.assertAlmostEqual(
-                (dispersion.func_n(wl), dispersion.func_k(wl)), result)
+                (material.n(wl), material.k(wl)), result)
 
     def test_dispersion_formula_exception(self):
         catalog = pd.DataFrame({'formula': [1], 'tabulated': [''],
                                 'wl_n_min': [0.25], 'wl_n_max': [2.0],
                                 'wl_k_min': [0.25], 'wl_k_max': [2.0]}).loc[0]
         data = pd.DataFrame({'cs': list(range(17))})
-        dispersion = Material(catalog, data)
+        material = Material(catalog, data)
         with self.assertRaises(ValueError):
-            dispersion.func_n(0.1)
+            material.n(0.1)
         with self.assertRaises(ValueError):
-            dispersion.func_k(0.1)
+            material.k(0.1)
         with self.assertRaises(ValueError):
-            dispersion.func_n(2.1)
+            material.n(2.1)
         with self.assertRaises(ValueError):
-            dispersion.func_k(2.1)
+            material.k(2.1)
         with self.assertRaises(ValueError):
-            dispersion.func_n(np.array([0.1 * i for i in range(21)]))
+            material.n(np.array([0.1 * i for i in range(21)]))
         with self.assertRaises(ValueError):
-            dispersion.func_k(np.array([0.1 * i for i in range(21)]))
+            material.k(np.array([0.1 * i for i in range(21)]))
 
 
 if __name__ == '__main__':

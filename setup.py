@@ -36,8 +36,7 @@ setup(name='riip',
           # [path.join('data', 'catalog.csv'),
           # path.join('data', 'grid_data.csv'),
           # path.join('data', 'raw_data.csv')]),
-          ('examples',
-          [path.join('examples', 'tutorial.ipynb')])],
+          ('examples', [path.join('examples', 'tutorial.ipynb')])],
       zip_safe=False,
       install_requires=[
           'setuptools',
@@ -45,7 +44,8 @@ setup(name='riip',
           'scipy',
           'pandas',
           'pyyaml',
-          'gitpython'
+          'gitpython',
+          'matplotlib'
       ],
       entry_points="""
       # -*- Entry points: -*-

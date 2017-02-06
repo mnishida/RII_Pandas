@@ -5,7 +5,7 @@ import typing
 from collections import Sequence
 from itertools import islice
 import numpy as np
-from pandas import DataFrame
+from pandas import DataFrame, Series
 from scipy.interpolate import interp1d
 from scipy import constants
 from scipy.special import wofz
@@ -26,14 +26,15 @@ class Material:
          formulas (dict[int, Callable]): A dict of functions for the formulas.
      """
 
-    def __init__(self, catalog: DataFrame, exp_data: DataFrame):
+    def __init__(self, catalog: Series, exp_data: DataFrame):
         """Initialize Material
 
         Args:
             catalog: The catalog data set.
             exp_data: The experimental data set.
         """
-        self.catalog: DataFrame = catalog
+        self.catalog: Series = catalog
+        self.ID = catalog.name
         self.exp_data: DataFrame = exp_data
         self.unit = constants.h * constants.c * 1e6 / constants.e
         self.formulas: typing.Dict[int, typing.Callable[[FloatNdarray],
@@ -45,7 +46,7 @@ class Material:
             9: self.formula_9,
             21: self.formula_21, 22: self.formula_22}
 
-    def func_n(self, x: FloatNdarray) -> FloatNdarray:
+    def n(self, x: FloatNdarray) -> FloatNdarray:
         """Return n for given wavelength
 
         Args:
@@ -81,9 +82,9 @@ class Material:
                     wls_n, ns, kind='linear', bounds_error=False,
                     fill_value=(ns[0], ns[-1]), assume_sorted=True)(x)
         else:
-            return np.empty_like(x)
+            return np.nan * np.ones_like(x)
 
-    def func_k(self, x: FloatNdarray) -> FloatNdarray:
+    def k(self, x: FloatNdarray) -> FloatNdarray:
         """Return n for given wavelength
 
         Args:
@@ -101,8 +102,7 @@ class Material:
                 'Wavelength is out of bounds [{} {}][um]'.format(
                     wl_k_min, wl_k_max))
         tabulated = self.catalog['tabulated']
-        if tabulated != 'f':
-            if 'k' in tabulated:
+        if 'k' in tabulated:
                 num_k = self.catalog['num_k']
                 wls_k = self.exp_data['wl_k'].values[:num_k]
                 ks = self.exp_data['k'].values[:num_k]
@@ -117,7 +117,7 @@ class Material:
             if formula > 20:
                 return np.sqrt(self.formulas[formula](x)).imag
             else:
-                return np.empty_like(x)
+                return np.nan * np.ones_like(x)
 
     def func_nk(self, x: FloatNdarray) \
             -> typing.Tuple[FloatNdarray, FloatNdarray]:
@@ -156,7 +156,7 @@ class Material:
                         wls_n, ns, kind='linear', bounds_error=False,
                         fill_value=(ns[0], ns[-1]), assume_sorted=True)(x)
             else:
-                raise Exception("Lack of data for complex refractive index.")
+                raise Exception("Refractive indices are not provided.")
             if 'k' in tabulated:
                 num_k = self.catalog['num_k']
                 wls_k = self.exp_data['wl_k'].values[:num_k]
@@ -168,7 +168,8 @@ class Material:
                         wls_k, ks, kind='linear', bounds_error=False,
                         fill_value=(ks[0], ks[-1]), assume_sorted=True)(x)
             else:
-                k = np.zeros_like(x)
+                raise Exception("Extinction coefficients are not provided.\n" +
+                                "Please check if they are negligible.")
         return n, k
 
     def eps(self, x: FloatNdarray) -> ComplexNdarray:
@@ -186,6 +187,41 @@ class Material:
             eps.real = n ** 2 - k ** 2
             eps.imag = 2 * n * k
         return eps
+
+    def plot(self, wls: typing.Union[Sequence, np.ndarray],
+             comp: str = 'n',
+             fmt: typing.Union[str, None] = '-',
+
+             **kwargs):
+        """Plot refractive index.
+
+        Args:
+            wls: Array of wavelength.
+            comp: 'n', 'k' or 'eps'
+            fmt: The plot format string.
+        """
+        import matplotlib.pyplot as plt
+        kwargs.setdefault('alpha', 0.5)
+        kwargs.setdefault('lw', 4)
+        kwargs.setdefault('ms', 8)
+        if comp == 'n':
+            ns = self.n(wls)
+            plt.plot(wls, ns, fmt, label="{}".format(self.catalog['page']),
+                     **kwargs)
+        elif comp == 'k':
+            ks = self.k(wls)
+            plt.plot(wls, ks, fmt, label="{}".format(self.catalog['page']),
+                     **kwargs)
+        elif comp == 'eps':
+            eps = self.eps(wls)
+            line, = plt.plot(wls, eps.real, fmt,
+                             label="{}".format(self.catalog['page']), **kwargs)
+            kwargs.setdefault('color', line.get_color())
+            plt.plot(wls, eps.imag, fmt, **kwargs)
+        plt.xlim(min(wls), max(wls))
+        plt.xlabel(r'$\lambda$ $[\mathrm{\mu m}]$')
+        plt.ylabel(r'$n$')
+        plt.legend(loc='best')
 
     def formula_1(self, x: FloatNdarray) -> FloatNdarray:
         cs = self.exp_data['c'].values[:24]
