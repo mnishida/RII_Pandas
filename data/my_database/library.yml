@@ -31,6 +31,9 @@
         - PAGE: Stewart
           name: "Stewart 2006: Drude-Lorentz model"
           path: "DL/Au/Stewart.yml"
+        - PAGE: Vial
+          name: "Vial 2005: Drude-Lorentz model"
+          path: "DL/Au/Vial.yml"
     - DIVIDER: "Cu - Copper"
     - BOOK: Cu
       name: "Cu (Copper)"
@@ -167,3 +170,13 @@
         - PAGE: Rakic
           name: "Rakić 1998: Brendel-Bormann model"
           path: "BB/W/Rakic.yml"
+- SHELF: Drude
+  name: "Drude - Drude model"
+  content:
+    - DIVIDER: "Au - Gold"
+    - BOOK: Au
+      name: "Au (Gold)"
+      content:
+        - PAGE: Vial
+          name: "Vial 2005: Drude model"
+          path: "Drude/Au/Vial.yml"

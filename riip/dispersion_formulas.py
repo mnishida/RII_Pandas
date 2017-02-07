@@ -179,6 +179,18 @@ class Material:
         Args:
             x: Wavelength.
         """
+        wl_min = self.catalog['wl_min']
+        wl_max = self.catalog['wl_max']
+        if isinstance(x, (Sequence, np.ndarray)):
+            x_min = min(x)
+            x_max = max(x)
+        else:
+            x_min = x_max = x
+        if x_min < wl_min * 0.999 or x_max > wl_max * 1.001:
+            raise ValueError(
+                'Wavelength is out of bounds [{} {}][um]'.format(
+                    wl_min, wl_max))
+
         formula = int(self.catalog['formula'])
         if formula > 20:
             return self.formulas[formula](x)
