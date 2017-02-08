@@ -9,7 +9,7 @@ import yaml
 import pandas as pd
 from pandas import DataFrame
 import numpy as np
-from riip.dispersion_formulas import Material
+from riip.material import Material
 
 logger = getLogger(__package__)
 _dirname = os.path.dirname(os.path.dirname(__file__))
@@ -164,7 +164,6 @@ class RiiDataFrame:
         df = DataFrame(self.extract_entry(self.db_path),
                        columns=self._catalog_columns.keys())
         set_columns_dtype(df, self._catalog_columns)
-        df.to_csv(self.catalog_file, index=False)
         logger.info("Done.")
         return df
 
@@ -178,7 +177,6 @@ class RiiDataFrame:
             columns=self._catalog_columns.keys())
         set_columns_dtype(df, self._catalog_columns)
         df = catalog.append(df, ignore_index=True)
-        df.to_csv(self.catalog_file, index=False)
         logger.info("Done.")
         return df
 
