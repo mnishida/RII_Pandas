@@ -414,9 +414,10 @@ class RiiDataFrame:
                    'wl_min', 'wl_max']
         return self.catalog.loc[idx, columns]
 
-    def material(self, idx: int) -> Material:
+    def material(self, idx: int, bound_check: bool = True) -> Material:
         """Material associated with the ID."""
-        return Material(self.catalog.loc[idx], self.raw_data.loc[idx])
+        return Material(self.catalog.loc[idx], self.raw_data.loc[idx],
+                        bound_check)
 
 
 def load_csv(csv_file: str,
