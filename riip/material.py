@@ -26,12 +26,14 @@ class Material:
          formulas (dict[int, Callable]): A dict of functions for the formulas.
      """
 
-    def __init__(self, catalog: Series, exp_data: DataFrame):
+    def __init__(self, catalog: Series, exp_data: DataFrame,
+                 bound_check: bool =True):
         """Initialize Material
 
         Args:
             catalog: The catalog data set.
             exp_data: The experimental data set.
+            bound_check: True if bound check should be done,
         """
         self.catalog: Series = catalog
         self.ID = catalog.name
@@ -45,6 +47,31 @@ class Material:
             7: self.formula_7, 8: self.formula_8,
             9: self.formula_9,
             21: self.formula_21, 22: self.formula_22}
+        self.bound_check_flag = bound_check
+
+    def bound_check(self, x: FloatNdarray, nk: str):
+        if not self.bound_check_flag:
+            return
+        if nk == 'n':
+            wl_min = self.catalog['wl_n_min']
+            wl_max = self.catalog['wl_n_max']
+        elif nk == 'k':
+            wl_min = self.catalog['wl_k_min']
+            wl_max = self.catalog['wl_k_max']
+        elif nk == 'nk':
+            wl_min = self.catalog['wl_min']
+            wl_max = self.catalog['wl_max']
+        else:
+            raise ValueError("nk must be 'n', 'k', or 'nk'.")
+        if isinstance(x, (Sequence, np.ndarray)):
+            x_min = min(x)
+            x_max = max(x)
+        else:
+            x_min = x_max = x
+        if x_min < wl_min * 0.999 or x_max > wl_max * 1.001:
+            raise ValueError(
+                'Wavelength is out of bounds [{} {}][um]'.format(
+                    wl_min, wl_max))
 
     def n(self, x: FloatNdarray) -> FloatNdarray:
         """Return n for given wavelength
@@ -52,18 +79,7 @@ class Material:
         Args:
             x: Wavelength.
         """
-        wl_n_min = self.catalog['wl_n_min']
-        wl_n_max = self.catalog['wl_n_max']
-        if isinstance(x, (Sequence, np.ndarray)):
-            x_min = min(x)
-            x_max = max(x)
-        else:
-            x_min = x_max = x
-        if x_min < wl_n_min * 0.999 or x_max > wl_n_max * 1.001:
-            raise ValueError(
-                'Wavelength is out of bounds [{} {}][um]'.format(
-                    wl_n_min, wl_n_max))
-
+        self.bound_check(x, 'n')
         formula = int(self.catalog['formula'])
         tabulated = self.catalog['tabulated']
         if formula > 0:
@@ -90,17 +106,7 @@ class Material:
         Args:
             x: Wavelength.
         """
-        wl_k_min = self.catalog['wl_k_min']
-        wl_k_max = self.catalog['wl_k_max']
-        if isinstance(x, (Sequence, np.ndarray)):
-            x_min = min(x)
-            x_max = max(x)
-        else:
-            x_min = x_max = x
-        if x_min < wl_k_min * 0.999 or x_max > wl_k_max * 1.001:
-            raise ValueError(
-                'Wavelength is out of bounds [{} {}][um]'.format(
-                    wl_k_min, wl_k_max))
+        self.bound_check(x, 'k')
         tabulated = self.catalog['tabulated']
         if 'k' in tabulated:
                 num_k = self.catalog['num_k']
@@ -126,18 +132,7 @@ class Material:
         Args:
             x: Wavelength.
         """
-        wl_min = self.catalog['wl_min']
-        wl_max = self.catalog['wl_max']
-        if isinstance(x, (Sequence, np.ndarray)):
-            x_min = min(x)
-            x_max = max(x)
-        else:
-            x_min = x_max = x
-        if x_min < wl_min * 0.999 or x_max > wl_max * 1.001:
-            raise ValueError(
-                'Wavelength is out of bounds [{} {}][um]'.format(
-                    wl_min, wl_max))
-
+        self.bound_check(x, 'nk')
         formula = int(self.catalog['formula'])
         tabulated = self.catalog['tabulated']
         if formula > 20:
@@ -179,18 +174,7 @@ class Material:
         Args:
             x: Wavelength.
         """
-        wl_min = self.catalog['wl_min']
-        wl_max = self.catalog['wl_max']
-        if isinstance(x, (Sequence, np.ndarray)):
-            x_min = min(x)
-            x_max = max(x)
-        else:
-            x_min = x_max = x
-        if x_min < wl_min * 0.999 or x_max > wl_max * 1.001:
-            raise ValueError(
-                'Wavelength is out of bounds [{} {}][um]'.format(
-                    wl_min, wl_max))
-
+        self.bound_check(x, 'nk')
         formula = int(self.catalog['formula'])
         if formula > 20:
             return self.formulas[formula](x)
