@@ -423,9 +423,9 @@ class RiiDataFrame:
 def load_csv(csv_file: str,
              dtype: Union[None, Dict] = None) -> DataFrame:
     """Convert csv file to a DataFrame."""
-    logger.info("Loading {}".format(os.path.basename(csv_file)))
+    # logger.info("Loading {}".format(os.path.basename(csv_file)))
     df = pd.read_csv(csv_file, dtype=dtype, index_col='id')
-    logger.info("Done.")
+    # logger.info("Done.")
     return df
 
 
