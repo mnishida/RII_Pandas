@@ -1,7 +1,7 @@
-data/refractiveindex.info-database/
-data/catalog.csv
-data/grid_data.csv
-data/raw_data.csv
+riip/data/refractiveindex.info-database/
+riip/data/catalog.csv
+riip/data/grid_data.csv
+riip/data/raw_data.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

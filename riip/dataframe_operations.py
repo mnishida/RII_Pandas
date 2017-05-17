@@ -12,7 +12,7 @@ import numpy as np
 from riip.material import Material
 
 logger = getLogger(__package__)
-_dirname = os.path.dirname(os.path.dirname(__file__))
+_dirname = os.path.dirname(__file__)
 _ri_database = os.path.join(
     _dirname, 'data', 'refractiveindex.info-database')
 _db_directory = os.path.join(_ri_database, 'database')
