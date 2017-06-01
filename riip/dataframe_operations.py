@@ -321,8 +321,8 @@ class RiiDataFrame:
             df_idx, catalog = self.extract_raw_data(idx, catalog)
             df = df.append(df_idx, ignore_index=True)
         set_columns_dtype(df, self._raw_data_columns)
-        catalog.to_csv(self.catalog_file, index=False)
-        df.to_csv(self.raw_data_file, index=False)
+        catalog.to_csv(self.catalog_file, index=False, encoding='utf-8')
+        df.to_csv(self.raw_data_file, index=False, encoding='utf-8')
         logger.info("Done.")
         return df, catalog
 
@@ -357,7 +357,7 @@ class RiiDataFrame:
             df = df.append(
                 DataFrame(data).ix[:, columns], ignore_index=True)
         set_columns_dtype(df, self._grid_data_columns)
-        df.to_csv(self.grid_data_file, index=False)
+        df.to_csv(self.grid_data_file, index=False, encoding='utf-8')
         logger.info("Done.")
 
     def update_db(self) -> None:
