@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
 import typing
-from collections import Sequence
+from collections.abc import Sequence
 from itertools import islice
 import numpy as np
 from pandas import DataFrame, Series
