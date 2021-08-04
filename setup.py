@@ -1,53 +1,39 @@
-from os import path
+import io
+import os
+import re
+
+from setuptools import find_packages
 from setuptools import setup
-import riip
-
-here = path.abspath(path.dirname(__file__))
-
-# Get the long description from the RpythonEADME file
-with open(path.join(here, 'README.md'), encoding='utf-8') as f:
-    long_description = f.read()
 
 
-setup(name='riip',
-      version=riip.__version__,
-      description=('Python 3 + Pandas wrapper ' +
-                   'for the refractiveindex.info database.'),
-      long_description=long_description,
-      classifiers=[
-          "Development Status :: 3 - Alpha",
-          "Intended Audience :: Developers",
-          "Intended Audience :: Science/Research",
-          "Programming Language :: Python",
-          "Programming Language :: Python :: 3",
-          "Topic :: Scientific/Engineering",
-          "Topic :: Scientific/Engineering :: Mathematics",
-          "Topic :: Software Development :: Libraries :: Python Modules",
-      ],
-      keywords='refractive index, dielectric constant, optical material',
-      author=riip.__author__,
-      author_email='mnishida@hiroshima-u.ac.jp',
-      url='https://github.com/mnishida/Riip',
-      license=riip.__license__,
-      packages=['riip', 'tests', 'examples'],
-      include_package_data=True,
-      data_files=[
-          # ('data',
-          # [path.join('data', 'catalog.csv'),
-          # path.join('data', 'grid_data.csv'),
-          # path.join('data', 'raw_data.csv')]),
-          ('examples', [path.join('examples', 'examples.ipynb')])],
-      zip_safe=False,
-      install_requires=[
-          'setuptools',
-          'numpy',
-          'scipy',
-          'pandas',
-          'pyyaml',
-          'gitpython',
-          'matplotlib'
-      ],
-      entry_points="""
-      # -*- Entry points: -*-
-      """
-      )
+def read(filename):
+    filename = os.path.join(os.path.dirname(__file__), filename)
+    text_type = type(u"")
+    with io.open(filename, mode="r", encoding="utf-8") as fd:
+        return re.sub(text_type(r":[a-z]+:`~?(.*?)`"), text_type(r"``\1``"), fd.read())
+
+
+def get_install_requires():
+    with open("requirements.txt", "r") as f:
+        return [line.strip() for line in f.readlines() if not line.startswith("-")]
+
+
+setup(
+    name="riip",
+    version="0.1.0",
+    url="https://github.com/mnishida/RII_Pandas",
+    license="MIT",
+    author=" Avatar",
+    author_email="Munehiro Nishida mnishida@hiroshima-u.ac.jp",
+    description="Python 3 + Pandas wrapper for the refractiveindex.info database",
+    long_description=read("README.md"),
+    packages=find_packages(),
+    install_requires=get_install_requires(),
+    python_requires=">=3.6",
+    classifiers=[
+        "Development Status :: 2 - Pre-Alpha",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3.7",
+    ],
+)

@@ -13,15 +13,15 @@ from riip.material import Material
 
 logger = getLogger(__package__)
 _dirname = os.path.dirname(__file__)
-_ri_database = os.path.join(
-    _dirname, 'data', 'refractiveindex.info-database')
-_db_directory = os.path.join(_ri_database, 'database')
-_my_db_directory = os.path.join(_dirname, 'data', 'my_database')
-_catalog_file = os.path.join(_dirname, 'data', 'catalog.csv')
-_raw_data_file = os.path.join(_dirname, 'data', 'raw_data.csv')
-_grid_data_file = os.path.join(_dirname, 'data', 'grid_data.csv')
-_ri_database_repo = ("https://github.com/polyanskiy/" +
-                     "refractiveindex.info-database.git")
+_ri_database = os.path.join(_dirname, "data", "refractiveindex.info-database")
+_db_directory = os.path.join(_ri_database, "database")
+_my_db_directory = os.path.join(_dirname, "data", "my_database")
+_catalog_file = os.path.join(_dirname, "data", "catalog.csv")
+_raw_data_file = os.path.join(_dirname, "data", "raw_data.csv")
+_grid_data_file = os.path.join(_dirname, "data", "grid_data.csv")
+_ri_database_repo = (
+    "https://github.com/polyanskiy/" + "refractiveindex.info-database.git"
+)
 
 
 class RiiDataFrame:
@@ -36,27 +36,53 @@ class RiiDataFrame:
         raw_data_file: The csv filename to store the raw_data.
         grid_data_file: The csv filename to store the grid_data.
     """
-    _catalog_columns: ClassVar[OrderedDict] = OrderedDict((
-        ('id', int), ('shelf', str), ('shelf_name', str), ('division', str),
-        ('book', str), ('book_name', str), ('page', str), ('path', str),
-        ('formula', int), ('tabulated', str), ('num_n', int),
-        ('num_k', int), ('wl_n_min', np.float64), ('wl_n_max', np.float64),
-        ('wl_k_min', np.float64), ('wl_k_max', np.float64),
-        ('wl_min', np.float64), ('wl_max', np.float64)))
 
-    _raw_data_columns: ClassVar[OrderedDict] = OrderedDict((
-        ('id', int), ('c', np.float64), ('wl_n', np.float64),
-        ('n', np.float64), ('wl_k', np.float64), ('k', np.float64)))
+    _catalog_columns: ClassVar[OrderedDict] = OrderedDict(
+        (
+            ("id", int),
+            ("shelf", str),
+            ("shelf_name", str),
+            ("division", str),
+            ("book", str),
+            ("book_name", str),
+            ("page", str),
+            ("path", str),
+            ("formula", int),
+            ("tabulated", str),
+            ("num_n", int),
+            ("num_k", int),
+            ("wl_n_min", np.float64),
+            ("wl_n_max", np.float64),
+            ("wl_k_min", np.float64),
+            ("wl_k_max", np.float64),
+            ("wl_min", np.float64),
+            ("wl_max", np.float64),
+        )
+    )
 
-    _grid_data_columns: ClassVar[OrderedDict] = OrderedDict((
-        ('id', int), ('wl', np.float64),
-        ('n', np.float64), ('k', np.float64)))
+    _raw_data_columns: ClassVar[OrderedDict] = OrderedDict(
+        (
+            ("id", int),
+            ("c", np.float64),
+            ("wl_n", np.float64),
+            ("n", np.float64),
+            ("wl_k", np.float64),
+            ("k", np.float64),
+        )
+    )
 
-    def __init__(self, db_path: str = _db_directory,
-                 catalog_file: str = _catalog_file,
-                 raw_data_file: str = _raw_data_file,
-                 grid_data_file: str = _grid_data_file,
-                 my_db_path: str = _my_db_directory):
+    _grid_data_columns: ClassVar[OrderedDict] = OrderedDict(
+        (("id", int), ("wl", np.float64), ("n", np.float64), ("k", np.float64))
+    )
+
+    def __init__(
+        self,
+        db_path: str = _db_directory,
+        catalog_file: str = _catalog_file,
+        raw_data_file: str = _raw_data_file,
+        grid_data_file: str = _grid_data_file,
+        my_db_path: str = _my_db_directory,
+    ):
         """Initialize the RiiDataFrame.
 
         Args:
@@ -80,14 +106,14 @@ class RiiDataFrame:
         # Create csv files
         if not os.path.isfile(self.catalog_file):
             logger.warning("Catalog file not found.")
-            if not os.path.isfile(os.path.join(self.db_path, 'library.yml')):
+            if not os.path.isfile(os.path.join(self.db_path, "library.yml")):
                 logger.warning("Cloning Repository...")
-                git.Repo.clone_from(_ri_database_repo, self._ri_database,
-                                    branch='master')
+                git.Repo.clone_from(
+                    _ri_database_repo, self._ri_database, branch="master"
+                )
                 logger.warning("Done.")
             logger.warning("Creating catalog file...")
-            catalog = self.add_my_db_to_catalog(
-                self.create_catalog())
+            catalog = self.add_my_db_to_catalog(self.create_catalog())
             logger.warning("Done.")
 
             # Preparing raw_data
@@ -109,60 +135,79 @@ class RiiDataFrame:
 
         reference_path = os.path.normpath(db_path)
         library_file = os.path.join(reference_path, "library.yml")
-        with open(library_file, "r", encoding='utf-8') as f:
+        with open(library_file, "r", encoding="utf-8") as f:
             library = yaml.safe_load(f)
         idx = start_id
-        shelf = 'main'
-        book = 'Ag (Experimental data)'
-        page = 'Johnson'
+        shelf = "main"
+        book = "Ag (Experimental data)"
+        page = "Johnson"
         try:
             for sh in library:
-                shelf = sh['SHELF']
-                if shelf == '3d':
+                shelf = sh["SHELF"]
+                if shelf == "3d":
                     # This shelf does not seem to contain new data.
                     break
-                shelf_name = sh['name']
+                shelf_name = sh["name"]
                 division = None
-                for b in sh['content']:
-                    if 'DIVIDER' in b:
-                        division = b['DIVIDER']
+                for b in sh["content"]:
+                    if "DIVIDER" in b:
+                        division = b["DIVIDER"]
                     else:
                         if division is None:
-                            raise Exception(
-                                "'DIVIDER' is missing in 'library.yml'.")
-                        if 'DIVIDER' not in b['content']:
-                            page_class = ''
-                        for p in b['content']:
-                            if 'DIVIDER' in p:
+                            raise Exception("'DIVIDER' is missing in 'library.yml'.")
+                        if "DIVIDER" not in b["content"]:
+                            page_class = ""
+                        for p in b["content"]:
+                            if "DIVIDER" in p:
                                 # This DIVIDER specifies the phase of the
                                 #  material such as gas, liquid or solid, so it
                                 #  is added to the book and book_name with
                                 #  parentheses.
-                                page_class = " ({})".format(p['DIVIDER'])
+                                page_class = " ({})".format(p["DIVIDER"])
                             else:
-                                book = ''.join([b['BOOK'], page_class])
-                                book_name = ''.join([b['name'], page_class])
-                                page = p['PAGE']
+                                book = "".join([b["BOOK"], page_class])
+                                book_name = "".join([b["name"], page_class])
+                                page = p["PAGE"]
                                 path = os.path.join(
-                                    reference_path, os.path.normpath(p['path']))
-                                logger.debug("{0} {1} {2}".format(
-                                    idx, book, page))
-                                yield [idx, shelf, shelf_name, division, book,
-                                       book_name, page, path,
-                                       0, 'f', 0, 0, 0, 0, 0, 0, 0, 0]
+                                    reference_path, os.path.normpath(p["path"])
+                                )
+                                logger.debug("{0} {1} {2}".format(idx, book, page))
+                                yield [
+                                    idx,
+                                    shelf,
+                                    shelf_name,
+                                    division,
+                                    book,
+                                    book_name,
+                                    page,
+                                    path,
+                                    0,
+                                    "f",
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                ]
                                 idx += 1
         except Exception as e:
             message = (
-                "There seems to be some inconsistency in the library.yml " +
-                "around id={}, shelf={}, book={}, page={}.".format(
-                    idx, shelf, book, page))
+                "There seems to be some inconsistency in the library.yml "
+                + "around id={}, shelf={}, book={}, page={}.".format(
+                    idx, shelf, book, page
+                )
+            )
             raise Exception(message) from e
 
     def create_catalog(self) -> DataFrame:
         """Create catalog DataFrame from library.yml."""
         logger.info("Creating catalog...")
-        df = DataFrame(self.extract_entry(self.db_path),
-                       columns=self._catalog_columns.keys())
+        df = DataFrame(
+            self.extract_entry(self.db_path), columns=self._catalog_columns.keys()
+        )
         set_columns_dtype(df, self._catalog_columns)
         logger.info("Done.")
         return df
@@ -170,11 +215,12 @@ class RiiDataFrame:
     def add_my_db_to_catalog(self, catalog) -> DataFrame:
         """Add data in my_database to catalog DataFrame."""
         logger.info("Adding my_db to catalog...")
-        start_id = catalog['id'].values[-1] + 1
+        start_id = catalog["id"].values[-1] + 1
         logger.debug(start_id)
         df = DataFrame(
             self.extract_entry(self.my_db_path, start_id),
-            columns=self._catalog_columns.keys())
+            columns=self._catalog_columns.keys(),
+        )
         set_columns_dtype(df, self._catalog_columns)
         df = catalog.append(df, ignore_index=True)
         logger.info("Done.")
@@ -182,12 +228,12 @@ class RiiDataFrame:
 
     def load_raw_data(self) -> DataFrame:
         # Load catalog and experimental data.
-        df = load_csv(
-            self.raw_data_file, dtype=self._raw_data_columns)
+        df = load_csv(self.raw_data_file, dtype=self._raw_data_columns)
         return df
 
-    def extract_raw_data(self, idx: int, catalog: DataFrame) \
-            -> Tuple[DataFrame, DataFrame]:
+    def extract_raw_data(
+        self, idx: int, catalog: DataFrame
+    ) -> Tuple[DataFrame, DataFrame]:
         """Yield a single raw data set.
 
         Some data are inserted into the catalog.
@@ -195,13 +241,13 @@ class RiiDataFrame:
             catalog: The catalog.
             idx: The ID number of the data set.
         """
-        path = catalog.loc[idx, 'path']
-        with open(path, "r", encoding='utf-8') as f:
-            data_list = yaml.safe_load(f)['DATA']
+        path = catalog.loc[idx, "path"]
+        with open(path, "r", encoding="utf-8") as f:
+            data_list = yaml.safe_load(f)["DATA"]
         wl_n_min = wl_k_min = 0
         wl_n_max = wl_k_max = np.inf
         formula = 0
-        tabulated = ''
+        tabulated = ""
         cs = []
         wls_n = []
         wls_k = []
@@ -209,15 +255,19 @@ class RiiDataFrame:
         ks = []
         num_n = num_k = 0
         for data in data_list:
-            data_type, data_set = data['type'].strip().split()
+            data_type, data_set = data["type"].strip().split()
 
             # For tabulated data
-            if data_type == 'tabulated':
-                if data_set == 'nk':
+            if data_type == "tabulated":
+                if data_set == "nk":
                     tabulated += data_set
                     wls_n, ns, ks = np.array(
-                        [line.strip().split() for line
-                         in data['data'].strip().split('\n')], dtype=float).T
+                        [
+                            line.strip().split()
+                            for line in data["data"].strip().split("\n")
+                        ],
+                        dtype=float,
+                    ).T
                     inds = np.argsort(wls_n)
                     wls_n = list(wls_n[inds])
                     wls_k = wls_n
@@ -227,22 +277,30 @@ class RiiDataFrame:
                     wl_n_max = wl_k_max = wls_n[-1]
                     num_n = len(wls_n)
                     num_k = len(wls_k)
-                elif data_set == 'n':
+                elif data_set == "n":
                     tabulated += data_set
                     wls_n, ns = np.array(
-                        [line.strip().split() for line
-                         in data['data'].strip().split('\n')], dtype=float).T
+                        [
+                            line.strip().split()
+                            for line in data["data"].strip().split("\n")
+                        ],
+                        dtype=float,
+                    ).T
                     inds = np.argsort(wls_n)
                     wls_n = list(wls_n[inds])
                     ns = list(ns[inds])
                     wl_n_min = wls_n[0]
                     wl_n_max = wls_n[-1]
                     num_n = len(wls_n)
-                elif data_set == 'k':
+                elif data_set == "k":
                     tabulated += data_set
                     wls_k, ks = np.array(
-                        [line.strip().split() for line
-                         in data['data'].strip().split('\n')], dtype=float).T
+                        [
+                            line.strip().split()
+                            for line in data["data"].strip().split("\n")
+                        ],
+                        dtype=float,
+                    ).T
                     inds = np.argsort(wls_k)
                     wls_k = list(wls_k[inds])
                     ks = list(ks[inds])
@@ -252,25 +310,23 @@ class RiiDataFrame:
                 else:
                     raise Exception("DATA is broken.")
             # For formulas
-            elif data_type == 'formula':
+            elif data_type == "formula":
                 formula = data_set
-                wl_n_min, wl_n_max = [float(s) for s in
-                                      data['range'].strip().split()]
-                cs = [float(s) for s in data['coefficients'].strip().split()]
+                wl_n_min, wl_n_max = [float(s) for s in data["range"].strip().split()]
+                cs = [float(s) for s in data["coefficients"].strip().split()]
             else:
-                raise Exception(
-                    "DATA has unknown contents {}".format(data_type))
+                raise Exception("DATA has unknown contents {}".format(data_type))
 
         if len(tabulated) > 2:
             raise Exception("Too many tabulated data set are provided")
-        elif 'nn' in tabulated or 'kk' in tabulated:
+        elif "nn" in tabulated or "kk" in tabulated:
             raise Exception("There is redundancy in n or k.")
-        elif tabulated == 'kn':
-            tabulated = 'nk'
-        elif tabulated == '':
-            tabulated = 'f'
+        elif tabulated == "kn":
+            tabulated = "nk"
+        elif tabulated == "":
+            tabulated = "f"
 
-        if 'k' not in tabulated:
+        if "k" not in tabulated:
             wl_k_min, wl_k_max = wl_n_min, wl_n_max
 
         wl_min = max(wl_n_min, wl_k_min)
@@ -291,38 +347,43 @@ class RiiDataFrame:
         ks = np.array(ks + [0.0] * (num - num_k), dtype=np.float64)
 
         # Rewrite catalog with the obtained data
-        catalog.loc[idx, 'formula'] = formula
-        catalog.loc[idx, 'tabulated'] = tabulated
-        catalog.loc[idx, 'num_n'] = num_n
-        catalog.loc[idx, 'num_k'] = num_k
-        catalog.loc[idx, 'wl_n_min'] = wl_n_min
-        catalog.loc[idx, 'wl_n_max'] = wl_n_max
-        catalog.loc[idx, 'wl_k_min'] = wl_k_min
-        catalog.loc[idx, 'wl_k_max'] = wl_k_max
-        catalog.loc[idx, 'wl_min'] = wl_min
-        catalog.loc[idx, 'wl_max'] = wl_max
+        catalog.loc[idx, "formula"] = formula
+        catalog.loc[idx, "tabulated"] = tabulated
+        catalog.loc[idx, "num_n"] = num_n
+        catalog.loc[idx, "num_k"] = num_k
+        catalog.loc[idx, "wl_n_min"] = wl_n_min
+        catalog.loc[idx, "wl_n_max"] = wl_n_max
+        catalog.loc[idx, "wl_k_min"] = wl_k_min
+        catalog.loc[idx, "wl_k_max"] = wl_k_max
+        catalog.loc[idx, "wl_min"] = wl_min
+        catalog.loc[idx, "wl_max"] = wl_max
 
         df = DataFrame(
-            {key: val for key, val in
-             zip(self._raw_data_columns.keys(),
-                 [idx, cs, wls_n, ns, wls_k, ks])})
+            {
+                key: val
+                for key, val in zip(
+                    self._raw_data_columns.keys(), [idx, cs, wls_n, ns, wls_k, ks]
+                )
+            }
+        )
         # Arrange the columns according to the order of _raw_data_columns
-        df = df.ix[:, self._raw_data_columns.keys()]
+        df = df.loc[:, self._raw_data_columns.keys()]
         set_columns_dtype(df, self._raw_data_columns)
         return df, catalog
 
-    def create_raw_data_and_modify_catalog(self, catalog: DataFrame) \
-            -> Tuple[DataFrame, DataFrame]:
+    def create_raw_data_and_modify_catalog(
+        self, catalog: DataFrame
+    ) -> Tuple[DataFrame, DataFrame]:
         """Create a DataFrame for experimental data."""
         logger.info("Creating raw data...")
         df = DataFrame(columns=self._raw_data_columns)
         for idx in catalog.index:
-            logger.debug("{}: {}".format(idx, catalog.loc[idx, 'path']))
+            logger.debug("{}: {}".format(idx, catalog.loc[idx, "path"]))
             df_idx, catalog = self.extract_raw_data(idx, catalog)
             df = df.append(df_idx, ignore_index=True)
         set_columns_dtype(df, self._raw_data_columns)
-        catalog.to_csv(self.catalog_file, index=False, encoding='utf-8')
-        df.to_csv(self.raw_data_file, index=False, encoding='utf-8')
+        catalog.to_csv(self.catalog_file, index=False, encoding="utf-8")
+        df.to_csv(self.raw_data_file, index=False, encoding="utf-8")
         logger.info("Done.")
         return df, catalog
 
@@ -333,38 +394,33 @@ class RiiDataFrame:
             self.create_grid_data(self.catalog, self.raw_data)
             logger.warning("Done.")
         else:
-            logger.info(
-                "Grid data file found at {}".format(self.grid_data_file))
-        return load_csv(
-            self.grid_data_file, dtype=self._grid_data_columns)
+            logger.info("Grid data file found at {}".format(self.grid_data_file))
+        return load_csv(self.grid_data_file, dtype=self._grid_data_columns)
 
-    def create_grid_data(
-            self, catalog: DataFrame, raw_data: DataFrame) -> None:
+    def create_grid_data(self, catalog: DataFrame, raw_data: DataFrame) -> None:
         """Create a DataFrame for the wl-nk data."""
         logger.info("Creating grid data...")
         columns = self._grid_data_columns.keys()
         df = DataFrame(columns=columns)
-        for idx in set(raw_data['id']):
+        for idx in set(raw_data["id"]):
             a_catalog = catalog.loc[idx]
-            data = raw_data[raw_data['id'] == idx]
+            data = raw_data[raw_data["id"] == idx]
             material = Material(a_catalog, data)
-            wl_min = a_catalog.loc['wl_min']
-            wl_max = a_catalog.loc['wl_max']
+            wl_min = a_catalog.loc["wl_min"]
+            wl_max = a_catalog.loc["wl_max"]
             wls = np.linspace(wl_min, wl_max, 200)
             ns = material.n(wls)
             ks = material.k(wls)
             data = {key: val for key, val in zip(columns, [idx, wls, ns, ks])}
-            df = df.append(
-                DataFrame(data).ix[:, columns], ignore_index=True)
+            df = df.append(DataFrame(data).loc[:, columns], ignore_index=True)
         set_columns_dtype(df, self._grid_data_columns)
-        df.to_csv(self.grid_data_file, index=False, encoding='utf-8')
+        df.to_csv(self.grid_data_file, index=False, encoding="utf-8")
         logger.info("Done.")
 
     def update_db(self) -> None:
-        if not os.path.isfile(os.path.join(self.db_path, 'library.yml')):
+        if not os.path.isfile(os.path.join(self.db_path, "library.yml")):
             logger.warning("Cloning Repository.")
-            git.Repo.clone_from(_ri_database_repo, self._ri_database,
-                                branch='master')
+            git.Repo.clone_from(_ri_database_repo, self._ri_database, branch="master")
             logger.warning("Done.")
         else:
             logger.warning("Pulling Repository...")
@@ -375,8 +431,7 @@ class RiiDataFrame:
         catalog = self.add_my_db_to_catalog(self.create_catalog())
         logger.warning("Done.")
         logger.warning("Updating raw data file...")
-        self.raw_data, self.catalog = self.create_raw_data_and_modify_catalog(
-            catalog)
+        self.raw_data, self.catalog = self.create_raw_data_and_modify_catalog(catalog)
         logger.warning("Done.")
         logger.warning("Updating grid data file...")
         self.create_grid_data(self.catalog, self.raw_data)
@@ -385,46 +440,52 @@ class RiiDataFrame:
 
     def search(self, name: str) -> DataFrame:
         """Search pages which contain the name."""
-        columns = ['shelf', 'book', 'page', 'formula', 'tabulated',
-                   'wl_min', 'wl_max']
+        columns = ["shelf", "book", "page", "formula", "tabulated", "wl_min", "wl_max"]
         df = self.catalog[
-            ((self.catalog['book'].str.contains(name)) |
-             (self.catalog['book_name'].str.replace(
-                 '<sub>', '').str.replace('</sub>', '').str.contains(name)))]
+            (
+                (self.catalog["book"].str.contains(name))
+                | (
+                    self.catalog["book_name"]
+                    .str.replace("<sub>", "")
+                    .str.replace("</sub>", "")
+                    .str.contains(name)
+                )
+            )
+        ]
         return df.loc[:, columns]
 
     def select(self, cond: Dict) -> List[int]:
         """Select pages which fulfill the condition."""
         gd = self.load_grid_data()
-        wl_min = cond.get('wl_min', 0.0)
-        wl_max = cond.get('wl_max', np.inf)
-        n_min = cond.get('n_min', 0.0)
-        n_max = cond.get('n_max', np.inf)
-        k_min = cond.get('k_min', 0.0)
-        k_max = cond.get('k_max', np.inf)
-        id_list = gd[(gd['wl'] >= wl_min) & (gd['wl'] <= wl_max) &
-                     (gd['n'] >= n_min) & (gd['n'] <= n_max) &
-                     ((gd['k'] != gd['k']) | (gd['k'] >= k_min) &
-                      (gd['k'] <= k_max))].index.unique()
+        wl_min = cond.get("wl_min", 0.0)
+        wl_max = cond.get("wl_max", np.inf)
+        n_min = cond.get("n_min", 0.0)
+        n_max = cond.get("n_max", np.inf)
+        k_min = cond.get("k_min", 0.0)
+        k_max = cond.get("k_max", np.inf)
+        id_list = gd[
+            (gd["wl"] >= wl_min)
+            & (gd["wl"] <= wl_max)
+            & (gd["n"] >= n_min)
+            & (gd["n"] <= n_max)
+            & ((gd["k"] != gd["k"]) | (gd["k"] >= k_min) & (gd["k"] <= k_max))
+        ].index.unique()
         return id_list
 
     def show(self, idx: Union[int, Sequence[int]]) -> DataFrame:
         """Show page(s) of the ID (list of IDs)."""
-        columns = ['shelf', 'book', 'page', 'formula', 'tabulated',
-                   'wl_min', 'wl_max']
+        columns = ["shelf", "book", "page", "formula", "tabulated", "wl_min", "wl_max"]
         return self.catalog.loc[idx, columns]
 
     def material(self, idx: int, bound_check: bool = True) -> Material:
         """Material associated with the ID."""
-        return Material(self.catalog.loc[idx], self.raw_data.loc[idx],
-                        bound_check)
+        return Material(self.catalog.loc[idx], self.raw_data.loc[idx], bound_check)
 
 
-def load_csv(csv_file: str,
-             dtype: Union[None, Dict] = None) -> DataFrame:
+def load_csv(csv_file: str, dtype: Union[None, Dict] = None) -> DataFrame:
     """Convert csv file to a DataFrame."""
     # logger.info("Loading {}".format(os.path.basename(csv_file)))
-    df = pd.read_csv(csv_file, dtype=dtype, index_col='id')
+    df = pd.read_csv(csv_file, dtype=dtype, index_col="id")
     # logger.info("Done.")
     return df
 
@@ -435,11 +496,11 @@ def set_columns_dtype(df: DataFrame, columns: Dict):
         df[key] = df[key].astype(val)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from logging import getLogger, StreamHandler, Formatter, DEBUG
-    logger = getLogger('')
-    formatter = Formatter(
-        fmt='%(levelname)s:[%(name)s.%(funcName)s]: %(message)s')
+
+    logger = getLogger("")
+    formatter = Formatter(fmt="%(levelname)s:[%(name)s.%(funcName)s]: %(message)s")
     logger.setLevel(DEBUG)
     stream_handler = StreamHandler()
     stream_handler.setFormatter(formatter)
