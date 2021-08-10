@@ -1,25 +1,26 @@
 repos:
     - repo: https://github.com/pre-commit/pre-commit-hooks
-      rev: ""
+      rev: "v4.0.1"
       hooks:
           - id: check-yaml
           - id: end-of-file-fixer
           - id: trailing-whitespace
 
-    - repo: https://github.com/hakancelik96/unimport
-      rev: stable
-      hooks:
-          - id: unimport
-            args: [--remove, --requirements, --include-star-import]
+    # - repo: https://github.com/hakancelik96/unimport
+    #   rev: "0.8.4"
+    #   hooks:
+    #       - id: unimport
+    #         args: [--remove, --requirements, --include-star-import]
     - repo: https://github.com/pycqa/isort
-      rev: ""
+      rev: "5.9.3"
       hooks:
           - id: isort
-            files: "pp/.*"
-            args: ["--profile", "black", "--filter-files"]
+            name: isort (python)
+            # files: "pp/.*"
+            # args: ["--profile", "black", "--filter-files"]
 
     - repo: https://github.com/psf/black
-      rev: ""
+      rev: "21.7b0"
       hooks:
           - id: black
 
@@ -29,10 +30,10 @@ repos:
     #       - id: flake8
 
     - repo: https://github.com/kynan/nbstripout
-      rev: master
+      rev: "0.5.0"
       hooks:
           - id: nbstripout
-            files: ".ipynb"
+            # files: ".ipynb"
 
     # - repo: https://github.com/pre-commit/mirrors-mypy
     #   rev: ""

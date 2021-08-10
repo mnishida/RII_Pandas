@@ -2,8 +2,7 @@ import io
 import os
 import re
 
-from setuptools import find_packages
-from setuptools import setup
+from setuptools import find_packages, setup
 
 
 def read(filename):
@@ -23,8 +22,8 @@ setup(
     version="0.1.0",
     url="https://github.com/mnishida/RII_Pandas",
     license="MIT",
-    author=" Avatar",
-    author_email="Munehiro Nishida mnishida@hiroshima-u.ac.jp",
+    author="Munehiro Nishida",
+    author_email="mnishida@hiroshima-u.ac.jp",
     description="Python 3 + Pandas wrapper for the refractiveindex.info database",
     long_description=read("README.md"),
     packages=find_packages(),
@@ -34,6 +33,6 @@ setup(
         "Development Status :: 2 - Pre-Alpha",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
     ],
 )

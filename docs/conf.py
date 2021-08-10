@@ -2,8 +2,8 @@ from recommonmark.transform import AutoStructify
 
 project = "riip"
 version = "0.1.0"
-copyright = "2020,  Avatar"
-author = " Avatar"
+copyright = "2021, Munehiro Nishida"
+author = "Munehiro Nishida"
 
 master_doc = "index"
 html_theme = "sphinx_rtd_theme"

@@ -14,8 +14,8 @@ I highly recommend to install [Anaconda](https://www.continuum.io/downloads) tha
 #### For linux
 Provided that Anaconda Python 3 is installed and activated,
 ```
-$ conda create -n py36 python=3.6 numpy scipy pandas pyyaml gitpython notebook
-$ source activate py36
+$ conda create -n py38 python=3.8 numpy scipy pandas pyyaml gitpython notebook
+$ source activate py38
 $ git clone https://github.com/mnishida/RII_Pandas.git
 $ python RII_Pandas/setup.py install
 ```
