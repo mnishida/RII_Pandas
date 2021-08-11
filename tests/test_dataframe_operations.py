@@ -35,8 +35,9 @@ class KnownValues(unittest.TestCase):
         catalog = riip.load_csv(self.catalog_file, self.ri._catalog_columns)
         catalog_known = riip.load_csv(self.catalog_file_known, self.ri._catalog_columns)
         for ind in catalog_known.index:
-            catalog_known.loc[ind, "path"] = dirname + catalog_known.loc[ind, "path"]
-        self.assertTrue(catalog.equals(catalog_known))
+            path = catalog_known.loc[ind, "path"].replace("/", os.sep)
+            catalog_known.loc[ind, "path"] = dirname + path
+        pd.testing.assert_frame_equal(catalog, catalog_known)
 
     def test_raw_data(self):
         """Check if the raw data is created as expected."""
@@ -44,7 +45,11 @@ class KnownValues(unittest.TestCase):
 
     def test_grid_data(self):
         """Check if the grid data is created as expected."""
-        self.assertTrue(cmp(self.grid_data_file, self.grid_data_file_known))
+        grid_data = riip.load_csv(self.grid_data_file, self.ri._grid_data_columns)
+        grid_data_known = riip.load_csv(
+            self.grid_data_file_known, self.ri._grid_data_columns
+        )
+        pd.testing.assert_frame_equal(grid_data, grid_data_known)
 
     def test_compare_with_RIID(self):
         """Compare withe csv data of Refractiveindex.infor database."""
