@@ -3,8 +3,10 @@
 import os
 import unittest
 from filecmp import cmp
+
 import pandas as pd
 from numpy.testing import assert_allclose
+
 import riip
 
 
@@ -29,7 +31,12 @@ class KnownValues(unittest.TestCase):
 
     def test_catalog(self):
         """Check if the catalog is created as expected."""
-        self.assertTrue(cmp(self.catalog_file, self.catalog_file_known))
+        dirname = os.path.dirname(__file__)
+        catalog = riip.load_csv(self.catalog_file, self.ri._catalog_columns)
+        catalog_known = riip.load_csv(self.catalog_file_known, self.ri._catalog_columns)
+        for ind in catalog_known.index:
+            catalog_known.loc[ind, "path"] = dirname + catalog_known.loc[ind, "path"]
+        self.assertTrue(catalog.equals(catalog_known))
 
     def test_raw_data(self):
         """Check if the raw data is created as expected."""
