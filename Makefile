@@ -5,6 +5,12 @@ install:
 	pip install -e .
 	pre-commit install
 
+conda:
+	conda install --file conda_requirements.txt
+	conda install --file conda_requirements_dev.txt
+	pip install -e .
+	pre-commit install
+
 test:
 	pytest
 
