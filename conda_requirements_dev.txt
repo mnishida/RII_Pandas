@@ -1,0 +1,12 @@
+sphinx==3.1.2
+sphinx_rtd_theme
+recommonmark
+sphinx-markdown-tables
+sphinx-autodoc-typehints
+pytest
+pytest-regressions
+pre-commit
+flake8
+tox
+doc8
+pydocstyle
