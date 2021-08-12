@@ -1,0 +1,27 @@
+diff --git a/database/data/other/intermetallics/PtAl2/Chen.yml b/database/data/other/intermetallics/PtAl2/Chen.yml
+index 60160c83..e2b31f86 100644
+--- a/database/data/other/intermetallics/PtAl2/Chen.yml
++++ b/database/data/other/intermetallics/PtAl2/Chen.yml
+@@ -6,7 +6,7 @@ REFERENCES: "L.-Y. Chen, D. W. Lynch. The optical properties of AuAl<sub>2</sub>
+ COMMENTS: "Bulk sample. Room temperature."
+ DATA:
+   - type: tabulated nk
+- data: |
++    data: |
+         0.22 1.24438 1.84221
+         0.23 1.24207 1.85032
+         0.24 1.25364 1.88226
+diff --git a/database/library.yml b/database/library.yml
+index 7b984c54..bfc09515 100644
+--- a/database/library.yml
++++ b/database/library.yml
+@@ -483,9 +483,6 @@
+         - PAGE: Schröter
+           name: "Schröter 1931: n 0.495-0.67 µm"
+           data: "main/AgBr/Schroter.yml"
+-        - PAGE: Polyanskiy
+-          name: "Polyanskiy"
+-          data: "main/AgBr/Polyanskiy.yml"
+     - BOOK: CsBr
+       name: "CsBr (Cesium bromide)"
+       info: "main/CsBr.html"

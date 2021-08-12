@@ -22,7 +22,7 @@ _grid_data_file = os.path.join(_dirname, "data", "grid_data.csv")
 _ri_database_repo = (
     "https://github.com/polyanskiy/" + "refractiveindex.info-database.git"
 )
-
+_ri_database_patch = os.path.join(_dirname, "..", "riid.patch")
 
 class RiiDataFrame:
     """This class provides a Pandas DataFrame for 'refractiveindex.info database'.
@@ -108,9 +108,10 @@ class RiiDataFrame:
             logger.warning("Catalog file not found.")
             if not os.path.isfile(os.path.join(self.db_path, "library.yml")):
                 logger.warning("Cloning Repository...")
-                git.Repo.clone_from(
+                repo = git.Repo.clone_from(
                     _ri_database_repo, self._ri_database, branch="master"
                 )
+                repo.git.apply(_ri_database_patch)
                 logger.warning("Done.")
             logger.warning("Creating catalog file...")
             catalog = self.add_my_db_to_catalog(self.create_catalog())
