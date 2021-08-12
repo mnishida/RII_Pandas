@@ -1,0 +1,6 @@
+REFERENCES: "A. D. Rakić, A. B. Djurišic, J. M. Elazar, and M. L. Majewski. Optical properties of metallic films for vertical-cavity optoelectronic devices, <a href=\"https://doi.org/10.1364/AO.37.005271\"><i>Appl. Opt.</i> <b>37</b>, 5271-5283 (1998)</a><br>[<a href=\"https://github.com/polyanskiy/refractiveindex.info-scripts/blob/master/scripts/Rakic%201998%20-%20Au%20(BB%20model).py\">Calculation script (Python)</a>]"
+COMMENTS: "Fit of the experimental data from several sources to Drude-Lorentz (DL) model."
+DATA:
+  - type: formula 21
+    wavelength_range: 0.2066 12.40
+    coefficients: 1 0.575 0.030 10.83 0.061 0.378 0.291 0.104 1.056 2.957 0.723 3.213 5.300 0.638 4.305 11.18

@@ -1,0 +1,6 @@
+REFERENCES: "M. E. Stewart, N. H. Mack, V. Malyarchuk, J. A. N. T. Soares, T.-W. Lee, S. K. Gray, R. G. Nuzzo, and J. A. Rogers. Quantitative Multispectral Biosensing and 1D Imaging Using Quasi-3D Plasmonic Crystals, <a href=\"https://doi.org/10.1073/pnas.0606216103\"><i>Proc. Nat. Acad. Sci. (USA)</i> <b>103</b>, 17143–17148 (2006)</a><br>"
+COMMENTS: "Fit of the experimental data to Drude-Lorentz (DL) model."
+DATA:
+  - type: formula 21
+    wavelength_range: 0.4 2.0
+    coefficients: 5.3983 1 0.0680196 9.20049 0.0636584  0.573078 2.81313 0.260042 0.8698534 3.43942

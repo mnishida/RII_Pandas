@@ -169,7 +169,7 @@ class RiiDataFrame:
                                 book_name = "".join([b["name"], page_class])
                                 page = p["PAGE"]
                                 path = os.path.join(
-                                    reference_path, os.path.normpath(p["path"])
+                                    reference_path, "data", os.path.normpath(p["data"])
                                 )
                                 logger.debug("{0} {1} {2}".format(idx, book, page))
                                 yield [
@@ -312,7 +312,7 @@ class RiiDataFrame:
             # For formulas
             elif data_type == "formula":
                 formula = data_set
-                wl_n_min, wl_n_max = [float(s) for s in data["range"].strip().split()]
+                wl_n_min, wl_n_max = [float(s) for s in data["wavelength_range"].strip().split()]
                 cs = [float(s) for s in data["coefficients"].strip().split()]
             else:
                 raise Exception("DATA has unknown contents {}".format(data_type))
@@ -325,6 +325,17 @@ class RiiDataFrame:
             tabulated = "nk"
         elif tabulated == "":
             tabulated = "f"
+
+        if tabulated == "k" and formula != 0:
+            if wl_n_min < wl_k_min:
+                wls_k = [wl_n_min] + wls_k
+                ks = [min(ks)] + ks
+                num_k += 1
+            if wl_n_max > wl_k_max:
+                wls_k = wls_k + [wl_n_max]
+                ks = ks + [min(ks)]
+                num_k += 1
+            wl_k_min, wl_k_max = wl_n_min, wl_n_max
 
         if "k" not in tabulated:
             wl_k_min, wl_k_max = wl_n_min, wl_n_max

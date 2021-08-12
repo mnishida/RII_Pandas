@@ -7,89 +7,89 @@
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Drude-Lorentz model"
-          path: "DL/Ag/Rakic.yml"
+          data: "DL/Ag/Rakic.yml"
         - PAGE: Vial
           name: "Vial 2007: Drude-Lorentz model"
-          path: "DL/Ag/Vial.yml"
+          data: "DL/Ag/Vial.yml"
         - PAGE: Lee
           name: "Lee 2005: Drude-Lorentz model"
-          path: "DL/Ag/Lee.yml"
+          data: "DL/Ag/Lee.yml"
     - DIVIDER: "Al - Aluminium"
     - BOOK: Al
       name: "Al (Aluminium)"
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Drude-Lorentz model"
-          path: "DL/Al/Rakic.yml"
+          data: "DL/Al/Rakic.yml"
     - DIVIDER: "Au - Gold"
     - BOOK: Au
       name: "Au (Gold)"
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Drude-Lorentz model"
-          path: "DL/Au/Rakic.yml"
+          data: "DL/Au/Rakic.yml"
         - PAGE: Stewart
           name: "Stewart 2006: Drude-Lorentz model"
-          path: "DL/Au/Stewart.yml"
+          data: "DL/Au/Stewart.yml"
         - PAGE: Vial
           name: "Vial 2005: Drude-Lorentz model"
-          path: "DL/Au/Vial.yml"
+          data: "DL/Au/Vial.yml"
     - DIVIDER: "Cu - Copper"
     - BOOK: Cu
       name: "Cu (Copper)"
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Drude-Lorentz model"
-          path: "DL/Cu/Rakic.yml"
+          data: "DL/Cu/Rakic.yml"
     - DIVIDER: "Be - Beryllium"
     - BOOK: Be
       name: "Be (Beryllium)"
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Drude-Lorentz model"
-          path: "DL/Be/Rakic.yml"
+          data: "DL/Be/Rakic.yml"
     - DIVIDER: "Cr - Chromium"
     - BOOK: Cr
       name: "Cr (Chromium)"
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Drude-Lorentz model"
-          path: "DL/Cr/Rakic.yml"
+          data: "DL/Cr/Rakic.yml"
     - DIVIDER: "Ni - Nickel"
     - BOOK: Ni
       name: "Ni (Nickel)"
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Drude-Lorentz model"
-          path: "DL/Ni/Rakic.yml"
+          data: "DL/Ni/Rakic.yml"
     - DIVIDER: "Pd - Palladium"
     - BOOK: Pd
       name: "Pd (Palladium)"
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Drude-Lorentz model"
-          path: "DL/Pd/Rakic.yml"
+          data: "DL/Pd/Rakic.yml"
     - DIVIDER: "Pt - Platinum"
     - BOOK: Pt
       name: "Pt (Platinum)"
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Drude-Lorentz model"
-          path: "DL/Pt/Rakic.yml"
+          data: "DL/Pt/Rakic.yml"
     - DIVIDER: "Ti - Titanium"
     - BOOK: Ti
       name: "Ti (Titanium)"
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Drude-Lorentz model"
-          path: "DL/Ti/Rakic.yml"
+          data: "DL/Ti/Rakic.yml"
     - DIVIDER: "W - Tungsten"
     - BOOK: W
       name: "W (Tungsten)"
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Drude-Lorentz model"
-          path: "DL/W/Rakic.yml"
+          data: "DL/W/Rakic.yml"
 - SHELF: BB
   name: "BB - Brendel-Bormann model"
   content:
@@ -99,77 +99,77 @@
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Brendel-Bormann model"
-          path: "BB/Ag/Rakic.yml"
+          data: "BB/Ag/Rakic.yml"
     - DIVIDER: "Al - Aluminium"
     - BOOK: Al
       name: "Al (Aluminium)"
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Brendel-Bormann model"
-          path: "BB/Al/Rakic.yml"
+          data: "BB/Al/Rakic.yml"
     - DIVIDER: "Au - Gold"
     - BOOK: Au
       name: "Au (Gold)"
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Brendel-Bormann model"
-          path: "BB/Au/Rakic.yml"
+          data: "BB/Au/Rakic.yml"
     - DIVIDER: "Cu - Copper"
     - BOOK: Cu
       name: "Cu (Copper)"
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Brendel-Bormann model"
-          path: "BB/Cu/Rakic.yml"
+          data: "BB/Cu/Rakic.yml"
     - DIVIDER: "Be - Beryllium"
     - BOOK: Be
       name: "Be (Beryllium)"
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Brendel-Bormann model"
-          path: "BB/Be/Rakic.yml"
+          data: "BB/Be/Rakic.yml"
     - DIVIDER: "Cr - Chromium"
     - BOOK: Cr
       name: "Cr (Chromium)"
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Brendel-Bormann model"
-          path: "BB/Cr/Rakic.yml"
+          data: "BB/Cr/Rakic.yml"
     - DIVIDER: "Ni - Nickel"
     - BOOK: Ni
       name: "Ni (Nickel)"
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Brendel-Bormann model"
-          path: "BB/Ni/Rakic.yml"
+          data: "BB/Ni/Rakic.yml"
     - DIVIDER: "Pd - Palladium"
     - BOOK: Pd
       name: "Pd (Palladium)"
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Brendel-Bormann model"
-          path: "BB/Pd/Rakic.yml"
+          data: "BB/Pd/Rakic.yml"
     - DIVIDER: "Pt - Platinum"
     - BOOK: Pt
       name: "Pt (Platinum)"
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Brendel-Bormann model"
-          path: "BB/Pt/Rakic.yml"
+          data: "BB/Pt/Rakic.yml"
     - DIVIDER: "Ti - Titanium"
     - BOOK: Ti
       name: "Ti (Titanium)"
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Brendel-Bormann model"
-          path: "BB/Ti/Rakic.yml"
+          data: "BB/Ti/Rakic.yml"
     - DIVIDER: "W - Tungsten"
     - BOOK: W
       name: "W (Tungsten)"
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Brendel-Bormann model"
-          path: "BB/W/Rakic.yml"
+          data: "BB/W/Rakic.yml"
 - SHELF: Drude
   name: "Drude - Drude model"
   content:
@@ -179,4 +179,4 @@
       content:
         - PAGE: Vial
           name: "Vial 2005: Drude model"
-          path: "Drude/Au/Vial.yml"
+          data: "Drude/Au/Vial.yml"

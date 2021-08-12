@@ -7,7 +7,7 @@
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Drude-Lorentz model"
-          path: "DL/Ag/Rakic.yml"
+          data: "DL/Ag/Rakic.yml"
 - SHELF: BB
   name: "BB - Brendel-Bormann model"
   content:
@@ -17,4 +17,4 @@
       content:
         - PAGE: Rakic
           name: "Rakić 1998: Brendel-Bormann model"
-          path: "BB/Ag/Rakic.yml"
+          data: "BB/Ag/Rakic.yml"

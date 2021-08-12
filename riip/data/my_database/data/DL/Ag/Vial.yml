@@ -1,0 +1,6 @@
+REFERENCES: "A. Vial and T. Laroche. Description of dispersion properties of metals by means of the critical points model and application to the study of resonant structures using the FDTD method, <a href=\"https://doi.org/10.1088/0022-3727/40/22/043\"><i>J. Phys. D: Appl. Phys.</i> <b>40</b>, 7152-7158 (2007)</a>"
+COMMENTS: "Fit of the experimental data from several sources to Drude-Lorentz (DL) model"
+DATA:
+  - type: formula 21
+    wavelength_range: 0.4 1.0
+    coefficients: 1.7984 1 0.0573744 8.79305 3.0079 288.198 5.37331 2.3410 39.8705 25.2200

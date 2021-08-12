@@ -8,48 +8,48 @@
         - DIVIDER: "Experimental data"
         - PAGE: Johnson
           name: "Johnson and Christy 1972: n,k 0.188-1.937 µm"
-          path: "main/Ag/Johnson.yml"
+          data: "main/Ag/Johnson.yml"
     - DIVIDER: "Al - Aluminium and aluminates"
     - BOOK: MgAl2O4
       name: "MgAl<sub>2</sub>O<sub>4</sub> (Magnesium aluminate, spinel)"
       content:
         - PAGE: Tropf
           name: "Tropf and Thomas 1991: n 0.35-5.5 µm"
-          path: "main/MgAl2O4/Tropf.yml"
+          data: "main/MgAl2O4/Tropf.yml"
     - BOOK: Y3Al5O12
       name: "Y<sub>3</sub>Al<sub>5</sub>O<sub>12</sub> (Yttrium aluminium garnet, YAG)"
       content:
         - PAGE: Zelmon
           name: "Zelmon et al. 1998: n 0.4-5.0 µm"
-          path: "main/Y3Al5O12/Zelmon.yml"
+          data: "main/Y3Al5O12/Zelmon.yml"
     - DIVIDER: "B - Boron and borates"
     - BOOK: BaB2O4
       name: "BaB<sub>2</sub>O<sub>4</sub> (Barium borate, BBO)"
       content:
         - PAGE: Eimerl-o
           name: "Eimerl et al. 1987: BBO; n(o) 0.22-1.06 µm"
-          path: "main/BaB2O4/Eimerl-o.yml"
+          data: "main/BaB2O4/Eimerl-o.yml"
     - DIVIDER: "Br - Bromides"
     - BOOK: AgBr
       name: "AgBr (Silver bromide)"
       content:
         - PAGE: Schröter
           name: "Schröter 1931: n 0.495-0.67 µm"
-          path: "main/AgBr/Schroter.yml"
+          data: "main/AgBr/Schroter.yml"
     - DIVIDER: "C - Carbon, carbides and carbonates"
     - BOOK: SiC
       name: "SiC (Silicon carbide)"
       content:
         - PAGE: Shaffer
           name: "Shaffer 1971: β-SiC; n 0.467-0.691 µm"
-          path: "main/SiC/Shaffer.yml"
+          data: "main/SiC/Shaffer.yml"
     - DIVIDER: "He - Helium"
     - BOOK: He
       name: "He (Helium)"
       content:
         - PAGE: Mansfield
           name: "Mansfield and Peck 1969: n 0.4801-2.0586 µm"
-          path: "main/He/Mansfield.yml"
+          data: "main/He/Mansfield.yml"
     - DIVIDER: "Si - Silicon, silicides and silicates"
     - BOOK: Si
       name: "Si (Silicon)"
@@ -57,7 +57,7 @@
         - DIVIDER: "Crystalline silicon"
         - PAGE: Edwards
           name: "Edwards and Ochoa 1980: n 2.5-25 µm"
-          path: "main/Si/Edwards.yml"
+          data: "main/Si/Edwards.yml"
 - SHELF: organic
   name: "ORGANIC - organic materials"
   content:
@@ -67,21 +67,21 @@
       content:
         - PAGE: Moutzouris
           name: "Moutzouris et al. 2013: n 0.450-1.551 µm"
-          path: "organic/CH4O - methanol/Moutzouris.yml"
+          data: "organic/CH4O - methanol/Moutzouris.yml"
     - DIVIDER: "Other non-polymer compounds"
     - BOOK: urea
       name: "CH<sub>4</sub>N<sub>2</sub>O (Urea)"
       content:
         - PAGE: Rosker-e
           name: "Rosker et al. 1985: n(e) 0.3-1.06 µm"
-          path: "organic/CH4N2O - urea/Rosker-e.yml"
+          data: "organic/CH4N2O - urea/Rosker-e.yml"
     - DIVIDER: "Polymers"
     - BOOK: polyvinylpyrrolidone
       name: "(C<sub>6</sub>H<sub>9</sub>NO)<sub>n</sub> (Polyvinylpyrrolidone, PVP)"
       content:
         - PAGE: Konig
           name: "König et al. 2014: n,k 0.375-1.0 µm"
-          path: "organic/(C6H9NO)n - polyvinylpyrrolidone/Konig.yml"
+          data: "organic/(C6H9NO)n - polyvinylpyrrolidone/Konig.yml"
 - SHELF: glass
   name: "GLASS - glasses"
   content:
@@ -91,7 +91,7 @@
       content:
         - PAGE: SCHOTT
           name: "N-BK7 (SCHOTT)"
-          path: "glass/schott/N-BK7.yml"
+          data: "glass/schott/N-BK7.yml"
 - SHELF: 3d
   name: "3D - selected data for 3D artists"
   content:
@@ -100,4 +100,4 @@
       content:
         - PAGE: silver
           name: "Silver (Ag)"
-          path: "main/Ag/Rakic.yml"
+          data: "main/Ag/Rakic.yml"

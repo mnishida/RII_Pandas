@@ -74,7 +74,7 @@ class Material:
             x_min = x_max = x
         if x_min < wl_min * 0.999 or x_max > wl_max * 1.001:
             raise ValueError(
-                "Wavelength is out of bounds [{} {}][um]".format(wl_min, wl_max)
+                f"Wavelength [{x_min} {x_max}] is out of bounds [{wl_min} {wl_max}][um]"
             )
 
     def n(self, x: FloatNdarray) -> FloatNdarray:
