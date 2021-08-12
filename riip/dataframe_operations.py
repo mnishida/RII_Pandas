@@ -24,6 +24,7 @@ _ri_database_repo = (
 )
 _ri_database_patch = os.path.join(_dirname, "..", "riid.patch")
 
+
 class RiiDataFrame:
     """This class provides a Pandas DataFrame for 'refractiveindex.info database'.
 
