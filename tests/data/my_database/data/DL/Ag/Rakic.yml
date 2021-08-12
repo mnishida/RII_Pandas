@@ -2,5 +2,5 @@ REFERENCES: "A. D. Rakić, A. B. Djurišic, J. M. Elazar, and M. L. Majewski. Op
 COMMENTS: "Fit of the experimental data from several sources to Drude-Lorentz (DL) model"
 DATA:
   - type: formula 21
-    range: 0.2066 12.40
+    wavelength_range: 0.2066 12.40
     coefficients: 1 0.845 0.048 9.01 0.065 3.886 0.816 0.124 0.452 4.481 0.011 0.065 8.185 0.840 0.916 9.083 5.646 2.419 20.29

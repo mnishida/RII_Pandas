@@ -2,5 +2,5 @@ REFERENCES: "A. D. Rakić, A. B. Djurišic, J. M. Elazar, and M. L. Majewski. Op
 COMMENTS: "Fit of the experimental data from several sources to Brendel-Bormann (BB) model"
 DATA:
   - type: formula 22
-    range: 0.2066 12.40
+    wavelength_range: 0.2066 12.40
     coefficients: 1 0.821 0.049 9.01 0.050 0.189 2.025 1.894 0.133 0.067 5.185 0.665 0.051 0.019 4.343 0.189 0.467 0.117 9.809 1.170 4.000 0.052 18.56 0.516
