@@ -112,7 +112,7 @@ class RiiDataFrame:
                 repo = git.Repo.clone_from(
                     _ri_database_repo, self._ri_database, branch="master"
                 )
-                repo.git.apply(_ri_database_patch)
+                # repo.git.apply(_ri_database_patch)
                 logger.warning("Done.")
             logger.warning("Creating catalog file...")
             catalog = self.add_my_db_to_catalog(self.create_catalog())
