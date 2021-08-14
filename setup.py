@@ -3,6 +3,7 @@ import os
 import re
 
 from setuptools import find_packages, setup
+import riip
 
 
 def read(filename):
@@ -19,16 +20,16 @@ def get_install_requires():
 
 setup(
     name="riip",
-    version="0.1.0",
+    version=riip.__version__,
     url="https://github.com/mnishida/RII_Pandas",
-    license="MIT",
-    author="Munehiro Nishida",
+    license=riip.__license__,
+    author=riip.__author__,
     author_email="mnishida@hiroshima-u.ac.jp",
     description="Python 3 + Pandas wrapper for the refractiveindex.info database",
     long_description=read("README.md"),
     packages=find_packages(),
     install_requires=get_install_requires(),
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "License :: OSI Approved :: MIT License",

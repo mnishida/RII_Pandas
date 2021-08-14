@@ -7,6 +7,7 @@ pytest
 pytest-regressions
 pre-commit
 flake8
+black
 tox
 tox-gh-actions
 doc8
