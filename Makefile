@@ -5,10 +5,10 @@ install:
 	pre-commit install
 
 conda:
-	conda config --append channels anaconda
-	conda config --append channels conda-forge
 	conda install --file conda_requirements.txt
 	conda install --file conda_requirements_dev.txt
+	pip install pre-commit tox pytest-regressions doc8
+	pip install sphinx-markdown-tables sphinx-autodoc-typehints
 	pip install -e .
 	pre-commit install
 
