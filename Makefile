@@ -7,7 +7,7 @@ install:
 conda:
 	conda install --file conda_requirements.txt
 	conda install --file conda_requirements_dev.txt
-	pip install pre-commit tox pytest-regressions doc8
+	pip install pre-commit tox tox-gh-actions pytest-regressions doc8
 	pip install sphinx-markdown-tables sphinx-autodoc-typehints
 	pip install -e .
 	pre-commit install
