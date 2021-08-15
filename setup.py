@@ -28,6 +28,7 @@ setup(
     description="Python 3 + Pandas wrapper for the refractiveindex.info database",
     long_description=read("README.md"),
     packages=find_packages(),
+    include_package_data=True,
     install_requires=get_install_requires(),
     python_requires=">=3.7",
     classifiers=[

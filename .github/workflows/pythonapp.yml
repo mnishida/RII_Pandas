@@ -45,12 +45,12 @@ jobs:
         with:
           update-conda: true
           python-version: ${{ matrix.python-version }}
+          activate-conda: true
           # conda-channels: anaconda, conda-forge, intel
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           make conda
-          pip install tox-gh-actions
       - name: Lint with flake8
         run: |
           flake8
