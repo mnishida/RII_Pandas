@@ -16,18 +16,18 @@ $ pip install -U riip
 
 ## Usage
 ```
- >>> import riip
- >>> ri = riip.RiiDataFrame()
+>>> import riip
+>>> ri = riip.RiiDataFrame()
 ```
 Polyanskiy's 'refractiveindex.info database' is cloned from [GitHub repository](https://github.com/polyanskiy/refractiveindex.info-database),
 and three csv files, 'catalog.csv', 'raw_data.csv' and 'grid_data.csv' are created.
 They are located in 'data' folder under the installation directory.
 This process may take a few minutes, but it will happen only the first time you start it after installation.
 ```
- >>> ri.catalog.loc[:30, ['book', 'page']]
- >>> ri.raw_data.loc[ri.raw_data['id']==10, ['wl_n', 'n']]
- >>> ri.raw_data.loc[ri.raw_data['id']==10, ['wl_k', 'k']]
- >>> ri.grid_data.loc[ri.grid_data['id']==10, ['wl', 'n', 'k']]
+>>> ri.catalog.loc[:30, ['book', 'page']]
+>>> ri.raw_data.loc[ri.raw_data['id']==10, ['wl_n', 'n']]
+>>> ri.raw_data.loc[ri.raw_data['id']==10, ['wl_k', 'k']]
+>>> ri.grid_data.loc[ri.grid_data['id']==10, ['wl', 'n', 'k']]
 ```
 For more information, see the [examples notebook](examples/examples.ipynb).
 
