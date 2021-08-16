@@ -5,11 +5,10 @@ install:
 	pre-commit install
 
 conda:
-	conda install --file conda_requirements.txt
-	conda install --file conda_requirements_dev.txt
-	pip install pre-commit tox tox-gh-actions pytest-regressions doc8
-	pip install sphinx-markdown-tables sphinx-autodoc-typehints
-	pip install -e .
+	conda install numpy scipy pandas pyyaml gitpython matplotlib
+	conda install sphinx==3.1.2 sphinx_rtd_theme recommonmark pytest flake8 black pydocstyle
+	conda install -c conda-forge pre-commit tox pytest-regressions doc8 sphinx-markdown-tables sphinx-autodoc-typehints
+	python setup.py develop
 	pre-commit install
 
 test:
