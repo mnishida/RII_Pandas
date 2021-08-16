@@ -22,35 +22,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          make install
+        run: make install
       - name: Lint with flake8
-        run: |
-          flake8
-      - name: Test
-        run: make test
-  build-conda:
-    runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 6
-      matrix:
-        python-version: [3.7, 3.8]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }} with conda
-        uses: s-weigand/setup-conda@v1
-        with:
-          update-conda: true
-          python-version: ${{ matrix.python-version }}
-          activate-conda: true
-          # conda-channels: anaconda, conda-forge
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          make conda
-      - name: Lint with flake8
-        run: |
-          flake8
+        run: flake8
       - name: Test
         run: make test

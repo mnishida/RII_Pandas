@@ -1,5 +1,5 @@
 # RII_Pandas (refractiveindex.info-pandas)
-___
+
 [![PyPI version][pypi-image]][pypi-link]
 [![Anaconda Version][anaconda-v-image]][anaconda-v-link]
 
@@ -53,6 +53,10 @@ For more information, see the [examples notebook](examples/examples.ipynb).
 ## Uninstall
 ```
 $ pip uninstall riip
+```
+or
+```
+$ conda uninstall riip
 ```
 
 ## Dependencies
