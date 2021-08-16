@@ -31,6 +31,3 @@ lintd2:
 
 lintd:
 	pydocstyle riip
-
-doc8:
-	doc8 docs/

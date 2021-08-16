@@ -9,15 +9,9 @@ Pandas DataFrame creation was made with modified versions of `dboperations.py` f
 
 
 ## Install
-I highly recommend to install [Anaconda](https://www.continuum.io/downloads) that has all required python packages.
-
-#### For linux
-Provided that Anaconda Python 3 is installed and activated,
+#### Install and update using pip
 ```
-$ conda create -n py38 python=3.8 numpy scipy pandas pyyaml gitpython notebook
-$ source activate py38
-$ git clone https://github.com/mnishida/RII_Pandas.git
-$ python RII_Pandas/setup.py install
+$ pip install -U riip
 ```
 
 ## Usage
@@ -35,6 +29,7 @@ This process may take a few minutes, but it will happen only the first time you 
  >>> ri.raw_data.loc[ri.raw_data['id']==10, ['wl_k', 'k']]
  >>> ri.grid_data.loc[ri.grid_data['id']==10, ['wl', 'n', 'k']]
 ```
+For more information, see the [examples notebook](examples/examples.ipynb).
 
 ## Update database
 ```
