@@ -1,4 +1,13 @@
 # RII_Pandas (refractiveindex.info-pandas)
+___
+[![PyPI version][pypi-image]][pypi-link]
+[![Anaconda Version][anaconda-v-image]][anaconda-v-link]
+
+[pypi-image]: https://badge.fury.io/py/riip.svg
+[pypi-link]: https://pypi.org/project/riip
+[anaconda-v-image]: https://anaconda.org/mnishida/riip/badges/version.svg
+[anaconda-v-link]: https://anaconda.org/mnishida/riip
+
 Python 3 + Pandas wrapper for the [refractiveindex.info database](http://refractiveindex.info/) developed by [Mikhail Polyanskiy](https://github.com/polyanskiy).
 
 Pandas DataFrame creation was made with modified versions of `dboperations.py` from [refractiveindex.info-sqlite package](https://github.com/HugoGuillen/refractiveindex.info-sqlite) developed by [Hugo Guillén](https://github.com/HugoGuillen).
@@ -7,11 +16,14 @@ Pandas DataFrame creation was made with modified versions of `dboperations.py` f
 - Create Pandas DataFrame by parsing database files cloned from Polyanskiy's  [GitHub repository](https://github.com/polyanskiy/refractiveindex.info-database).
 - Drude-Lorentz model (formula 21) and Brendel-Bormann model (formula 22) are available to describe metallic dielectric function.
 
-
 ## Install
 #### Install and update using pip
 ```
 $ pip install -U riip
+```
+#### Install using conda
+```
+$ conda install -c mnishida riip
 ```
 
 ## Usage
