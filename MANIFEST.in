@@ -1,4 +1,5 @@
 include requirements.txt
 include README.md
 include LICENSE
+graft examples
 graft riip/data/my_database
