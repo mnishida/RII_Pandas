@@ -41,7 +41,7 @@ This process may take a few minutes, but it will happen only the first time you 
 >>> ri.raw_data.loc[ri.raw_data['id']==10, ['wl_k', 'k']]
 >>> ri.grid_data.loc[ri.grid_data['id']==10, ['wl', 'n', 'k']]
 ```
-For more information, see the [examples notebook](examples/examples.ipynb).
+For more information, see the [examples notebook](https://github.com/mnishida/RII_Pandas/blob/master/examples/examples.ipynb).
 
 ## Update database
 ```
