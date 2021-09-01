@@ -1,0 +1,43 @@
+{% set version = "0.1.0" %}
+
+package:
+  name: riip
+  version: "{{ version }}"
+
+source:
+  path: ../
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - pip
+    - python
+    - setuptools
+  run:
+    - gitpython
+    - matplotlib
+    - numpy
+    - pandas
+    - python
+    - pyyaml
+    - scipy
+
+test:
+  imports:
+    - riip
+
+about:
+  home: "https://github.com/mnishida/RII_Pandas"
+  license: MIT
+  license_family: MIT
+  license_file: ../LICENSE
+  summary: "Python 3 + Pandas wrapper for the refractiveindex.info database"
+  doc_url: https://github.com/mnishida/RII_Pandas/tree/master/tutorial
+
+extra:
+  recipe-maintainers:
+    - mnishida

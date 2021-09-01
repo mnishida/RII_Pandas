@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from logging import getLogger
 import os
 from collections import OrderedDict
-from typing import Iterable, Any, Union, Dict, Tuple, ClassVar, Sequence, List
+from logging import getLogger
+from typing import Any, ClassVar, Dict, Iterable, List, Sequence, Tuple, Union
+
 import git
-import yaml
-import pandas as pd
-from pandas import DataFrame
 import numpy as np
+import pandas as pd
+import yaml
+from pandas import DataFrame
+
 from riip.material import Material
 
 logger = getLogger(__package__)
@@ -317,7 +319,9 @@ class RiiDataFrame:
             # For formulas
             elif data_type == "formula":
                 formula = data_set
-                wl_n_min, wl_n_max = [float(s) for s in data["wavelength_range"].strip().split()]
+                wl_n_min, wl_n_max = [
+                    float(s) for s in data["wavelength_range"].strip().split()
+                ]
                 cs = [float(s) for s in data["coefficients"].strip().split()]
             else:
                 raise Exception("DATA has unknown contents {}".format(data_type))
@@ -513,7 +517,7 @@ def set_columns_dtype(df: DataFrame, columns: Dict):
 
 
 if __name__ == "__main__":
-    from logging import getLogger, StreamHandler, Formatter, DEBUG
+    from logging import DEBUG, Formatter, StreamHandler, getLogger
 
     logger = getLogger("")
     formatter = Formatter(fmt="%(levelname)s:[%(name)s.%(funcName)s]: %(message)s")

@@ -1,3 +1,7 @@
+conda
+conda-build
+conda-verify
+anaconda-client
 pytest
 pytest-regressions
 pre-commit

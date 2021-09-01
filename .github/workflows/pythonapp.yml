@@ -27,3 +27,24 @@ jobs:
         run: flake8
       - name: Test using tox
         run: tox -e py
+  build_conda:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 6
+      matrix:
+        python-version: [3.7, 3.8]
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python with Conda ${{ matrix.python-version }}
+        uses: s-weigand/setup-conda@v1
+        with:
+          update-conda: true
+          python-version: ${{ matrix.python-version }}
+          activate-conda: true
+      - name: Install dependencies with Conda
+        run: make conda
+      - name: Lint with flake8
+        run: flake8
+      - name: Test using tox
+        run: tox

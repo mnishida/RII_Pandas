@@ -1,46 +1,46 @@
 repos:
-    - repo: https://github.com/pre-commit/pre-commit-hooks
-      rev: "v4.0.1"
-      hooks:
-          - id: check-yaml
-          - id: end-of-file-fixer
-          - id: trailing-whitespace
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: "v4.0.1"
+    hooks:
+      # - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
 
-    # - repo: https://github.com/hakancelik96/unimport
-    #   rev: "0.8.4"
-    #   hooks:
-    #       - id: unimport
-    #         args: [--remove, --requirements, --include-star-import]
-    - repo: https://github.com/pycqa/isort
-      rev: "5.9.3"
-      hooks:
-          - id: isort
-            name: isort (python)
-            # files: "pp/.*"
-            # args: ["--profile", "black", "--filter-files"]
+  # - repo: https://github.com/hakancelik96/unimport
+  #   rev: "0.8.4"
+  #   hooks:
+  #       - id: unimport
+  #         args: [--remove, --requirements, --include-star-import]
+  - repo: https://github.com/pycqa/isort
+    rev: "5.9.3"
+    hooks:
+      - id: isort
+        name: isort (python)
+        # files: "pp/.*"
+        # args: ["--profile", "black", "--filter-files"]
 
-    - repo: https://github.com/psf/black
-      rev: "21.7b0"
-      hooks:
-          - id: black
+  - repo: https://github.com/psf/black
+    rev: "21.7b0"
+    hooks:
+      - id: black
 
-    - repo: https://gitlab.com/pycqa/flake8
-      rev: "3.9.2"
-      hooks:
-          - id: flake8
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: "3.9.2"
+    hooks:
+      - id: flake8
 
-    - repo: https://github.com/kynan/nbstripout
-      rev: "0.5.0"
-      hooks:
-          - id: nbstripout
-            # files: ".ipynb"
+  - repo: https://github.com/kynan/nbstripout
+    rev: "0.5.0"
+    hooks:
+      - id: nbstripout
+        # files: ".ipynb"
 
-    # - repo: https://github.com/pre-commit/mirrors-mypy
-    #   rev: ""
-    #   hooks:
-    #       - id: mypy
-    #         exclude: ^(docs/|example-plugin/|tests/fixtures)
-    # - repo: https://github.com/pycqa/pydocstyle
-    #   rev: ""
-    #   hooks:
-    #       - id: pydocstyle
+  # - repo: https://github.com/pre-commit/mirrors-mypy
+  #   rev: ""
+  #   hooks:
+  #       - id: mypy
+  #         exclude: ^(docs/|example-plugin/|tests/fixtures)
+  # - repo: https://github.com/pycqa/pydocstyle
+  #   rev: ""
+  #   hooks:
+  #       - id: pydocstyle

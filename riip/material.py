@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from logging import getLogger
 import typing
 from collections.abc import Sequence
 from itertools import islice
+from logging import getLogger
+
 import numpy as np
 from pandas import DataFrame, Series
-from scipy.interpolate import interp1d
 from scipy import constants
+from scipy.interpolate import interp1d
 from scipy.special import wofz
 
 logger = getLogger(__package__)
@@ -17,12 +18,12 @@ ComplexNdarray = typing.NewType("ComplexNdarray", typing.Union[complex, np.ndarr
 
 class Material:
     """This class provide dispersion formula defined
-     in refractiveindex.info database.
+    in refractiveindex.info database.
 
-     Attributes:
-         exp_data: The experimental data set.
-         formulas (dict[int, Callable]): A dict of functions for the formulas.
-     """
+    Attributes:
+        exp_data: The experimental data set.
+        formulas (dict[int, Callable]): A dict of functions for the formulas.
+    """
 
     def __init__(self, catalog: Series, exp_data: DataFrame, bound_check: bool = True):
         """Initialize Material
@@ -215,7 +216,7 @@ class Material:
         wls: typing.Union[Sequence, np.ndarray],
         comp: str = "n",
         fmt: typing.Union[str, None] = "-",
-        **kwargs
+        **kwargs,
     ):
         """Plot refractive index.
 

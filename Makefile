@@ -5,6 +5,13 @@ install:
 	pip install -e .
 	pre-commit install
 
+conda:
+	conda install -c mnishida -c defaults -c conda-forge --file conda_pkg/conda_requirements_dev.txt
+	conda install -c mnishida --file conda_pkg/conda_requirements.txt
+	conda build conda_pkg
+	conda install --use-local riip
+	pre-commit install
+
 test:
 	pytest
 
