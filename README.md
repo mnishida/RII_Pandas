@@ -10,7 +10,7 @@
 
 Python 3 + Pandas wrapper for the [refractiveindex.info database](http://refractiveindex.info/) developed by [Mikhail Polyanskiy](https://github.com/polyanskiy).
 
-Pandas DataFrame creation was made with modified versions of `dboperations.py` from [refractiveindex.info-sqlite package](https://github.com/HugoGuillen/refractiveindex.info-sqlite) developed by [Hugo Guillén](https://github.com/HugoGuillen).
+[Pandas](https://pandas.pydata.org/) DataFrame creation was made with modified versions of `dboperations.py` from [refractiveindex.info-sqlite package](https://github.com/HugoGuillen/refractiveindex.info-sqlite) developed by [Hugo Guillén](https://github.com/HugoGuillen).
 
 ## Features
 - Create Pandas DataFrame by parsing database files cloned from Polyanskiy's  [GitHub repository](https://github.com/polyanskiy/refractiveindex.info-database).
@@ -37,13 +37,16 @@ They are located in 'data' folder under the installation directory.
 This process may take a few minutes, but it will happen only the first time you start it after installation.
 ```
 >>> ri.catalog.loc[:30, ['book', 'page']]
->>> ri.raw_data.loc[ri.raw_data['id']==10, ['wl_n', 'n']]
->>> ri.raw_data.loc[ri.raw_data['id']==10, ['wl_k', 'k']]
->>> ri.grid_data.loc[ri.grid_data['id']==10, ['wl', 'n', 'k']]
+>>> ri.raw_data.loc[10, ['wl_n', 'n']]
+>>> ri.raw_data.loc[10, ['wl_k', 'k']]
+>>> grid_data = ri.load_grid_data()
+>>> grid_data.loc[10]
 ```
-For more information, see the [examples notebook](https://github.com/mnishida/RII_Pandas/blob/master/examples/examples.ipynb).
+For more information, see [tutorial](https://github.com/mnishida/RII_Pandas/blob/master/docs/00_tutorial.ipynb) and [examples notebook](https://github.com/mnishida/RII_Pandas/blob/master/docs/examples.ipynb).
 
 ## Update database
+If [refractiveindex.info database](http://refractiveindex.info/) is updated, you can pull it to the local database by
+
 ```
 >>> import riip
 >>> ri = riip.RiiDataFrame()

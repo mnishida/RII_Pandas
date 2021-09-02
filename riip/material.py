@@ -12,7 +12,7 @@ from scipy.interpolate import interp1d
 from scipy.special import wofz
 
 logger = getLogger(__package__)
-FloatNdarray = typing.NewType("FloatNdarray", typing.Union[complex, np.ndarray])
+FloatNdarray = typing.NewType("FloatNdarray", typing.Union[float, np.ndarray])
 ComplexNdarray = typing.NewType("ComplexNdarray", typing.Union[complex, np.ndarray])
 
 
@@ -111,7 +111,7 @@ class Material:
             return np.nan * np.ones_like(x)
 
     def k(self, x: FloatNdarray) -> FloatNdarray:
-        """Return n for given wavelength
+        """Return k for given wavelength
 
         Args:
             x: Wavelength.

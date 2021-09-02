@@ -8,6 +8,7 @@ pre-commit
 flake8
 black
 isort
+bumpversion
 tox
 tox-gh-actions
 pydocstyle

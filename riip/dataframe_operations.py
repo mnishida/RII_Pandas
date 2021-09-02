@@ -460,7 +460,15 @@ class RiiDataFrame:
 
     def search(self, name: str) -> DataFrame:
         """Search pages which contain the name."""
-        columns = ["shelf", "book", "page", "formula", "tabulated", "wl_min", "wl_max"]
+        columns = [
+            "shelf",
+            "book",
+            "page",
+            "formula",
+            "tabulated",
+            "wl_min",
+            "wl_max",
+        ]
         df = self.catalog[
             (
                 (self.catalog["book"].str.contains(name))
@@ -468,38 +476,36 @@ class RiiDataFrame:
                     self.catalog["book_name"]
                     .str.replace("<sub>", "")
                     .str.replace("</sub>", "")
-                    .str.contains(name)
+                    .str.lower()
+                    .str.contains(name.lower())
                 )
             )
         ]
         return df.loc[:, columns]
 
-    def select(self, cond: Dict) -> List[int]:
+    def select(self, cond: str) -> List[int]:
         """Select pages which fulfill the condition."""
+        columns = [
+            "shelf",
+            "book",
+            "page",
+            "formula",
+            "tabulated",
+            "wl_min",
+            "wl_max",
+        ]
         gd = self.load_grid_data()
-        wl_min = cond.get("wl_min", 0.0)
-        wl_max = cond.get("wl_max", np.inf)
-        n_min = cond.get("n_min", 0.0)
-        n_max = cond.get("n_max", np.inf)
-        k_min = cond.get("k_min", 0.0)
-        k_max = cond.get("k_max", np.inf)
-        id_list = gd[
-            (gd["wl"] >= wl_min)
-            & (gd["wl"] <= wl_max)
-            & (gd["n"] >= n_min)
-            & (gd["n"] <= n_max)
-            & ((gd["k"] != gd["k"]) | (gd["k"] >= k_min) & (gd["k"] <= k_max))
-        ].index.unique()
-        return id_list
+        id_list = gd.query(cond).index.unique()
+        return self.catalog.loc[id_list, columns]
 
-    def show(self, idx: Union[int, Sequence[int]]) -> DataFrame:
+    def show(self, id: Union[int, Sequence[int]]) -> DataFrame:
         """Show page(s) of the ID (list of IDs)."""
         columns = ["shelf", "book", "page", "formula", "tabulated", "wl_min", "wl_max"]
-        return self.catalog.loc[idx, columns]
+        return self.catalog.loc[id, columns]
 
-    def material(self, idx: int, bound_check: bool = True) -> Material:
+    def material(self, id: int, bound_check: bool = True) -> Material:
         """Material associated with the ID."""
-        return Material(self.catalog.loc[idx], self.raw_data.loc[idx], bound_check)
+        return Material(self.catalog.loc[id], self.raw_data.loc[id], bound_check)
 
 
 def load_csv(csv_file: str, dtype: Union[None, Dict] = None) -> DataFrame:
