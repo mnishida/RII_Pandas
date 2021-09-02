@@ -32,7 +32,7 @@ jobs:
         uses: s-weigand/setup-conda@v1
         with:
           update-conda: true
-          python-version: "3.x"
+          python-version: "3.8"
           activate-conda: true
       - name: Install dependencies
         run: |
