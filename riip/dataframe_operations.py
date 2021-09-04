@@ -9,6 +9,7 @@ import git
 import numpy as np
 import pandas as pd
 import yaml
+from IPython.display import HTML
 from pandas import DataFrame
 
 from riip.material import Material
@@ -48,6 +49,7 @@ class RiiDataFrame:
             ("division", str),
             ("book", str),
             ("book_name", str),
+            ("section", str),
             ("page", str),
             ("path", str),
             ("formula", int),
@@ -111,13 +113,13 @@ class RiiDataFrame:
             logger.warning("Catalog file not found.")
             if not os.path.isfile(os.path.join(self.db_path, "library.yml")):
                 logger.warning("Cloning Repository...")
-                # repo = git.Repo.clone_from(
-                #     _ri_database_repo, self._ri_database, branch="master"
-                # )
-                # repo.git.apply(_ri_database_patch)
-                git.Repo.clone_from(
+                repo = git.Repo.clone_from(
                     _ri_database_repo, self._ri_database, branch="master"
                 )
+                repo.git.apply(_ri_database_patch)
+                # git.Repo.clone_from(
+                #     _ri_database_repo, self._ri_database, branch="master"
+                # )
                 logger.warning("Done.")
             logger.warning("Creating catalog file...")
             catalog = self.add_my_db_to_catalog(self.create_catalog())
@@ -130,10 +132,17 @@ class RiiDataFrame:
 
             # Preparing grid_data
             logger.warning("Updating grid data file...")
+            catalog = catalog.set_index("id")
+            raw_data = raw_data.set_index("id")
             self.create_grid_data(catalog, raw_data)
             logger.warning("Done.")
-        catalog = load_csv(self.catalog_file, dtype=self._catalog_columns)
-        raw_data = load_csv(self.raw_data_file, dtype=self._raw_data_columns)
+        else:
+            catalog = pd.read_csv(
+                self.catalog_file, dtype=self._catalog_columns, index_col="id"
+            )
+            raw_data = pd.read_csv(
+                self.raw_data_file, dtype=self._raw_data_columns, index_col="id"
+            )
         return catalog, raw_data
 
     @staticmethod
@@ -163,17 +172,17 @@ class RiiDataFrame:
                         if division is None:
                             raise Exception("'DIVIDER' is missing in 'library.yml'.")
                         if "DIVIDER" not in b["content"]:
-                            page_class = ""
+                            section = ""
                         for p in b["content"]:
                             if "DIVIDER" in p:
                                 # This DIVIDER specifies the phase of the
                                 #  material such as gas, liquid or solid, so it
                                 #  is added to the book and book_name with
                                 #  parentheses.
-                                page_class = " ({})".format(p["DIVIDER"])
+                                section = p["DIVIDER"]
                             else:
-                                book = "".join([b["BOOK"], page_class])
-                                book_name = "".join([b["name"], page_class])
+                                book = b["BOOK"]
+                                book_name = b["name"]
                                 page = p["PAGE"]
                                 path = os.path.join(
                                     reference_path, "data", os.path.normpath(p["data"])
@@ -186,6 +195,7 @@ class RiiDataFrame:
                                     division,
                                     book,
                                     book_name,
+                                    section,
                                     page,
                                     path,
                                     0,
@@ -215,9 +225,8 @@ class RiiDataFrame:
         df = DataFrame(
             self.extract_entry(self.db_path), columns=self._catalog_columns.keys()
         )
-        set_columns_dtype(df, self._catalog_columns)
         logger.info("Done.")
-        return df
+        return df.astype(self._catalog_columns)
 
     def add_my_db_to_catalog(self, catalog) -> DataFrame:
         """Add data in my_database to catalog DataFrame."""
@@ -228,14 +237,15 @@ class RiiDataFrame:
             self.extract_entry(self.my_db_path, start_id),
             columns=self._catalog_columns.keys(),
         )
-        set_columns_dtype(df, self._catalog_columns)
         df = catalog.append(df, ignore_index=True)
         logger.info("Done.")
         return df
 
     def load_raw_data(self) -> DataFrame:
         # Load catalog and experimental data.
-        df = load_csv(self.raw_data_file, dtype=self._raw_data_columns)
+        df = pd.read_csv(
+            self.raw_data_file, dtype=self._raw_data_columns, index_col="id"
+        )
         return df
 
     def extract_raw_data(
@@ -387,8 +397,7 @@ class RiiDataFrame:
             }
         )
         # Arrange the columns according to the order of _raw_data_columns
-        df = df.loc[:, self._raw_data_columns.keys()]
-        set_columns_dtype(df, self._raw_data_columns)
+        df = df.loc[:, self._raw_data_columns.keys()].astype(self._raw_data_columns)
         return df, catalog
 
     def create_raw_data_and_modify_catalog(
@@ -401,7 +410,7 @@ class RiiDataFrame:
             logger.debug("{}: {}".format(idx, catalog.loc[idx, "path"]))
             df_idx, catalog = self.extract_raw_data(idx, catalog)
             df = df.append(df_idx, ignore_index=True)
-        set_columns_dtype(df, self._raw_data_columns)
+        df = df.astype(self._raw_data_columns)
         catalog.to_csv(self.catalog_file, index=False, encoding="utf-8")
         df.to_csv(self.raw_data_file, index=False, encoding="utf-8")
         logger.info("Done.")
@@ -415,25 +424,25 @@ class RiiDataFrame:
             logger.warning("Done.")
         else:
             logger.info("Grid data file found at {}".format(self.grid_data_file))
-        return load_csv(self.grid_data_file, dtype=self._grid_data_columns)
+        return pd.read_csv(
+            self.grid_data_file, dtype=self._grid_data_columns, index_col="id"
+        )
 
     def create_grid_data(self, catalog: DataFrame, raw_data: DataFrame) -> None:
         """Create a DataFrame for the wl-nk data."""
         logger.info("Creating grid data...")
         columns = self._grid_data_columns.keys()
         df = DataFrame(columns=columns)
-        for idx in set(raw_data["id"]):
-            a_catalog = catalog.loc[idx]
-            data = raw_data[raw_data["id"] == idx]
-            material = Material(a_catalog, data)
-            wl_min = a_catalog.loc["wl_min"]
-            wl_max = a_catalog.loc["wl_max"]
+        for idx in catalog.index:
+            material = Material(idx, catalog, raw_data)
+            wl_min = material.catalog.loc["wl_min"]
+            wl_max = material.catalog.loc["wl_max"]
             wls = np.linspace(wl_min, wl_max, 200)
             ns = material.n(wls)
             ks = material.k(wls)
             data = {key: val for key, val in zip(columns, [idx, wls, ns, ks])}
             df = df.append(DataFrame(data).loc[:, columns], ignore_index=True)
-        set_columns_dtype(df, self._grid_data_columns)
+        df = df.astype(self._grid_data_columns)
         df.to_csv(self.grid_data_file, index=False, encoding="utf-8")
         logger.info("Done.")
 
@@ -452,17 +461,28 @@ class RiiDataFrame:
         logger.warning("Done.")
         logger.warning("Updating raw data file...")
         self.raw_data, self.catalog = self.create_raw_data_and_modify_catalog(catalog)
+        self.catalog = self.catalog.set_index("id")
+        self.raw_data = self.raw_data.set_index("id")
         logger.warning("Done.")
         logger.warning("Updating grid data file...")
         self.create_grid_data(self.catalog, self.raw_data)
         logger.warning("Done.")
         logger.warning("All Done.")
 
+        """."""
+
     def search(self, name: str) -> DataFrame:
-        """Search pages which contain the name."""
+        """Search pages which contain the name of material.
+
+        Args:
+            name (str): Name of material
+
+        Returns:
+            DataFrame: Simplified catalog
+        """
         columns = [
-            "shelf",
             "book",
+            "section",
             "page",
             "formula",
             "tabulated",
@@ -484,10 +504,17 @@ class RiiDataFrame:
         return df.loc[:, columns]
 
     def select(self, cond: str) -> List[int]:
-        """Select pages which fulfill the condition."""
+        """Select pages that fullfil the condition
+
+        Args:
+            cond (str): Query condition, such as '1.5 <= n <= 2 & 1.0 <= wl <= 2.0'
+
+        Returns:
+            List[int]: Simplified catalog
+        """
         columns = [
-            "shelf",
             "book",
+            "section",
             "page",
             "formula",
             "tabulated",
@@ -499,27 +526,67 @@ class RiiDataFrame:
         return self.catalog.loc[id_list, columns]
 
     def show(self, id: Union[int, Sequence[int]]) -> DataFrame:
-        """Show page(s) of the ID (list of IDs)."""
-        columns = ["shelf", "book", "page", "formula", "tabulated", "wl_min", "wl_max"]
+        """Summary of page(s) of ID (list of IDs)
+
+        Args:
+            id (Union[int, Sequence[int]]): ID number
+
+        Returns:
+            DataFrame: Simplified catalog
+        """
+        columns = [
+            "book",
+            "section",
+            "page",
+            "formula",
+            "tabulated",
+            "wl_min",
+            "wl_max",
+        ]
         return self.catalog.loc[id, columns]
 
-    def material(self, id: int, bound_check: bool = True) -> Material:
-        """Material associated with the ID."""
-        return Material(self.catalog.loc[id], self.raw_data.loc[id], bound_check)
+    def material(self, idx: int, bound_check: bool = True) -> Material:
+        """Create instance of Material class associated with ID
 
+        Args:
+            idx (int): ID number
+            bound_check (bool, optional):
+                If True  ValueError will be raised when the wavelength exeeds the domain of experimental data.
+                Defaults to True.
 
-def load_csv(csv_file: str, dtype: Union[None, Dict] = None) -> DataFrame:
-    """Convert csv file to a DataFrame."""
-    # logger.info("Loading {}".format(os.path.basename(csv_file)))
-    df = pd.read_csv(csv_file, dtype=dtype, index_col="id")
-    # logger.info("Done.")
-    return df
+        Returns:
+            Material: A class that provides dielectric function of the material
+        """
+        return Material(idx, self.catalog, self.raw_data, bound_check)
 
+    def read(self, idx: int, as_dict: bool = False) -> Union[str, dict]:
+        """Return contants of a page associated with the id.
 
-def set_columns_dtype(df: DataFrame, columns: Dict):
-    """Set data type of each column in the DataFrame."""
-    for key, val in columns.items():
-        df[key] = df[key].astype(val)
+        Args:
+            idx (int): ID number
+            as_dict (bool): If True, the page contents are returned as python dict
+        Returns:
+            Union[str, dict]: Page contents
+        """
+        path = self.catalog.loc[idx, "path"]
+        with open(path) as fd:
+            if as_dict:
+                contents = yaml.safe_load(fd)
+            else:
+                contents = fd.read()
+        return contents
+
+    def references(self, idx: int) -> HTML:
+        """Return REFERENCES as IPython.display.HTML class
+
+        Args:
+            idx (int): ID number
+
+        Returns:
+            HTML: REFERENCES as IPython.display.HTML class
+        """
+        contents = self.read(idx, as_dict=True)
+        return HTML(contents["REFERENCES"])
 
 
 if __name__ == "__main__":

@@ -25,6 +25,7 @@ requirements:
     - python
     - pyyaml
     - scipy
+    - ipython
 
 test:
   imports:

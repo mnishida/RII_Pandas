@@ -77,9 +77,10 @@ class KnownValues(unittest.TestCase):
                     "wl_k_min": [0.25],
                     "wl_k_max": [2.0],
                 }
-            ).loc[0]
-            data = pd.DataFrame({"c": cs})
-            material = Material(catalog, data)
+            )
+            print(cs)
+            data = pd.DataFrame({"id": 0, "c": cs}).set_index("id")
+            material = Material(0, catalog, data)
             n = material.n(wl)
             self.assertAlmostEqual(n, result)
 
@@ -103,9 +104,11 @@ class KnownValues(unittest.TestCase):
                     "wl_k_min": [0.25],
                     "wl_k_max": [2.0],
                 }
-            ).loc[0]
-            data = pd.DataFrame({"wl_n": wls, "n": ns, "wl_k": wls, "k": ks})
-            material = Material(catalog, data)
+            )
+            data = pd.DataFrame(
+                {"id": 0, "wl_n": wls, "n": ns, "wl_k": wls, "k": ks}
+            ).set_index("id")
+            material = Material(0, catalog, data)
             self.assertAlmostEqual((material.n(wl), material.k(wl)), result)
 
     def test_dispersion_formula_exception(self):
@@ -118,9 +121,9 @@ class KnownValues(unittest.TestCase):
                 "wl_k_min": [0.25],
                 "wl_k_max": [2.0],
             }
-        ).loc[0]
-        data = pd.DataFrame({"cs": list(range(17))})
-        material = Material(catalog, data)
+        )
+        data = pd.DataFrame({"id": 0, "cs": list(range(17))}).set_index("id")
+        material = Material(0, catalog, data)
         with self.assertRaises(ValueError):
             material.n(0.1)
         with self.assertRaises(ValueError):

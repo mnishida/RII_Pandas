@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import typing
 from collections.abc import Sequence
 from itertools import islice
 from logging import getLogger
+from typing import Callable, Dict, Tuple, Union
 
 import numpy as np
 from pandas import DataFrame, Series
@@ -12,8 +12,6 @@ from scipy.interpolate import interp1d
 from scipy.special import wofz
 
 logger = getLogger(__package__)
-FloatNdarray = typing.NewType("FloatNdarray", typing.Union[float, np.ndarray])
-ComplexNdarray = typing.NewType("ComplexNdarray", typing.Union[complex, np.ndarray])
 
 
 class Material:
@@ -25,20 +23,31 @@ class Material:
         formulas (dict[int, Callable]): A dict of functions for the formulas.
     """
 
-    def __init__(self, catalog: Series, exp_data: DataFrame, bound_check: bool = True):
+    def __init__(
+        self,
+        idx: int,
+        catalog: DataFrame,
+        exp_data: DataFrame,
+        bound_check: bool = True,
+    ):
         """Initialize Material
 
         Args:
+            idx: ID number.
             catalog: The catalog data set.
             exp_data: The experimental data set.
             bound_check: True if bound check should be done,
         """
-        self.catalog: Series = catalog
-        self.ID = catalog.name
-        self.exp_data: DataFrame = exp_data
+        self.catalog: Series = catalog.loc[idx]
+        self.id = idx
+        # exp_data becomes a Series if it has only 1 row.
+        self.exp_data: Union[Series, DataFrame] = exp_data.loc[idx]
         self.unit = constants.h * constants.c * 1e6 / constants.e
-        self.formulas: typing.Dict[
-            int, typing.Callable[[FloatNdarray], FloatNdarray]
+        self.formulas: Dict[
+            int,
+            Callable[
+                [Union[float, complex, np.ndarray]], Union[float, complex, np.ndarray]
+            ],
         ] = {
             1: self.formula_1,
             2: self.formula_2,
@@ -53,8 +62,10 @@ class Material:
             22: self.formula_22,
         }
         self.bound_check_flag = bound_check
+        self.__n = self.func_n()
+        self.__k = self.func_k()
 
-    def bound_check(self, x: FloatNdarray, nk: str):
+    def bound_check(self, x: Union[float, complex, np.ndarray], nk: str):
         if not self.bound_check_flag:
             return
         if nk == "n":
@@ -78,134 +89,83 @@ class Material:
                 f"Wavelength [{x_min} {x_max}] is out of bounds [{wl_min} {wl_max}][um]"
             )
 
-    def n(self, x: FloatNdarray) -> FloatNdarray:
+    def func_n(self):
+        formula = int(self.catalog["formula"])
+        tabulated = self.catalog["tabulated"]
+        if formula > 0:
+            if formula <= 20:
+                return self.formulas[formula]
+            else:
+                return lambda x: np.sqrt(self.formulas[formula](x)).real
+        elif "n" in tabulated:
+            num_n = self.catalog["num_n"]
+            if num_n == 1:
+                return lambda x: self.exp_data["n"] * np.ones_like(x)
+            else:
+                return interp1d(
+                    self.exp_data["wl_n"].to_numpy()[:num_n],
+                    self.exp_data["n"].to_numpy()[:num_n],
+                    kind="linear",
+                    bounds_error=False,
+                    fill_value="extrapolate",
+                    assume_sorted=True,
+                )
+        else:
+            return lambda x: np.nan * np.ones_like(x)
+
+    def func_k(self):
+        tabulated = self.catalog["tabulated"]
+        if "k" in tabulated:
+            num_k = self.catalog["num_k"]
+            if num_k == 1:
+                return lambda x: self.exp_data["k"] * np.ones_like(x)
+            else:
+                return interp1d(
+                    self.exp_data["wl_k"].to_numpy()[:num_k],
+                    self.exp_data["k"].to_numpy()[:num_k],
+                    kind="linear",
+                    bounds_error=False,
+                    fill_value="extrapolate",
+                    assume_sorted=True,
+                )
+        else:
+            formula = int(self.catalog["formula"])
+            if formula > 20:
+                return lambda x: np.sqrt(self.formulas[formula](x)).imag
+            else:
+                return lambda x: np.nan * np.ones_like(x)
+
+    def n(self, x: Union[float, complex, np.ndarray]) -> Union[float, np.ndarray]:
         """Return n for given wavelength
 
         Args:
             x: Wavelength.
         """
-        self.bound_check(x, "n")
-        formula = int(self.catalog["formula"])
-        tabulated = self.catalog["tabulated"]
-        if formula > 0:
-            if formula <= 20:
-                return self.formulas[formula](x)
-            else:
-                return np.sqrt(self.formulas[formula](x)).real
-        elif "n" in tabulated:
-            num_n = self.catalog["num_n"]
-            wls_n = self.exp_data["wl_n"].values[:num_n]
-            ns = self.exp_data["n"].values[:num_n]
-            if len(ns) == 1:
-                return ns * np.ones_like(x)
-            else:
-                return interp1d(
-                    wls_n,
-                    ns,
-                    kind="linear",
-                    bounds_error=False,
-                    fill_value="extrapolate",
-                    assume_sorted=True,
-                )(x)
-        else:
-            return np.nan * np.ones_like(x)
+        self.bound_check(x.real, "n")
+        return self.__n(x)
 
-    def k(self, x: FloatNdarray) -> FloatNdarray:
+    def k(self, x: Union[float, complex, np.ndarray]) -> Union[float, np.ndarray]:
         """Return k for given wavelength
 
         Args:
             x: Wavelength.
         """
-        self.bound_check(x, "k")
-        tabulated = self.catalog["tabulated"]
-        if "k" in tabulated:
-            num_k = self.catalog["num_k"]
-            wls_k = self.exp_data["wl_k"].values[:num_k]
-            ks = self.exp_data["k"].values[:num_k]
-            if len(ks) == 1:
-                return ks * np.ones_like(x)
-            else:
-                return interp1d(
-                    wls_k,
-                    ks,
-                    kind="linear",
-                    bounds_error=False,
-                    fill_value="extrapolate",
-                    assume_sorted=True,
-                )(x)
-        else:
-            formula = int(self.catalog["formula"])
-            if formula > 20:
-                return np.sqrt(self.formulas[formula](x)).imag
-            else:
-                return np.nan * np.ones_like(x)
+        self.bound_check(x.real, "k")
+        return self.__k(x)
 
-    def func_nk(self, x: FloatNdarray) -> typing.Tuple[FloatNdarray, FloatNdarray]:
-        """Return (n, k) for given wavelength
-
-        Args:
-            x: Wavelength.
-        """
-        self.bound_check(x, "nk")
-        formula = int(self.catalog["formula"])
-        tabulated = self.catalog["tabulated"]
-        if formula > 20:
-            sqrt_eps = np.sqrt(self.formulas[formula](x))
-            n, k = sqrt_eps.real, sqrt_eps.imag
-        else:
-            if formula != 0:
-                n = self.formulas[formula](x)
-            elif "n" in tabulated:
-                num_n = self.catalog["num_n"]
-                wls_n = self.exp_data["wl_n"].values[:num_n]
-                ns = self.exp_data["n"].values[:num_n]
-                if len(ns) == 1:
-                    n = ns * np.ones_like(x)
-                else:
-                    n = interp1d(
-                        wls_n,
-                        ns,
-                        kind="linear",
-                        bounds_error=False,
-                        fill_value="extrapolate",
-                        assume_sorted=True,
-                    )(x)
-            else:
-                raise Exception("Refractive indices are not provided.")
-            if "k" in tabulated:
-                num_k = self.catalog["num_k"]
-                wls_k = self.exp_data["wl_k"].values[:num_k]
-                ks = self.exp_data["k"].values[:num_k]
-                if len(ks) == 1:
-                    k = ks * np.ones_like(x)
-                else:
-                    k = interp1d(
-                        wls_k,
-                        ks,
-                        kind="linear",
-                        bounds_error=False,
-                        fill_value=(ks[0], ks[-1]),
-                        assume_sorted=True,
-                    )(x)
-            else:
-                raise Exception(
-                    "Extinction coefficients are not provided.\n"
-                    + "Please check if they are negligible."
-                )
-        return n, k
-
-    def eps(self, x: FloatNdarray) -> ComplexNdarray:
+    def eps(self, x: Union[float, complex, np.ndarray]) -> Union[complex, np.ndarray]:
         """Return complex dielectric constant
 
         Args:
             x: Wavelength.
         """
-        self.bound_check(x, "nk")
+        self.bound_check(x.real, "nk")
         formula = int(self.catalog["formula"])
         if formula > 20:
             return self.formulas[formula](x)
         else:
-            n, k = self.func_nk(x)
+            n = self.__n(x.real)
+            k = self.__k(x.real)
             eps = np.zeros_like(x, dtype=complex)
             eps.real = n ** 2 - k ** 2
             eps.imag = 2 * n * k
@@ -213,9 +173,9 @@ class Material:
 
     def plot(
         self,
-        wls: typing.Union[Sequence, np.ndarray],
+        wls: Union[Sequence, np.ndarray],
         comp: str = "n",
-        fmt: typing.Union[str, None] = "-",
+        fmt: Union[str, None] = "-",
         **kwargs,
     ):
         """Plot refractive index.
@@ -250,31 +210,31 @@ class Material:
         plt.xlabel(r"$\lambda$ $[\mathrm{\mu m}]$")
         plt.legend(loc="best")
 
-    def formula_1(self, x: FloatNdarray) -> FloatNdarray:
-        cs = self.exp_data["c"].values[:24]
+    def formula_1(self, x: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+        cs = self.exp_data["c"].to_numpy()[:24]
         x_sqr = x ** 2
         n_sqr = 1 + cs[0]
         for c1, c2 in zip(islice(cs, 1, None, 2), islice(cs, 2, None, 2)):
             n_sqr += c1 * x_sqr / (x_sqr - c2 ** 2)
-        return np.sqrt(n_sqr)
+        return np.sqrt(n_sqr * (n_sqr > 0))
 
-    def formula_2(self, x: FloatNdarray) -> FloatNdarray:
-        cs = self.exp_data["c"].values[:24]
+    def formula_2(self, x: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+        cs = self.exp_data["c"].to_numpy()[:24]
         x_sqr = x ** 2
         n_sqr = 1 + cs[0]
         for c1, c2 in zip(islice(cs, 1, None, 2), islice(cs, 2, None, 2)):
             n_sqr += c1 * x_sqr / (x_sqr - c2)
-        return np.sqrt(n_sqr)
+        return np.sqrt(n_sqr * (n_sqr > 0))
 
-    def formula_3(self, x: FloatNdarray) -> FloatNdarray:
-        cs = self.exp_data["c"].values[:24]
+    def formula_3(self, x: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+        cs = self.exp_data["c"].to_numpy()[:24]
         n_sqr = cs[0]
         for c1, c2 in zip(islice(cs, 1, None, 2), islice(cs, 2, None, 2)):
             n_sqr += c1 * x ** c2
-        return np.sqrt(n_sqr)
+        return np.sqrt(n_sqr * (n_sqr > 0))
 
-    def formula_4(self, x: FloatNdarray) -> FloatNdarray:
-        cs = self.exp_data["c"].values[:24]
+    def formula_4(self, x: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+        cs = self.exp_data["c"].to_numpy()[:24]
         n_sqr = (
             cs[0]
             + cs[1] * x ** cs[2] / (x ** 2 - cs[3] ** cs[4])
@@ -282,25 +242,25 @@ class Material:
         )
         for c1, c2 in zip(islice(cs, 9, None, 2), islice(cs, 10, None, 2)):
             n_sqr += c1 * x ** c2
-        return np.sqrt(n_sqr)
+        return np.sqrt(n_sqr * (n_sqr > 0))
 
-    def formula_5(self, x: FloatNdarray) -> FloatNdarray:
-        cs = self.exp_data["c"].values[:24]
+    def formula_5(self, x: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+        cs = self.exp_data["c"].to_numpy()[:24]
         n = cs[0]
         for c1, c2 in zip(islice(cs, 1, None, 2), islice(cs, 2, None, 2)):
             n += c1 * x ** c2
         return n
 
-    def formula_6(self, x: FloatNdarray) -> FloatNdarray:
-        cs = self.exp_data["c"].values[:24]
+    def formula_6(self, x: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+        cs = self.exp_data["c"].to_numpy()[:24]
         x_m2 = 1 / x ** 2
         n = 1 + cs[0]
         for c1, c2 in zip(islice(cs, 1, None, 2), islice(cs, 2, None, 2)):
             n += c1 / (c2 - x_m2)
         return n
 
-    def formula_7(self, x: FloatNdarray) -> FloatNdarray:
-        cs = self.exp_data["c"].values[:24]
+    def formula_7(self, x: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+        cs = self.exp_data["c"].to_numpy()[:24]
         x_sqr = x ** 2
         n = (
             cs[0]
@@ -312,24 +272,26 @@ class Material:
         )
         return n
 
-    def formula_8(self, x: FloatNdarray) -> FloatNdarray:
-        cs = self.exp_data["c"].values[:24]
+    def formula_8(self, x: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+        cs = self.exp_data["c"].to_numpy()[:24]
         x_sqr = x ** 2
         a = cs[0] + cs[1] * x_sqr / (x_sqr - cs[2]) + cs[3] * x_sqr
         n_sqr = (1 + 2 * a) / (1 - a)
-        return np.sqrt(n_sqr)
+        return np.sqrt(n_sqr * (n_sqr > 0))
 
-    def formula_9(self, x: FloatNdarray) -> FloatNdarray:
-        cs = self.exp_data["c"].values[:24]
+    def formula_9(self, x: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+        cs = self.exp_data["c"].to_numpy()[:24]
         n_sqr = (
             cs[0]
             + cs[1] / (x ** 2 - cs[2])
             + cs[3] * (x - cs[4]) / ((x - cs[4]) ** 2 + cs[5])
         )
-        return np.sqrt(n_sqr)
+        return np.sqrt(n_sqr * (n_sqr > 0))
 
-    def formula_21(self, x: FloatNdarray) -> typing.Tuple[FloatNdarray, FloatNdarray]:
-        cs = self.exp_data["c"].values[:24]
+    def formula_21(
+        self, x: Union[float, np.ndarray]
+    ) -> Tuple[Union[float, np.ndarray], Union[float, np.ndarray]]:
+        cs = self.exp_data["c"].to_numpy()[:24]
         w = self.unit / x
         eb = cs[0]
         f0 = cs[1]
@@ -342,8 +304,10 @@ class Material:
             eps -= fj * wp ** 2 / (w ** 2 - wj ** 2 + 1j * w * gj)
         return eps
 
-    def formula_22(self, x: FloatNdarray) -> typing.Tuple[FloatNdarray, FloatNdarray]:
-        cs = self.exp_data["c"].values[:24]
+    def formula_22(
+        self, x: Union[float, np.ndarray]
+    ) -> Tuple[Union[float, np.ndarray], Union[float, np.ndarray]]:
+        cs = self.exp_data["c"].to_numpy()[:24]
         w = self.unit / x
         eb = cs[0]
         f0 = cs[1]
