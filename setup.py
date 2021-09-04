@@ -8,7 +8,7 @@ def get_install_requires():
 
 setup(
     name="riip",
-    version="0.3.0",
+    version="0.3.1",
     url="https://github.com/mnishida/RII_Pandas",
     license="MIT",
     author="Munehiro Nishida",
