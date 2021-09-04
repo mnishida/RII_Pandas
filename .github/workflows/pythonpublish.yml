@@ -38,6 +38,8 @@ jobs:
         run: |
           conda install conda-build conda-verify anaconda-client
       - name: Build and publish
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.CONDA_TOKEN }}
         run: |
-          conda build --token ${{ secrets.CONDA_TOKEN }} --user mnishida --output-folder conda_pkg conda_pkg
+          conda build --output-folder conda_pkg conda_pkg
           anaconda upload conda_pkg/noarch/riip-*.tar.bz2
