@@ -113,13 +113,13 @@ class RiiDataFrame:
             logger.warning("Catalog file not found.")
             if not os.path.isfile(os.path.join(self.db_path, "library.yml")):
                 logger.warning("Cloning Repository...")
-                repo = git.Repo.clone_from(
-                    _ri_database_repo, self._ri_database, branch="master"
-                )
-                repo.git.apply(_ri_database_patch)
-                # git.Repo.clone_from(
+                # repo = git.Repo.clone_from(
                 #     _ri_database_repo, self._ri_database, branch="master"
                 # )
+                # repo.git.apply(_ri_database_patch)
+                git.Repo.clone_from(
+                    _ri_database_repo, self._ri_database, branch="master"
+                )
                 logger.warning("Done.")
             logger.warning("Creating catalog file...")
             catalog = self.add_my_db_to_catalog(self.create_catalog())
