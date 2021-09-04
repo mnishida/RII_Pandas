@@ -5,11 +5,11 @@ import riip
 
 def test_create_catalog():
     ri = riip.RiiDataFrame()
-    dupl = ri.catalog.duplicated(subset=["book", "page"], keep=False)
-    if dupl.sum():
-        print("Found duplication:")
-        print(ri.catalog.loc[dupl, ["book", "page"]])
-        raise Exception
+    # dupl = ri.catalog.duplicated(subset=["book", "page"], keep=False)
+    # if dupl.sum():
+    #     print("Found duplication:")
+    #     print(ri.catalog.loc[dupl, ["book", "page"]])
+    #     raise Exception
 
     for _id in ri.catalog.query("'n' in tabulated").index:
         try:
