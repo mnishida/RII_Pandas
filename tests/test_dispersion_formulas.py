@@ -5,7 +5,7 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from riip import Material
+from riip import RiiMaterial
 
 
 class KnownValues(unittest.TestCase):
@@ -70,6 +70,7 @@ class KnownValues(unittest.TestCase):
         for i, (formula, cs, wl, result) in enumerate(self.known_values):
             catalog = pd.DataFrame(
                 {
+                    "page": "",
                     "formula": [formula],
                     "tabulated": [""],
                     "wl_n_min": [0.25],
@@ -80,7 +81,7 @@ class KnownValues(unittest.TestCase):
             )
             print(cs)
             data = pd.DataFrame({"id": 0, "c": cs}).set_index("id")
-            material = Material(0, catalog, data)
+            material = RiiMaterial(0, catalog, data)
             n = material.n(wl)
             self.assertAlmostEqual(n, result)
 
@@ -95,6 +96,7 @@ class KnownValues(unittest.TestCase):
             ks = wlnk[:, 2]
             catalog = pd.DataFrame(
                 {
+                    "page": "",
                     "formula": [formula],
                     "tabulated": ["nk"],
                     "num_n": 100,
@@ -108,12 +110,15 @@ class KnownValues(unittest.TestCase):
             data = pd.DataFrame(
                 {"id": 0, "wl_n": wls, "n": ns, "wl_k": wls, "k": ks}
             ).set_index("id")
-            material = Material(0, catalog, data)
-            self.assertAlmostEqual((material.n(wl), material.k(wl)), result)
+            material = RiiMaterial(0, catalog, data)
+            print(material.n(wl), material.k(wl), result)
+            self.assertAlmostEqual(material.n(wl), result[0])
+            self.assertAlmostEqual(material.k(wl), result[1])
 
     def test_dispersion_formula_exception(self):
         catalog = pd.DataFrame(
             {
+                "page": "",
                 "formula": [1],
                 "tabulated": [""],
                 "wl_n_min": [0.25],
@@ -123,7 +128,7 @@ class KnownValues(unittest.TestCase):
             }
         )
         data = pd.DataFrame({"id": 0, "cs": list(range(17))}).set_index("id")
-        material = Material(0, catalog, data)
+        material = RiiMaterial(0, catalog, data)
         with self.assertRaises(ValueError):
             material.n(0.1)
         with self.assertRaises(ValueError):

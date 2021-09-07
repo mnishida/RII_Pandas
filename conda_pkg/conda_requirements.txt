@@ -1,6 +1,7 @@
-numpy
+numpy>=1.20
 scipy
 pandas
+pytables
 pyyaml
 gitpython
 matplotlib

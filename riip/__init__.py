@@ -1,11 +1,10 @@
-from riip import material
-from riip.dataframe_operations import RiiDataFrame
-from riip.material import Material
+from riip.dataframe import RiiDataFrame
+from riip.material import Material, RiiMaterial
 
 __all__ = [
     "Material",
+    "RiiMaterial",
     "RiiDataFrame",
-    "material",
 ]
 
 __author__ = "Munehiro Nishida"

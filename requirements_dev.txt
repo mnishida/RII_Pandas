@@ -1,5 +1,6 @@
 pytest
 pytest-regressions
+pytest-cov
 pre-commit
 flake8
 black
@@ -8,3 +9,6 @@ bumpversion
 tox
 tox-gh-actions
 pydocstyle
+mypy
+cython
+blosc

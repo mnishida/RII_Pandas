@@ -17,10 +17,10 @@ class KnownValues(unittest.TestCase):
         self.db_directory = os.path.join(dirname, "data")
         self.catalog_file_known = os.path.join(dirname, "catalog.csv")
         self.raw_data_file_known = os.path.join(dirname, "raw_data.csv")
-        self.grid_data_file_known = os.path.join(dirname, "grid_data.csv")
+        self.grid_data_file_known = os.path.join(dirname, "grid_data.h5")
         self.catalog_file = os.path.join(dirname, "data", "catalog.csv")
         self.raw_data_file = os.path.join(dirname, "data", "raw_data.csv")
-        self.grid_data_file = os.path.join(dirname, "data", "grid_data.csv")
+        self.grid_data_file = os.path.join(dirname, "data", "grid_data.h5")
         self.my_db_directory = os.path.join(dirname, "data", "my_database")
         self.ri = riip.RiiDataFrame(
             self.db_directory,
@@ -50,12 +50,8 @@ class KnownValues(unittest.TestCase):
 
     def test_grid_data(self):
         """Check if the grid data is created as expected."""
-        grid_data = pd.read_csv(
-            self.grid_data_file, dtype=self.ri._grid_data_columns, index_col="id"
-        )
-        grid_data_known = pd.read_csv(
-            self.grid_data_file_known, dtype=self.ri._grid_data_columns, index_col="id"
-        )
+        grid_data = pd.read_hdf(self.grid_data_file)
+        grid_data_known = pd.read_hdf(self.grid_data_file_known)
         pd.testing.assert_frame_equal(grid_data, grid_data_known)
 
     def test_compare_with_RIID(self):
@@ -64,7 +60,7 @@ class KnownValues(unittest.TestCase):
         for idx in catalog.index:
             root, _ = os.path.splitext(catalog.loc[idx, "path"])
             df = pd.read_csv(root + ".csv", header=0)
-            material = self.ri.material(idx)
+            material = self.ri.material(idx, bound_check=False)
             ns = material.n(df["wl"].values)
             print(catalog.loc[idx, "page"])
             assert_allclose(df["n"].values, ns, rtol=1e-5)

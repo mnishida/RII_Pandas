@@ -1,22 +1,87 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from collections.abc import Sequence
+from __future__ import annotations
+
+import abc
+from collections.abc import Callable, Sequence
 from itertools import islice
 from logging import getLogger
-from typing import Callable, Dict, Tuple, Union
+from re import A, M
+from typing import Optional
 
 import numpy as np
+from numpy.typing import ArrayLike
 from pandas import DataFrame, Series
 from scipy import constants
 from scipy.interpolate import interp1d
 from scipy.special import wofz
 
+import riip.dataframe
+
 logger = getLogger(__package__)
 
 
-class Material:
-    """This class provide dispersion formula defined
-    in refractiveindex.info database.
+def _ensure_positive_imag(x: ArrayLike) -> ArrayLike:
+    return x.real + 1j * x.imag * (x.imag > 0)
+
+
+class AbstractMaterial(metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def __init__(self, *args, **kwargs):
+        self.label = ""
+
+    @abc.abstractmethod
+    def n(self, wls: ArrayLike) -> ArrayLike:
+        pass
+
+    @abc.abstractmethod
+    def k(self, wls: ArrayLike) -> ArrayLike:
+        pass
+
+    @abc.abstractmethod
+    def eps(self, wls: ArrayLike) -> ArrayLike:
+        pass
+
+    def plot(
+        self,
+        wls: Sequence | np.ndarray,
+        comp: str = "n",
+        fmt1: Optional[str] = "-",
+        fmt2: Optional[str] = "--",
+        **kwargs,
+    ):
+        """Plot refractive index, extinction coefficient or permittivity.
+
+        Args:
+            wls (Union[Sequence, np.ndarray]): Wavelength coordinates to be plotted [μm].
+            comp (str): 'n', 'k' or 'eps'
+            fmt1 (Union[str, None]): Plot format for n and Re(eps).
+            fmt2 (Union[str, None]): Plot format for k and Im(eps).
+        """
+        import matplotlib.pyplot as plt
+
+        kwargs.setdefault("lw", 4)
+        kwargs.setdefault("ms", 8)
+        if comp == "n":
+            ns = self.n(wls)
+            plt.plot(wls, ns, fmt1, label=self.label, **kwargs)
+            plt.ylabel(r"$n$")
+        elif comp == "k":
+            ks = self.k(wls)
+            plt.plot(wls, ks, fmt2, label=self.label, **kwargs)
+            plt.ylabel(r"$k$")
+        elif comp == "eps":
+            eps = self.eps(wls)
+            (line,) = plt.plot(wls, eps.real, fmt1, label=self.label, **kwargs)
+            color = line.get_color()
+            plt.plot(wls, eps.imag, fmt2, color=color, **kwargs)
+            plt.ylabel(r"$\varepsilon$")
+        plt.xlabel(r"$\lambda$ $[\mathrm{\mu m}]$")
+        plt.legend()
+
+
+class RiiMaterial(AbstractMaterial):
+    """This class provide dispersion formula defined in refractiveindex.info database.
 
     Attributes:
         exp_data: The experimental data set.
@@ -27,45 +92,40 @@ class Material:
         self,
         idx: int,
         catalog: DataFrame,
-        exp_data: DataFrame,
+        raw_data: DataFrame,
         bound_check: bool = True,
-    ):
-        """Initialize Material
+    ) -> None:
+        """Initialize RiiMaterial
 
         Args:
-            idx: ID number.
-            catalog: The catalog data set.
-            exp_data: The experimental data set.
-            bound_check: True if bound check should be done,
+            idx (int): 'id' in RiiDataFrame.catalog.
+            catalog (DataFrame): 'RiiDataFrame.catalog.
+            raw_data (DataFrame): 'RiiDataFrame.raw_data.
+            bound_check: True if bound check should be done.
         """
         self.catalog: Series = catalog.loc[idx]
-        self.id = idx
         # exp_data becomes a Series if it has only 1 row.
-        self.exp_data: Union[Series, DataFrame] = exp_data.loc[idx]
+        self.exp_data: Series | DataFrame = raw_data.loc[idx]
+        self.label = self.catalog["page"]
         self.unit = constants.h * constants.c * 1e6 / constants.e
-        self.formulas: Dict[
-            int,
-            Callable[
-                [Union[float, complex, np.ndarray]], Union[float, complex, np.ndarray]
-            ],
-        ] = {
-            1: self.formula_1,
-            2: self.formula_2,
-            3: self.formula_3,
-            4: self.formula_4,
-            5: self.formula_5,
-            6: self.formula_6,
-            7: self.formula_7,
-            8: self.formula_8,
-            9: self.formula_9,
-            21: self.formula_21,
-            22: self.formula_22,
+        self.formulas: dict[int, Callable] = {
+            1: self._formula_1,
+            2: self._formula_2,
+            3: self._formula_3,
+            4: self._formula_4,
+            5: self._formula_5,
+            6: self._formula_6,
+            7: self._formula_7,
+            8: self._formula_8,
+            9: self._formula_9,
+            21: self._formula_21,
+            22: self._formula_22,
         }
         self.bound_check_flag = bound_check
-        self.__n = self.func_n()
-        self.__k = self.func_k()
+        self.__n = self._func_n()
+        self.__k = self._func_k()
 
-    def bound_check(self, x: Union[float, complex, np.ndarray], nk: str):
+    def _bound_check(self, x: ArrayLike, nk: str) -> None:
         if not self.bound_check_flag:
             return
         if nk == "n":
@@ -80,23 +140,26 @@ class Material:
         else:
             raise ValueError("nk must be 'n', 'k', or 'nk'.")
         if isinstance(x, (Sequence, np.ndarray)):
-            x_min = min(x)
-            x_max = max(x)
+            _x = np.asarray(x).real
+            x_min = min(_x)
+            x_max = max(_x)
         else:
-            x_min = x_max = x
-        if x_min < wl_min * 0.999 or x_max > wl_max * 1.001:
+            x_min = x_max = x.real
+        if x_min < wl_min or x_max > wl_max:
             raise ValueError(
                 f"Wavelength [{x_min} {x_max}] is out of bounds [{wl_min} {wl_max}][um]"
             )
 
-    def func_n(self):
+    def _func_n(self) -> Callable:
         formula = int(self.catalog["formula"])
         tabulated = self.catalog["tabulated"]
         if formula > 0:
             if formula <= 20:
                 return self.formulas[formula]
             else:
-                return lambda x: np.sqrt(self.formulas[formula](x)).real
+                return lambda x: np.sqrt(
+                    _ensure_positive_imag(self.formulas[formula](x))
+                ).real
         elif "n" in tabulated:
             num_n = self.catalog["num_n"]
             if num_n == 1:
@@ -105,15 +168,16 @@ class Material:
                 return interp1d(
                     self.exp_data["wl_n"].to_numpy()[:num_n],
                     self.exp_data["n"].to_numpy()[:num_n],
-                    kind="linear",
+                    kind="cubic",
                     bounds_error=False,
                     fill_value="extrapolate",
                     assume_sorted=True,
                 )
         else:
-            return lambda x: np.nan * np.ones_like(x)
+            logger.warning("Refractive index is missing and set to zero.")
+            return lambda x: np.zeros_like(x)
 
-    def func_k(self):
+    def _func_k(self) -> Callable:
         tabulated = self.catalog["tabulated"]
         if "k" in tabulated:
             num_k = self.catalog["num_k"]
@@ -131,86 +195,48 @@ class Material:
         else:
             formula = int(self.catalog["formula"])
             if formula > 20:
-                return lambda x: np.sqrt(self.formulas[formula](x)).imag
+                return lambda x: np.sqrt(
+                    _ensure_positive_imag(self.formulas[formula](x))
+                ).imag
             else:
-                return lambda x: np.nan * np.ones_like(x)
+                logger.warning("Extinction index is missing and set to zero.")
+                return lambda x: np.zeros_like(x)
 
-    def n(self, x: Union[float, complex, np.ndarray]) -> Union[float, np.ndarray]:
-        """Return n for given wavelength
-
-        Args:
-            x: Wavelength.
-        """
-        self.bound_check(x.real, "n")
-        return self.__n(x)
-
-    def k(self, x: Union[float, complex, np.ndarray]) -> Union[float, np.ndarray]:
-        """Return k for given wavelength
+    def n(self, wl: ArrayLike) -> ArrayLike:
+        """Return refractive index at given wavelength.
 
         Args:
-            x: Wavelength.
+            wl (ArrayLike): Wavelength [μm].
         """
-        self.bound_check(x.real, "k")
-        return self.__k(x)
+        self._bound_check(wl, "n")
+        return self.__n(np.asarray(wl).real)
 
-    def eps(self, x: Union[float, complex, np.ndarray]) -> Union[complex, np.ndarray]:
-        """Return complex dielectric constant
+    def k(self, wl: ArrayLike) -> ArrayLike:
+        """Return extinction coefficient at given wavelength.
 
         Args:
-            x: Wavelength.
+            wl (ArrayLike): Wavelength [μm].
         """
-        self.bound_check(x.real, "nk")
+        self._bound_check(wl, "k")
+        return self.__k(np.asarray(wl).real)
+
+    def eps(self, wl: ArrayLike) -> ArrayLike:
+        """Return complex dielectric constant at given wavelength.
+
+        Args:
+            wl (Union[float, complex, Sequence, np.ndarray]): Wavelength [μm].
+        """
         formula = int(self.catalog["formula"])
         if formula > 20:
-            return self.formulas[formula](x)
-        else:
-            n = self.__n(x.real)
-            k = self.__k(x.real)
-            eps = np.zeros_like(x, dtype=complex)
-            eps.real = n ** 2 - k ** 2
-            eps.imag = 2 * n * k
+            self._bound_check(wl, "nk")
+            return self.formulas[formula](np.asarray(wl))
+        _wl = np.asarray(wl)
+        n: np.ndarray = self.n(_wl)
+        k: np.ndarray = self.k(_wl)
+        eps = n ** 2 - k ** 2 + 2j * n * k
         return eps
 
-    def plot(
-        self,
-        wls: Union[Sequence, np.ndarray],
-        comp: str = "n",
-        fmt: Union[str, None] = "-",
-        **kwargs,
-    ):
-        """Plot refractive index.
-
-        Args:
-            wls: Array of wavelength.
-            comp: 'n', 'k' or 'eps'
-            fmt: The plot format string.
-        """
-        import matplotlib.pyplot as plt
-
-        kwargs.setdefault("alpha", 0.5)
-        kwargs.setdefault("lw", 4)
-        kwargs.setdefault("ms", 8)
-        if comp == "n":
-            ns = self.n(wls)
-            plt.plot(wls, ns, fmt, label="{}".format(self.catalog["page"]), **kwargs)
-            plt.ylabel(r"$n$")
-        elif comp == "k":
-            ks = self.k(wls)
-            plt.plot(wls, ks, fmt, label="{}".format(self.catalog["page"]), **kwargs)
-            plt.ylabel(r"$k$")
-        elif comp == "eps":
-            eps = self.eps(wls)
-            (line,) = plt.plot(
-                wls, eps.real, fmt, label="{}".format(self.catalog["page"]), **kwargs
-            )
-            kwargs.setdefault("color", line.get_color())
-            plt.plot(wls, eps.imag, fmt, **kwargs)
-            plt.ylabel(r"$\varepsilon$")
-        plt.xlim(min(wls), max(wls))
-        plt.xlabel(r"$\lambda$ $[\mathrm{\mu m}]$")
-        plt.legend(loc="best")
-
-    def formula_1(self, x: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+    def _formula_1(self, x: ArrayLike) -> ArrayLike:
         cs = self.exp_data["c"].to_numpy()[:24]
         x_sqr = x ** 2
         n_sqr = 1 + cs[0]
@@ -218,7 +244,7 @@ class Material:
             n_sqr += c1 * x_sqr / (x_sqr - c2 ** 2)
         return np.sqrt(n_sqr * (n_sqr > 0))
 
-    def formula_2(self, x: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+    def _formula_2(self, x: ArrayLike) -> ArrayLike:
         cs = self.exp_data["c"].to_numpy()[:24]
         x_sqr = x ** 2
         n_sqr = 1 + cs[0]
@@ -226,14 +252,14 @@ class Material:
             n_sqr += c1 * x_sqr / (x_sqr - c2)
         return np.sqrt(n_sqr * (n_sqr > 0))
 
-    def formula_3(self, x: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+    def _formula_3(self, x: ArrayLike) -> ArrayLike:
         cs = self.exp_data["c"].to_numpy()[:24]
         n_sqr = cs[0]
         for c1, c2 in zip(islice(cs, 1, None, 2), islice(cs, 2, None, 2)):
             n_sqr += c1 * x ** c2
         return np.sqrt(n_sqr * (n_sqr > 0))
 
-    def formula_4(self, x: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+    def _formula_4(self, x: ArrayLike) -> ArrayLike:
         cs = self.exp_data["c"].to_numpy()[:24]
         n_sqr = (
             cs[0]
@@ -244,14 +270,14 @@ class Material:
             n_sqr += c1 * x ** c2
         return np.sqrt(n_sqr * (n_sqr > 0))
 
-    def formula_5(self, x: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+    def _formula_5(self, x: ArrayLike) -> ArrayLike:
         cs = self.exp_data["c"].to_numpy()[:24]
         n = cs[0]
         for c1, c2 in zip(islice(cs, 1, None, 2), islice(cs, 2, None, 2)):
             n += c1 * x ** c2
         return n
 
-    def formula_6(self, x: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+    def _formula_6(self, x: ArrayLike) -> ArrayLike:
         cs = self.exp_data["c"].to_numpy()[:24]
         x_m2 = 1 / x ** 2
         n = 1 + cs[0]
@@ -259,7 +285,7 @@ class Material:
             n += c1 / (c2 - x_m2)
         return n
 
-    def formula_7(self, x: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+    def _formula_7(self, x: ArrayLike) -> ArrayLike:
         cs = self.exp_data["c"].to_numpy()[:24]
         x_sqr = x ** 2
         n = (
@@ -272,14 +298,14 @@ class Material:
         )
         return n
 
-    def formula_8(self, x: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+    def _formula_8(self, x: ArrayLike) -> ArrayLike:
         cs = self.exp_data["c"].to_numpy()[:24]
         x_sqr = x ** 2
         a = cs[0] + cs[1] * x_sqr / (x_sqr - cs[2]) + cs[3] * x_sqr
         n_sqr = (1 + 2 * a) / (1 - a)
         return np.sqrt(n_sqr * (n_sqr > 0))
 
-    def formula_9(self, x: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+    def _formula_9(self, x: ArrayLike) -> ArrayLike:
         cs = self.exp_data["c"].to_numpy()[:24]
         n_sqr = (
             cs[0]
@@ -288,9 +314,7 @@ class Material:
         )
         return np.sqrt(n_sqr * (n_sqr > 0))
 
-    def formula_21(
-        self, x: Union[float, np.ndarray]
-    ) -> Tuple[Union[float, np.ndarray], Union[float, np.ndarray]]:
+    def _formula_21(self, x: ArrayLike) -> ArrayLike:
         cs = self.exp_data["c"].to_numpy()[:24]
         w = self.unit / x
         eb = cs[0]
@@ -304,9 +328,7 @@ class Material:
             eps -= fj * wp ** 2 / (w ** 2 - wj ** 2 + 1j * w * gj)
         return eps
 
-    def formula_22(
-        self, x: Union[float, np.ndarray]
-    ) -> Tuple[Union[float, np.ndarray], Union[float, np.ndarray]]:
+    def _formula_22(self, x: ArrayLike) -> ArrayLike:
         cs = self.exp_data["c"].to_numpy()[:24]
         w = self.unit / x
         eb = cs[0]
@@ -335,3 +357,121 @@ class Material:
                 )
             )
         return eps
+
+
+class Material(AbstractMaterial):
+    def __init__(self, params: dict) -> None:
+        """Initialize Material
+
+        Args:
+            params (Dict): parameter dict contains the following key and values
+                'book': book value in catalog of RiiDataFrame. (str)
+                'page': page value in catalog of RiiDataFrame. (str)
+                'RI': Constant refractive index. (complex)
+                'e': Constant permittivity. (complex)
+                'bound_check': True if bound check should be done. Defaults to True. (bool)
+                'im_factor': A magnification factor multiplied to the imaginary part of permittivity. Defaults to 1.0. (float)
+        """
+        self.rim: Optional[RiiMaterial] = None
+        self.__ce0: Optional[complex] = None
+        self.__ce: Optional[complex] = None
+        self.__cn: Optional[float] = None
+        self.__ck: Optional[float] = None
+        if "RI" in params:
+            self.__ce0 = params["RI"] ** 2
+            self.__label = f"RI: {params['RI']}"
+            if "e" in params:
+                if params["e"] != params["RI"] ** 2:
+                    raise ValueError("e must be RI ** 2.")
+        elif "e" in params:
+            self.__label = r"$\varepsilon$" + f": {params['e']}"
+            self.__ce0 = params["e"]
+        elif "book" not in params or "page" not in params:
+            raise ValueError("'RI', 'e' or ('book' and 'page') must be specified")
+        else:
+            rii = riip.dataframe.RiiDataFrame()
+            book = params["book"]
+            page = params["page"]
+            idx = rii.catalog.query(f"book == '{book}' and page == '{page}'").index[0]
+            self.__label = page
+            self.rim = RiiMaterial(
+                idx, rii.catalog, rii.raw_data, params.get("bound_check", None)
+            )
+        self.im_factor = params.get("im_factor", 1.0)
+
+    def _set_constants(self, im_factor: float) -> None:
+        if im_factor != 1.0:
+            self.label = self.__label + f" im_factor: {self.__im_factor}"
+        else:
+            self.label = self.__label
+        if self.__ce0:
+            imag = self.__ce0.imag * im_factor
+            self.__ce = self.__ce0.real + 1j * imag * (imag > 0)
+            _ri = 1j * np.sqrt(self.__ce)
+            self.__cn = _ri.real
+            self.__ck = _ri.imag
+
+    @property
+    def im_factor(self) -> float:
+        return self.__im_factor
+
+    @im_factor.setter
+    def im_factor(self, factor: float) -> None:
+        self.__w = None
+        self.__im_factor = factor
+        self._set_constants(factor)
+
+    def n(self, wl: float | complex) -> float:
+        """Return refractive index at given wavelength.
+
+        Args:
+            wl (float | complex): Wavelength [μm].
+        """
+        if self.__cn is None:
+            return self.rim.n(wl)
+        if isinstance(wl, (Sequence, np.ndarray)):
+            return self.__cn * np.ones_like(wl, dtype=float)
+        return self.__cn
+
+    def k(self, wl: float | complex) -> float:
+        """Return extinction coefficient at given wavelength.
+
+        Args:
+            wl (float | complex): Wavelength [μm].
+        """
+        if self.__ck is None:
+            return self.rim.k(wl)
+        if isinstance(wl, (Sequence, np.ndarray)):
+            return self.__ck * np.ones_like(wl, dtype=float)
+        return self.__ck
+
+    def eps(self, wl: float | complex) -> complex:
+        """Return complex dielectric constant at given wavelength.
+
+        Args:
+            wl (float | complex): Wavelength [μm].
+        """
+        if self.__ce is None:
+            e = self.rim.eps(wl)
+            imag = e.imag * self.im_factor
+            return e.real + 1j * imag
+        if isinstance(wl, (Sequence, np.ndarray)):
+            return self.__ce * np.ones_like(wl, dtype=float)
+        return self.__ce
+
+    def __call__(self, w: float | complex) -> complex:
+        """Return relative permittivity at given angular frequency.
+
+        Args:
+            w (float | complex): A float indicating the angular frequency.
+
+        Returns:
+            complex: Relative permittivity at w
+
+        Raises:
+            ValueError: The model is not defined.
+        """
+        if self.__w is None or w != self.__w:
+            self.__w = w
+            self.__e = self.eps(2 * np.pi / w)
+        return self.__e
