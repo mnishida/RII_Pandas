@@ -83,7 +83,7 @@ class RiiDataFrame:
     )
 
     _grid_data_columns: ClassVar[OrderedDict] = OrderedDict(
-        (("id", int), ("wl", np.float64), ("n", np.float64), ("k", np.float64))
+        (("id", np.int32), ("wl", np.float64), ("n", np.float64), ("k", np.float64))
     )
 
     def __init__(
