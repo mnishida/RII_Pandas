@@ -2,7 +2,6 @@ install:
 	python -m pip install --upgrade pip
 	pip install -r requirements.txt --upgrade
 	pip install -r requirements_dev.txt --upgrade
-	pip install git+https://github.com/PyTables/PyTables.git
 	pip install -e . --upgrade
 	pre-commit install
 

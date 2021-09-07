@@ -49,7 +49,7 @@ class RiiDataFrame:
 
     _catalog_columns: ClassVar[OrderedDict] = OrderedDict(
         (
-            ("id", int),
+            ("id", np.int32),
             ("shelf", str),
             ("shelf_name", str),
             ("division", str),
@@ -58,10 +58,10 @@ class RiiDataFrame:
             ("section", str),
             ("page", str),
             ("path", str),
-            ("formula", int),
+            ("formula", np.int32),
             ("tabulated", str),
-            ("num_n", int),
-            ("num_k", int),
+            ("num_n", np.int32),
+            ("num_k", np.int32),
             ("wl_n_min", np.float64),
             ("wl_n_max", np.float64),
             ("wl_k_min", np.float64),
@@ -73,7 +73,7 @@ class RiiDataFrame:
 
     _raw_data_columns: ClassVar[OrderedDict] = OrderedDict(
         (
-            ("id", int),
+            ("id", np.int32),
             ("c", np.float64),
             ("wl_n", np.float64),
             ("n", np.float64),

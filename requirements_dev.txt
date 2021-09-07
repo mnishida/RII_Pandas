@@ -10,5 +10,3 @@ tox
 tox-gh-actions
 pydocstyle
 mypy
-cython
-blosc
