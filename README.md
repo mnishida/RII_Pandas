@@ -36,13 +36,23 @@ and three csv files, 'catalog.csv', 'raw_data.csv' and 'grid_data.csv' are creat
 They are located in 'data' folder under the installation directory.
 This process may take a few minutes, but it will happen only the first time you start it after installation.
 ```
->>> ri.catalog.loc[:30, ['book', 'page']]
->>> ri.raw_data.loc[10, ['wl_n', 'n']]
->>> ri.raw_data.loc[10, ['wl_k', 'k']]
->>> grid_data = ri.load_grid_data()
->>> grid_data.loc[10]
+>>> ri.search("Al")                      # search material contains the string
+>>> ri.select(
+      "2.5 < n < 3 and 0.4 < wl < 0.8"
+    )                                    # select materials that fullfill the condition
+>>> print(ri.show([23, 118]))            # show catalog
+>>> print(ri.read(23))                   # read the data book
+>>> ri.references(23)                    # see references
+>>> ri.plot(23, "n")                     # plot wavelength dependence of refractive index
+
+>>> Al = ri.material(23)                 # create material
+>>> import numpy as np
+>>> wls = np.linspace(0.5, 1.6)          # wavelength from 0.5 μm to 1.6 μm
+>>> Al.n(wls)                            # refractive index
+>>> Al.k(wls)                            # extinction coefficient
+>>> Al.eps(wls)                          # complex permittivity
 ```
-For more information, see [tutorial](https://github.com/mnishida/RII_Pandas/blob/master/docs/00_tutorial.ipynb) and [examples notebook](https://github.com/mnishida/RII_Pandas/blob/master/docs/examples.ipynb).
+For more information, see [RII_Pandas User's Guide](https://rii-pandas.readthedocs.io/en/latest/).
 
 ## Update database
 If [refractiveindex.info database](http://refractiveindex.info/) is updated, you can pull it to the local database by
