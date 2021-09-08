@@ -8,5 +8,5 @@ __all__ = [
 ]
 
 __author__ = "Munehiro Nishida"
-__version__ = "0.3.1"
+__version__ = "0.4.0"
 __license__ = "MIT"
