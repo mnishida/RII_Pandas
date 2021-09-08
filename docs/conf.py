@@ -14,7 +14,7 @@ source_suffix = {
     ".md": "markdown",
 }
 
-html_static_path = ["_static"]
+html_static_path = ["static"]
 htmlhelp_basename = project
 
 extensions = [
@@ -31,7 +31,7 @@ extensions = [
 ]
 
 # Exclude build directory and Jupyter backup files:
-exclude_patterns = ["_build", "**.ipynb_checkpoints"]
+exclude_patterns = ["build", "**.ipynb_checkpoints"]
 
 # Default language for syntax highlighting in reST and Markdown cells:
 highlight_language = "none"
