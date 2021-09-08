@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=source
 set BUILDDIR=build
-set SPHINXPROJ=PyMWM
+set SPHINXPROJ=RII_Pandas
 
 if "%1" == "" goto help
 

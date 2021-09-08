@@ -1,6 +1,6 @@
 
 ```eval_rst
-.. automodule:: pymwm
+.. automodule:: riip
     :members:
 
 

@@ -1,6 +1,6 @@
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
-SPHINXPROJ    = PyMWM
+SPHINXPROJ    = RII_Pandas
 SOURCEDIR     = .
 BUILDDIR      = build
 
@@ -17,7 +17,7 @@ help:
 
 upload:
 	mkdir -p site
-	rsync -rv build/html/ site/pymwm
+	rsync -rv build/html/ site/riip
 
 open:
 	open build/html/index.html

@@ -1,7 +1,7 @@
 from recommonmark.transform import AutoStructify
 
 project = "RII_Pandas"
-version = "0.3.0"
+version = "0.3.1"
 copyright = "2021, Munehiro Nishida"
 author = "Munehiro Nishida"
 
