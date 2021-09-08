@@ -14,10 +14,12 @@ import numpy as np
 import pandas as pd
 import yaml
 from IPython.display import HTML
-from numpy.typing import ArrayLike
 from pandas import DataFrame
 
 import riip.material
+
+# from numpy.typing import ArrayLike
+
 
 logger = getLogger(__package__)
 _dirname = os.path.dirname(__file__)
@@ -199,27 +201,10 @@ class RiiDataFrame:
                                     reference_path, "data", os.path.normpath(p["data"])
                                 )
                                 logger.debug("{0} {1} {2}".format(idx, book, page))
-                                yield [
-                                    idx,
-                                    shelf,
-                                    shelf_name,
-                                    division,
-                                    book,
-                                    book_name,
-                                    section,
-                                    page,
-                                    path,
-                                    0,
-                                    "f",
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                ]
+                                row = [idx, shelf, shelf_name, division]
+                                row += [book, book_name, section, page, path]
+                                row += [0, "f", 0, 0, 0, 0, 0, 0, 0, 0]
+                                yield row
                                 idx += 1
         except Exception as e:
             message = (
@@ -234,7 +219,8 @@ class RiiDataFrame:
         """Create catalog DataFrame from library.yml."""
         logger.info("Creating catalog...")
         df = DataFrame(
-            self._extract_entry(self._db_path), columns=self._catalog_columns.keys()
+            list(self._extract_entry(self._db_path)),
+            columns=self._catalog_columns.keys(),
         )
         logger.info("Done.")
         return df.astype(self._catalog_columns)
@@ -245,7 +231,7 @@ class RiiDataFrame:
         start_id = catalog["id"].values[-1] + 1
         logger.debug(start_id)
         df = DataFrame(
-            self._extract_entry(self._my_db_path, start_id),
+            list(self._extract_entry(self._my_db_path, start_id)),
             columns=self._catalog_columns.keys(),
         )
         df = catalog.append(df, ignore_index=True)
@@ -266,7 +252,7 @@ class RiiDataFrame:
         path = catalog.loc[idx, "path"]
         with open(path, "r", encoding="utf-8") as f:
             data_list = yaml.safe_load(f)["DATA"]
-        wl_n_min = wl_k_min = 0
+        wl_n_min = wl_k_min = 0.0
         wl_n_max = wl_k_max = np.inf
         formula = 0
         tabulated = ""
@@ -382,11 +368,11 @@ class RiiDataFrame:
 
         # All the arrays must have the same length.
         num = max(num_n, num_k, num_c)
-        cs = np.array(cs + [0.0] * (num - num_c), dtype=np.float64)
-        wls_n = np.array(wls_n + [0.0] * (num - num_n), dtype=np.float64)
-        ns = np.array(ns + [0.0] * (num - num_n), dtype=np.float64)
-        wls_k = np.array(wls_k + [0.0] * (num - num_k), dtype=np.float64)
-        ks = np.array(ks + [0.0] * (num - num_k), dtype=np.float64)
+        _cs = np.array(cs + [0.0] * (num - num_c), dtype=np.float64)
+        _wls_n = np.array(wls_n + [0.0] * (num - num_n), dtype=np.float64)
+        _ns = np.array(ns + [0.0] * (num - num_n), dtype=np.float64)
+        _wls_k = np.array(wls_k + [0.0] * (num - num_k), dtype=np.float64)
+        _ks = np.array(ks + [0.0] * (num - num_k), dtype=np.float64)
 
         # Rewrite catalog with the obtained data
         catalog.loc[idx, "formula"] = formula
@@ -404,7 +390,7 @@ class RiiDataFrame:
             {
                 key: val
                 for key, val in zip(
-                    self._raw_data_columns.keys(), [idx, cs, wls_n, ns, wls_k, ks]
+                    self._raw_data_columns.keys(), [idx, _cs, _wls_n, _ns, _wls_k, _ks]
                 )
             }
         )
@@ -432,7 +418,7 @@ class RiiDataFrame:
         """Load grid data of (wl, n, k) for given id.
 
         Args:
-            id (Union[int, None], optional): ID number. If id is None, all the data is loaded.
+            id (Optional[int]): ID number. If id is None, all the data is loaded.
                 Defaults to None.
 
         Returns:
@@ -534,7 +520,7 @@ class RiiDataFrame:
         ]
         return df.loc[:, columns]
 
-    def select(self, cond: str) -> list[int]:
+    def select(self, cond: str) -> DataFrame:
         """Select pages that fullfil the condition.
 
         Args:
@@ -590,7 +576,7 @@ class RiiDataFrame:
         """
         return riip.material.RiiMaterial(id, self.catalog, self.raw_data, bound_check)
 
-    def read(self, id: int, as_dict: bool = False) -> str | dict:
+    def read(self, id: int, as_dict: bool = False):
         """Return contants of a page associated with the id.
 
         Args:

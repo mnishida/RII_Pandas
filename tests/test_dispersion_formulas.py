@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import annotations
+
 import unittest
 
 import numpy as np
+import numpy.testing as npt
 import pandas as pd
 
 from riip import RiiMaterial
@@ -83,17 +86,17 @@ class KnownValues(unittest.TestCase):
             data = pd.DataFrame({"id": 0, "c": cs}).set_index("id")
             material = RiiMaterial(0, catalog, data)
             n = material.n(wl)
-            self.assertAlmostEqual(n, result)
+            npt.assert_array_almost_equal(n, np.atleast_1d(result))
 
     def test_dispersion_formula_for_tabulated(self):
         """dispersion_formula should return function."""
         for i, (formula, wlnk, wl, result) in enumerate(
             self.known_values_for_tabulated
         ):
-            wlnk = np.array(wlnk)
-            wls = wlnk[:, 0]
-            ns = wlnk[:, 1]
-            ks = wlnk[:, 2]
+            _wlnk = np.asarray(wlnk)
+            wls = _wlnk[:, 0]
+            ns = _wlnk[:, 1]
+            ks = _wlnk[:, 2]
             catalog = pd.DataFrame(
                 {
                     "page": "",
@@ -112,8 +115,8 @@ class KnownValues(unittest.TestCase):
             ).set_index("id")
             material = RiiMaterial(0, catalog, data)
             print(material.n(wl), material.k(wl), result)
-            self.assertAlmostEqual(material.n(wl), result[0])
-            self.assertAlmostEqual(material.k(wl), result[1])
+            self.assertAlmostEqual(material.n(wl).item(), result[0])
+            self.assertAlmostEqual(material.k(wl).item(), result[1])
 
     def test_dispersion_formula_exception(self):
         catalog = pd.DataFrame(
