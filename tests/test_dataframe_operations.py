@@ -62,7 +62,7 @@ class KnownValues(unittest.TestCase):
         for idx in catalog.index:
             root, _ = os.path.splitext(catalog.loc[idx, "path"])
             df = pd.read_csv(root + ".csv", header=0)
-            material = self.ri.material(idx, bound_check=False)
+            material = self.ri.material({"id": idx, "bound_check": False})
             ns = material.n(df["wl"].values)
             print(catalog.loc[idx, "page"])
             assert_allclose(df["n"].values, ns, rtol=1e-5)

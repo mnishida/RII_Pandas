@@ -1,7 +1,7 @@
 # Byte-compiled / optimized / DLL files
 riip/data/refractiveindex.info-database/
 riip/data/catalog.csv
-riip/data/grid_data.csv
+riip/data/grid_data.h5
 riip/data/raw_data.csv
 __pycache__/
 *.py[cod]
@@ -10,6 +10,8 @@ __pycache__/
 # C extensions
 *.so
 *.fsp
+riip/utils/*.c
+riip/utils/*.cpp
 
 # Distribution / packaging
 .Python

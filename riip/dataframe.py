@@ -15,6 +15,7 @@ import pandas as pd
 import yaml
 from IPython.display import HTML
 from pandas import DataFrame
+from pandas.core.series import Series
 
 import riip.material
 
@@ -32,7 +33,7 @@ _grid_data_file = os.path.join(_dirname, "data", "grid_data.h5")
 _ri_database_repo = (
     "https://github.com/polyanskiy/" + "refractiveindex.info-database.git"
 )
-_ri_database_patch = os.path.join(_dirname, "..", "riid.patch")
+_ri_database_patch = os.path.join(_dirname, "data", "riid.patch")
 
 
 class RiiDataFrame:
@@ -114,6 +115,7 @@ class RiiDataFrame:
         _catalog, _raw_data = self._load_catalog_and_raw_data()
         self.catalog: DataFrame = _catalog
         self.raw_data: DataFrame = _raw_data
+        self.__book_page_order = self._create_book_page_order()
 
     def _load_catalog_and_raw_data(self) -> tuple[DataFrame, DataFrame]:
         # Create csv files
@@ -121,13 +123,13 @@ class RiiDataFrame:
             logger.warning("Catalog file not found.")
             if not os.path.isfile(os.path.join(self._db_path, "library.yml")):
                 logger.warning("Cloning Repository...")
-                # repo = git.Repo.clone_from(
-                #     _ri_database_repo, self._ri_database, branch="master"
-                # )
-                # repo.git.apply(_ri_database_patch)
-                git.Repo.clone_from(
+                repo = git.Repo.clone_from(
                     _ri_database_repo, self._ri_database, branch="master"
                 )
+                repo.git.apply(_ri_database_patch)
+                # git.Repo.clone_from(
+                #     _ri_database_repo, self._ri_database, branch="master"
+                # )
                 logger.warning("Done.")
             logger.warning("Creating catalog file...")
             catalog = self._add_my_db_to_catalog(self._create_catalog())
@@ -225,7 +227,7 @@ class RiiDataFrame:
         logger.info("Done.")
         return df.astype(self._catalog_columns)
 
-    def _add_my_db_to_catalog(self, catalog) -> DataFrame:
+    def _add_my_db_to_catalog(self, catalog: DataFrame) -> DataFrame:
         """Add data in my_database to catalog DataFrame."""
         logger.info("Adding my_db to catalog...")
         start_id = catalog["id"].values[-1] + 1
@@ -237,6 +239,19 @@ class RiiDataFrame:
         df = catalog.append(df, ignore_index=True)
         logger.info("Done.")
         return df
+
+    def _create_book_page_order(self) -> Series:
+        """Create [id, book+page string] array used to search id."""
+        cl = self.catalog
+        book_page = {
+            idx: f"{cl.loc[idx, 'book']}{cl.loc[idx, 'page']}" for idx in cl.index
+        }
+        return Series(book_page).sort_values()
+
+    def book_page_to_id(self, params: dict) -> int:
+        bp = params["book"] + params["page"]
+        ind = np.searchsorted(self.__book_page_order, bp)
+        return self.__book_page_order.index[ind]
 
     def _extract_raw_data(
         self, idx: int, catalog: DataFrame
@@ -433,8 +448,8 @@ class RiiDataFrame:
         else:
             logger.info("Grid data file found at {}".format(self._grid_data_file))
         if id is None:
-            return pd.read_hdf(self._grid_data_file)
-        return pd.read_hdf(self._grid_data_file, where=f"id == {id}")
+            return pd.read_hdf(self._grid_data_file).set_index("id")
+        return pd.read_hdf(self._grid_data_file, where=f"id == {id}").set_index("id")
 
     def _create_grid_data(self, catalog: DataFrame, raw_data: DataFrame) -> None:
         """Create a DataFrame for the wl-nk data."""
@@ -539,7 +554,7 @@ class RiiDataFrame:
             "wl_max",
         ]
         gd = self.load_grid_data()
-        id_list = gd.query(cond)["id"].unique()
+        id_list = gd.query(cond).index.unique()
         return self.catalog.loc[id_list, columns]
 
     def show(self, id: int | Sequence[int]) -> DataFrame:
@@ -562,19 +577,23 @@ class RiiDataFrame:
         ]
         return self.catalog.loc[id, columns]
 
-    def material(self, id: int, bound_check: bool = True) -> riip.material.RiiMaterial:
+    def material(self, params: dict) -> riip.material.Material:
         """Create instance of Material class associated with ID.
 
         Args:
-            id (int): ID number.
-            bound_check (bool, optional):
-                If True  ValueError will be raised when the wavelength exeeds the domain of experimental data.
-                Defaults to True.
+            params (dict): Parameter dict that can contain the following values:
+                'id': ID number (int)
+                'book': book value in catalog of RiiDataFrame. (str)
+                'page': page value in catalog of RiiDataFrame. (str)
+                'RI': Constant refractive index. (complex)
+                'e': Constant permittivity. (complex)
+                'bound_check': True if bound check should be done. Defaults to True. (bool)
+                'im_factor': A magnification factor multiplied to the imaginary part of permittivity. Defaults to 1.0. (float)
 
         Returns:
-            Material: A class that provides dielectric function of the material
+            Material: A class that provides refractive index, extinction coefficient and dielectric function of the material
         """
-        return riip.material.RiiMaterial(id, self.catalog, self.raw_data, bound_check)
+        return riip.material.Material(params, self)
 
     def read(self, id: int, as_dict: bool = False):
         """Return contants of a page associated with the id.

@@ -8,7 +8,6 @@ source:
   path: ../
 
 build:
-  noarch: python
   number: 0
   script: "{{ PYTHON }} -m pip install . -vv"
 
@@ -16,6 +15,9 @@ requirements:
   host:
     - pip
     - python
+    - numpy
+    - scipy
+    - cython
     - setuptools
   run:
     - gitpython
@@ -31,12 +33,13 @@ requirements:
 test:
   imports:
     - riip
+    - riip.utils
 
 about:
   home: "https://github.com/mnishida/RII_Pandas"
   license: MIT
   license_family: MIT
-  license_file: ../LICENSE
+  license_file: LICENSE
   summary: "Python 3 + Pandas wrapper for the refractiveindex.info database"
   doc_url: https://github.com/mnishida/RII_Pandas/tree/master/tutorial
 

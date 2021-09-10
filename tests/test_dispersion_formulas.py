@@ -8,7 +8,7 @@ import numpy as np
 import numpy.testing as npt
 import pandas as pd
 
-from riip import RiiMaterial
+from riip.material import RiiMaterial
 
 
 class KnownValues(unittest.TestCase):
@@ -130,7 +130,7 @@ class KnownValues(unittest.TestCase):
                 "wl_k_max": [2.0],
             }
         )
-        data = pd.DataFrame({"id": 0, "cs": list(range(17))}).set_index("id")
+        data = pd.DataFrame({"id": 0, "c": list(range(17))}).set_index("id")
         material = RiiMaterial(0, catalog, data)
         with self.assertRaises(ValueError):
             material.n(0.1)

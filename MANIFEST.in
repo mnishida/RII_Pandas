@@ -2,4 +2,6 @@ include requirements.txt
 include README.md
 include LICENSE
 graft docs
+include riip/data/riid.patch
 graft riip/data/my_database
+recursive-include riip/utils *.pyx

@@ -1,9 +1,8 @@
 from riip.dataframe import RiiDataFrame
-from riip.material import Material, RiiMaterial
+from riip.material import Material
 
 __all__ = [
     "Material",
-    "RiiMaterial",
     "RiiDataFrame",
 ]
 

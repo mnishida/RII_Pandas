@@ -1,10 +1,25 @@
-from setuptools import find_packages, setup
+import os
+import sys
+
+import numpy as np
+from Cython.Distutils import build_ext
+from setuptools import Extension, find_packages, setup
+
+lib = os.path.join(sys.prefix, "lib")
+include = os.path.join(sys.prefix, "include")
 
 
-def get_install_requires():
-    with open("requirements.txt", "r") as f:
-        return [line.strip() for line in f.readlines() if not line.startswith("-")]
-
+ext_modules = []
+e = Extension(
+    "riip.utils.formulas",
+    sources=[os.path.join("riip", "utils", "formulas.pyx")],
+    depends=[],
+    include_dirs=[np.get_include(), include, "."],
+    library_dirs=[lib],
+    language="c++",
+)
+e.cython_directives = {"language_level": "3"}
+ext_modules.append(e)
 
 setup(
     name="riip",
@@ -18,7 +33,8 @@ setup(
     long_description_content_type="text/markdown",
     packages=find_packages(),
     include_package_data=True,
-    install_requires=get_install_requires(),
+    setup_requires=["Cython", "numpy", "scipy"],
+    install_requires=[line.strip() for line in open("requirements.txt").readlines()],
     python_requires=">=3.7",
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -29,4 +45,6 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Topic :: Scientific/Engineering",
     ],
+    ext_modules=ext_modules,
+    cmdclass={"build_ext": build_ext},
 )

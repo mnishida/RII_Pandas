@@ -2,6 +2,7 @@ conda
 conda-build
 conda-verify
 anaconda-client
+Cython
 pytest
 pytest-regressions
 pytest-cov
