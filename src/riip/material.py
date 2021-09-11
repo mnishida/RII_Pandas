@@ -3,8 +3,6 @@ from __future__ import annotations
 import abc
 from collections.abc import Callable, Sequence
 from logging import getLogger
-from os import confstr_names
-from re import A
 from typing import Optional
 
 import numpy as np

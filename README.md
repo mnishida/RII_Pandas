@@ -45,7 +45,15 @@ This process may take a few minutes, but it will happen only the first time you 
 >>> ri.references(23)                    # see references
 >>> ri.plot(23, "n")                     # plot wavelength dependence of refractive index
 
->>> Al = ri.material(23)                 # create material
+>>> Al = ri.material(
+  {"book": "Al", "page": "Mathewson"})   # create material with book and page
+>>> Al = ri.material({"id": 23})         # create material with id number
+```
+
+It may not be safe to use "id" in your application importing this package.
+The id number may be changed when an update is done on your local database.
+
+```
 >>> import numpy as np
 >>> wls = np.linspace(0.5, 1.6)          # wavelength from 0.5 μm to 1.6 μm
 >>> Al.n(wls)                            # refractive index
