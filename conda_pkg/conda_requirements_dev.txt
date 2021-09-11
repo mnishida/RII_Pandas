@@ -12,6 +12,7 @@ black
 isort
 bumpversion
 tox
+tox-conda
 tox-gh-actions
 pydocstyle
 mypy
