@@ -25,8 +25,8 @@ jobs:
         run: make install
       - name: Lint with flake8
         run: flake8
-      - name: Test using tox
-        run: tox -e py
+      - name: Test using pytest
+        run: pytest
   build_conda:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -46,5 +46,5 @@ jobs:
         run: make conda
       - name: Lint with flake8
         run: flake8
-      - name: Test using tox
-        run: tox -e py
+      - name: Test using pytest
+        run: pytest
