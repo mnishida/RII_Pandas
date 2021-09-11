@@ -2,7 +2,7 @@ import numpy as np
 import numpy.testing as npt
 
 import riip
-from riip.formulas import formulas_cython, formulas_numpy
+from riip.formulas import formulas_cython_dict, formulas_numpy_dict
 
 
 def test_cython_formulas():
@@ -25,6 +25,6 @@ def test_cython_formulas():
         m = rid.material({"book": b, "page": p})
         wls = np.linspace(m.wl_max, m.wl_min)
         ws = 2 * np.pi / wls
-        f_c = [formulas_cython[f](w, m.cs) for w in ws]
-        f_n = [formulas_numpy[f](wl, m.cs) for wl in wls]
+        f_c = [formulas_cython_dict[f](w, m.cs) for w in ws]
+        f_n = [formulas_numpy_dict[f](wl, m.cs) for wl in wls]
         npt.assert_allclose(f_c, f_n)

@@ -33,7 +33,6 @@ requirements:
 test:
   imports:
     - riip
-    - riip.utils
 
 about:
   home: "https://github.com/mnishida/RII_Pandas"

@@ -1,0 +1,175 @@
+- SHELF: DL-f21
+  name: "DL - formula 21: Drude Lorentz model"
+  content:
+    - DIVIDER: "Ag - Silver"
+    - BOOK: Ag
+      name: "Ag (Silver)"
+      content:
+        - PAGE: Rakic-DLF
+          name: "Rakić 1998: Drude-Lorentz model"
+          data: "DL/Ag/Rakic.yml"
+        - PAGE: Vial-DLF
+          name: "Vial 2007: Drude-Lorentz model"
+          data: "DL/Ag/Vial.yml"
+        - PAGE: Lee-DLF
+          name: "Lee 2005: Drude-Lorentz model"
+          data: "DL/Ag/Lee.yml"
+    - DIVIDER: "Al - Aluminium"
+    - BOOK: Al
+      name: "Al (Aluminium)"
+      content:
+        - PAGE: Rakic-DLF
+          name: "Rakić 1998: Drude-Lorentz model"
+          data: "DL/Al/Rakic.yml"
+    - DIVIDER: "Au - Gold"
+    - BOOK: Au
+      name: "Au (Gold)"
+      content:
+        - PAGE: Rakic-DLF
+          name: "Rakić 1998: Drude-Lorentz model"
+          data: "DL/Au/Rakic.yml"
+        - PAGE: Stewart-DLF
+          name: "Stewart 2006: Drude-Lorentz model"
+          data: "DL/Au/Stewart.yml"
+        - PAGE: Vial-DLF
+          name: "Vial 2005: Drude-Lorentz model"
+          data: "DL/Au/Vial_dl.yml"
+        - PAGE: Vial-DF
+          name: "Vial 2005: Drude model"
+          data: "DL/Au/Vial_d.yml"
+    - DIVIDER: "Cu - Copper"
+    - BOOK: Cu
+      name: "Cu (Copper)"
+      content:
+        - PAGE: Rakic-DLF
+          name: "Rakić 1998: Drude-Lorentz model"
+          data: "DL/Cu/Rakic.yml"
+    - DIVIDER: "Be - Beryllium"
+    - BOOK: Be
+      name: "Be (Beryllium)"
+      content:
+        - PAGE: Rakic-DLF
+          name: "Rakić 1998: Drude-Lorentz model"
+          data: "DL/Be/Rakic.yml"
+    - DIVIDER: "Cr - Chromium"
+    - BOOK: Cr
+      name: "Cr (Chromium)"
+      content:
+        - PAGE: Rakic-DLF
+          name: "Rakić 1998: Drude-Lorentz model"
+          data: "DL/Cr/Rakic.yml"
+    - DIVIDER: "Ni - Nickel"
+    - BOOK: Ni
+      name: "Ni (Nickel)"
+      content:
+        - PAGE: Rakic-DLF
+          name: "Rakić 1998: Drude-Lorentz model"
+          data: "DL/Ni/Rakic.yml"
+    - DIVIDER: "Pd - Palladium"
+    - BOOK: Pd
+      name: "Pd (Palladium)"
+      content:
+        - PAGE: Rakic-DLF
+          name: "Rakić 1998: Drude-Lorentz model"
+          data: "DL/Pd/Rakic.yml"
+    - DIVIDER: "Pt - Platinum"
+    - BOOK: Pt
+      name: "Pt (Platinum)"
+      content:
+        - PAGE: Rakic-DLF
+          name: "Rakić 1998: Drude-Lorentz model"
+          data: "DL/Pt/Rakic.yml"
+    - DIVIDER: "Ti - Titanium"
+    - BOOK: Ti
+      name: "Ti (Titanium)"
+      content:
+        - PAGE: Rakic-DLF
+          name: "Rakić 1998: Drude-Lorentz model"
+          data: "DL/Ti/Rakic.yml"
+    - DIVIDER: "W - Tungsten"
+    - BOOK: W
+      name: "W (Tungsten)"
+      content:
+        - PAGE: Rakic-DLF
+          name: "Rakić 1998: Drude-Lorentz model"
+          data: "DL/W/Rakic.yml"
+- SHELF: BB-f22
+  name: "BB - formula 22: Brendel-Bormann model"
+  content:
+    - DIVIDER: "Ag - Silver"
+    - BOOK: Ag
+      name: "Ag (Silver)"
+      content:
+        - PAGE: Rakic-BBF
+          name: "Rakić 1998: Brendel-Bormann model"
+          data: "BB/Ag/Rakic.yml"
+    - DIVIDER: "Al - Aluminium"
+    - BOOK: Al
+      name: "Al (Aluminium)"
+      content:
+        - PAGE: Rakic-BBF
+          name: "Rakić 1998: Brendel-Bormann model"
+          data: "BB/Al/Rakic.yml"
+    - DIVIDER: "Au - Gold"
+    - BOOK: Au
+      name: "Au (Gold)"
+      content:
+        - PAGE: Rakic-BBF
+          name: "Rakić 1998: Brendel-Bormann model"
+          data: "BB/Au/Rakic.yml"
+    - DIVIDER: "Cu - Copper"
+    - BOOK: Cu
+      name: "Cu (Copper)"
+      content:
+        - PAGE: Rakic-BBF
+          name: "Rakić 1998: Brendel-Bormann model"
+          data: "BB/Cu/Rakic.yml"
+    - DIVIDER: "Be - Beryllium"
+    - BOOK: Be
+      name: "Be (Beryllium)"
+      content:
+        - PAGE: Rakic-BBF
+          name: "Rakić 1998: Brendel-Bormann model"
+          data: "BB/Be/Rakic.yml"
+    - DIVIDER: "Cr - Chromium"
+    - BOOK: Cr
+      name: "Cr (Chromium)"
+      content:
+        - PAGE: Rakic-BBF
+          name: "Rakić 1998: Brendel-Bormann model"
+          data: "BB/Cr/Rakic.yml"
+    - DIVIDER: "Ni - Nickel"
+    - BOOK: Ni
+      name: "Ni (Nickel)"
+      content:
+        - PAGE: Rakic-BBF
+          name: "Rakić 1998: Brendel-Bormann model"
+          data: "BB/Ni/Rakic.yml"
+    - DIVIDER: "Pd - Palladium"
+    - BOOK: Pd
+      name: "Pd (Palladium)"
+      content:
+        - PAGE: Rakic-BBF
+          name: "Rakić 1998: Brendel-Bormann model"
+          data: "BB/Pd/Rakic.yml"
+    - DIVIDER: "Pt - Platinum"
+    - BOOK: Pt
+      name: "Pt (Platinum)"
+      content:
+        - PAGE: Rakic-BBF
+          name: "Rakić 1998: Brendel-Bormann model"
+          data: "BB/Pt/Rakic.yml"
+    - DIVIDER: "Ti - Titanium"
+    - BOOK: Ti
+      name: "Ti (Titanium)"
+      content:
+        - PAGE: Rakic-BBF
+          name: "Rakić 1998: Brendel-Bormann model"
+          data: "BB/Ti/Rakic.yml"
+    - DIVIDER: "W - Tungsten"
+    - BOOK: W
+      name: "W (Tungsten)"
+      content:
+        - PAGE: Rakic-BBF
+          name: "Rakić 1998: Brendel-Bormann model"
+          data: "BB/W/Rakic.yml"

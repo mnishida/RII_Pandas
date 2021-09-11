@@ -3,6 +3,7 @@ scipy
 pandas
 pytables
 pyyaml
+git
 gitpython
 matplotlib
 ipython
