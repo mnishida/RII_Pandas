@@ -16,3 +16,4 @@ tox-conda
 tox-gh-actions
 pydocstyle
 mypy
+pandas-stubs

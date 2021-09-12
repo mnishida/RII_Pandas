@@ -29,7 +29,7 @@ setup(
     packages=find_packages("src"),
     package_dir={"": "src"},
     include_package_data=True,
-    package_data={"riip": ["data/riid.patch", "data/my_database"]},
+    package_data={"riip": ["py.typed", "data/riid.patch", "data/my_database"]},
     setup_requires=["Cython", "numpy", "scipy"],
     install_requires=[line.strip() for line in open("requirements.txt").readlines()],
     python_requires=">=3.7",
