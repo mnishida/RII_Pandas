@@ -638,7 +638,7 @@ class RiiDataFrame:
             fmt1 (Union[str, None]): Plot format for n and Re(eps).
             fmt2 (Union[str, None]): Plot format for k and Im(eps).
         """
-        label = self.catalog.loc[id, "page"]
+        label = f"{self.catalog.loc[id, 'book']} {self.catalog.loc[id, 'page']}"
         df = self.load_grid_data(id)
         wls = df["wl"]
         ns = df["n"]

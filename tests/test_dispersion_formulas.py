@@ -73,6 +73,7 @@ class KnownValues(unittest.TestCase):
         for i, (formula, cs, wl, result) in enumerate(self.known_values):
             catalog = pd.DataFrame(
                 {
+                    "book": "",
                     "page": "",
                     "formula": [formula],
                     "tabulated": [""],
@@ -99,6 +100,7 @@ class KnownValues(unittest.TestCase):
             ks = _wlnk[:, 2]
             catalog = pd.DataFrame(
                 {
+                    "book": "",
                     "page": "",
                     "formula": [formula],
                     "tabulated": ["nk"],
@@ -121,6 +123,7 @@ class KnownValues(unittest.TestCase):
     def test_dispersion_formula_exception(self):
         catalog = pd.DataFrame(
             {
+                "book": "",
                 "page": "",
                 "formula": [1],
                 "tabulated": [""],
