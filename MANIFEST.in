@@ -3,5 +3,5 @@ include README.md
 include LICENSE
 graft docs
 include src/riip/data/riid.patch
-recursive-include src/riip/data/my_database
+graft src/riip/data/my_database
 recursive-include src/utils *.pyx
