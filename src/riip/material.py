@@ -113,7 +113,7 @@ class RiiMaterial(AbstractMaterial):
         if self.f > 0:
             self.cs = self.raw_data["c"].to_numpy()[:24]
             self.formula = lambda x: formulas_numpy_dict[self.f](x, self.cs)
-        self.label = self.catalog["page"]
+        self.label = f"{self.catalog['book']} {self.catalog['page']}"
         self.bound_check_flag = bound_check
         self.__n = self._func_n()
         self.__k = self._func_k()
@@ -259,7 +259,7 @@ class ConstMaterial(AbstractMaterial):
                     raise ValueError("e must be RI ** 2.")
         elif "e" in params:
             e = params["e"]
-            self.label = r"$\varepsilon$" + f": {e}"
+            self.label = f"eps: {e}"
             self.ce = e + 0.0j
             ri = np.sqrt(_ensure_positive_imag(e))
             self.cn = ri.real
@@ -410,7 +410,7 @@ class Material(AbstractMaterial):
             return self.__ce
         if self.__w is None or w != self.__w:
             wl = 2 * np.pi / w.real
-            if wl < self.wl_min or wl > self.wl_max:
+            if self.bound_check_flag and (wl < self.wl_min or wl > self.wl_max):
                 raise ValueError(
                     f"Wavelength {wl} is out of bounds [{self.wl_min} {self.wl_max}][um]"
                 )
