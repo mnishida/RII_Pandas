@@ -2,11 +2,14 @@
 
 [![PyPI version][pypi-image]][pypi-link]
 [![Anaconda Version][anaconda-v-image]][anaconda-v-link]
+[![Lint and Test][github-workflow-image]][github-workflow-link]
 
 [pypi-image]: https://badge.fury.io/py/riip.svg
 [pypi-link]: https://pypi.org/project/riip
 [anaconda-v-image]: https://anaconda.org/mnishida/riip/badges/version.svg
 [anaconda-v-link]: https://anaconda.org/mnishida/riip
+[github-workflow-image]: https://github.com/mnishida/RII_Pandas/actions/workflows/pythonapp.yml/badge.svg
+[github-workflow-link]: https://github.com/mnishida/RII_Pandas/actions/workflows/pythonapp.yml
 
 Python 3 + [Pandas](https://pandas.pydata.org/) wrapper for the [refractiveindex.info database](http://refractiveindex.info/) developed by [Mikhail Polyanskiy](https://github.com/polyanskiy).
 
