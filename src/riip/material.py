@@ -243,8 +243,8 @@ class ConstMaterial(AbstractMaterial):
 
         Args:
             params (Dict): parameter dict contains the following key and values
-                'RI': Constant refractive index. (complex)
-                'e': Constant permittivity. (complex)
+                'RI' (float | complex): Constant refractive index.
+                'e' (float | complex): Constant permittivity.
         """
         if "RI" in params:
             RI: float | complex = params["RI"]
@@ -308,7 +308,7 @@ class PEC(ConstMaterial):
             rid (RiiDataFrame): Rii_Pandas DataFrame.
         """
         self.label = "PEC"
-        self.ce = -1.0e8 + 0.0j
+        self.ce = -1.0e8
         self.cn = 0.0
         self.ck = 1.0e4
 
@@ -417,12 +417,12 @@ class Material(AbstractMaterial):
     def im_factor(self, factor: float) -> None:
         self.__w = None
         self.__im_factor = factor
+        self.__ce = self.__ce0
         if factor != 1.0:
             self.label = self.material.label + f" im_factor: {factor}"
-            if self.__ce0 is not None:
-                if factor != 1.0 and self.__ce0.imag != 0:
-                    imag = self.__ce0.imag * factor
-                    self.__ce = self.__ce0.real + 1j * imag
+            if self.__ce0 is not None and self.__ce0.imag != 0.0:
+                imag = self.__ce0.imag * factor
+                self.__ce = self.__ce0.real + 1j * imag
         else:
             self.label = self.material.label
 
@@ -455,5 +455,7 @@ class Material(AbstractMaterial):
                     self.__e = self.__e.real + 1j * imag
             else:
                 self.__e = self.eps(wl).item()
+            if self.__e.imag == 0.0:
+                self.__e = self.__e.real
             self.__w = w
         return self.__e
