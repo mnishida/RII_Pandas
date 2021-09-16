@@ -245,7 +245,6 @@ class ConstMaterial(AbstractMaterial):
             params (Dict): parameter dict contains the following key and values
                 'RI': Constant refractive index. (complex)
                 'e': Constant permittivity. (complex)
-            rid (RiiDataFrame): Rii_Pandas DataFrame.
         """
         if "RI" in params:
             RI = params["RI"]
@@ -292,6 +291,28 @@ class ConstMaterial(AbstractMaterial):
         return self.ce * np.ones_like(wl)
 
 
+class PEC(ConstMaterial):
+    """Perfect Electric Conductor class as a material that has negative large pemittivity
+
+    Attributes:
+        ce (-1e8+0j: complex): The value of constant permittivity
+        label ('PEC': str): A label used in plot
+    """
+
+    def __init__(
+        self,
+    ) -> None:
+        """Initialize Material
+
+        Args:
+            rid (RiiDataFrame): Rii_Pandas DataFrame.
+        """
+        self.label = "PEC"
+        self.ce = -1.0e8 + 0.0j
+        self.cn = 0.0
+        self.ck = 1.0e4
+
+
 class Material(AbstractMaterial):
     """A Class that constructs RiiMaterial or ConstMaterial instance depending on the given parameters.
 
@@ -309,21 +330,29 @@ class Material(AbstractMaterial):
 
         Args:
             params (dict): parameter dict contains the following key and values
-                'id': ID number (int)
-                'book': book value in catalog of RiiDataFrame. (str)
-                'page': page value in catalog of RiiDataFrame. (str)
-                'RI': Constant refractive index. (complex)
-                'e': Constant permittivity. (complex)
-                'bound_check': True if bound check should be done. Defaults to True. (bool)
-                'im_factor': A magnification factor multiplied to the imaginary part of permittivity. Defaults to 1.0. (float)
+                'PEC' (bool): If the target material is PEC. Deafaults to False.
+                'id' (int): ID number.
+                'book' (str): book value in catalog of RiiDataFrame.
+                'page' (str): page value in catalog of RiiDataFrame.
+                'RI' (complex): Constant refractive index.
+                'e' (complex): Constant permittivity.
+                'bound_check' (bool): True if bound check should be done. Defaults to True.
+                'im_factor' (float): A magnification factor multiplied to the imaginary part of permittivity. Defaults to 1.0.
             rid (RiiDataFrame): Rii_Pandas DataFrame. Defaults to None.
         """
-        if "RI" in params or "e" in params:
-            self.material: ConstMaterial | RiiMaterial = ConstMaterial(params)
+        self.params = params
+        if params.get("PEC", False):
+            self.material: PEC | ConstMaterial | RiiMaterial = PEC()
             self.__ce0: Optional[complex] = self.material.ce
             self.f = 0
+        elif "RI" in params or "e" in params:
+            self.material = ConstMaterial(params)
+            self.__ce0 = self.material.ce
+            self.f = 0
         elif "id" not in params and ("book" not in params or "page" not in params):
-            raise ValueError("'RI', 'e', 'id', or 'book'-'page' pair must be specified")
+            raise ValueError(
+                "'PEC', 'RI', 'e', 'id', or 'book'-'page' pair must be specified"
+            )
         else:
             if rid is None:
                 rid = riip.dataframe.RiiDataFrame()

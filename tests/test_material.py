@@ -21,6 +21,7 @@ def test_material(num_regression):
         "Al-lowloss": Material({"book": "Al", "page": "Rakic-DLF", "im_factor": 0.1})(
             w
         ),
+        "PEC": Material({"PEC": True})(w),
     }
     print(data)
     num_regression.check(data)
