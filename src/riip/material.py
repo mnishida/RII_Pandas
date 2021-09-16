@@ -234,7 +234,7 @@ class ConstMaterial(AbstractMaterial):
     """A class defines a material with constant permittivity
 
     Attributes:
-        ce (complex): The value of constant permittivity
+        ce (float | complex): The value of constant permittivity
         label (str): A label used in plot
     """
 
@@ -247,8 +247,8 @@ class ConstMaterial(AbstractMaterial):
                 'e': Constant permittivity. (complex)
         """
         if "RI" in params:
-            RI = params["RI"]
-            self.ce = RI ** 2 + 0.0j
+            RI: float | complex = params["RI"]
+            self.ce: float | complex = RI ** 2
             self.cn = RI.real
             self.ck = RI.imag
             self.label = f"RI: {RI}"
@@ -259,7 +259,7 @@ class ConstMaterial(AbstractMaterial):
         elif "e" in params:
             e = params["e"]
             self.label = f"eps: {e}"
-            self.ce = e + 0.0j
+            self.ce = e
             ri = np.sqrt(_ensure_positive_imag(e))
             self.cn = ri.real
             self.ck = ri.imag
@@ -343,7 +343,7 @@ class Material(AbstractMaterial):
         self.params = params
         if params.get("PEC", False):
             self.material: PEC | ConstMaterial | RiiMaterial = PEC()
-            self.__ce0: Optional[complex] = self.material.ce
+            self.__ce0: Optional[float | complex] = self.material.ce
             self.f = 0
         elif "RI" in params or "e" in params:
             self.material = ConstMaterial(params)
@@ -378,7 +378,7 @@ class Material(AbstractMaterial):
             if self.f != 0:
                 self.cs = self.material.cs
         self.__w: Optional[float | complex] = None
-        self.__ce: Optional[complex] = self.__ce0
+        self.__ce: Optional[float | complex] = self.__ce0
         self.im_factor = params.get("im_factor", 1.0)
 
     def eps(self, wl: ArrayLike) -> np.ndarray:
@@ -420,20 +420,20 @@ class Material(AbstractMaterial):
         if factor != 1.0:
             self.label = self.material.label + f" im_factor: {factor}"
             if self.__ce0 is not None:
-                if factor != 1.0:
-                    imag = self.__ce0 * factor
+                if factor != 1.0 and self.__ce0.imag != 0:
+                    imag = self.__ce0.imag * factor
                     self.__ce = self.__ce0.real + 1j * imag
         else:
             self.label = self.material.label
 
-    def __call__(self, w: float | complex) -> complex:
+    def __call__(self, w: float | complex) -> float | complex:
         """Return relative permittivity at given angular frequency.
 
         Args:
             w (float | complex): A float indicating the angular frequency (vacuum wavenumber ω/c [rad/μm]).
 
         Returns:
-            complex: Relative permittivity at w
+            float | complex: Relative permittivity at w
         """
         if self.__ce is not None:
             return self.__ce
