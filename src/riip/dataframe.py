@@ -249,6 +249,8 @@ class RiiDataFrame:
     def book_page_to_id(self, params: dict) -> int:
         bp = params["book"] + params["page"]
         ind = np.searchsorted(self.__book_page_order, bp)
+        if self.__book_page_order.iloc[ind] != bp:
+            raise ValueError(bp + " could not be found")
         return self.__book_page_order.index[ind]
 
     def _extract_raw_data(
