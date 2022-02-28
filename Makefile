@@ -8,8 +8,9 @@ install:
 conda:
 	conda install -c mnishida -c defaults -c conda-forge --file conda_pkg/conda_requirements_dev.txt
 	conda install -c mnishida --file conda_pkg/conda_requirements.txt
-	conda build --numpy 1.20 conda_pkg
+	conda build --numpy 1.21 conda_pkg
 	conda install --use-local --force-reinstall riip
+	pip install pre-commit
 	pre-commit install
 
 test:
