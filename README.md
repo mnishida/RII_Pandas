@@ -92,4 +92,4 @@ $ conda uninstall riip
 - gitpython
 
 ## Version
-0.6.5
+0.6.6
