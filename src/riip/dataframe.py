@@ -234,7 +234,7 @@ class RiiDataFrame:
             list(self._extract_entry(self._my_db_path, start_id)),
             columns=self._catalog_columns.keys(),
         )
-        df = catalog.append(df, ignore_index=True)
+        df = pd.concat([catalog, df], ignore_index=True)
         logger.info("Done.")
         return df
 
@@ -422,7 +422,7 @@ class RiiDataFrame:
         for idx in catalog.index:
             logger.debug("{}: {}".format(idx, catalog.loc[idx, "path"]))
             df_idx, catalog = self._extract_raw_data(idx, catalog)
-            df = df.append(df_idx, ignore_index=True)
+            df = pd.concat([df, df_idx], ignore_index=True)
         df = df.astype(self._raw_data_columns)
         catalog.to_csv(self._catalog_file, index=False, encoding="utf-8")
         df.to_csv(self._raw_data_file, index=False, encoding="utf-8")
@@ -465,7 +465,7 @@ class RiiDataFrame:
             ns = material.n(wls)
             ks = material.k(wls)
             data = {key: val for key, val in zip(columns, [idx, wls, ns, ks])}
-            df = df.append(DataFrame(data).loc[:, columns], ignore_index=True)
+            df = pd.concat([df, DataFrame(data).loc[:, columns]], ignore_index=True)
         logger.setLevel(WARNING)
         df = df.astype(self._grid_data_columns)
         df.to_hdf(
