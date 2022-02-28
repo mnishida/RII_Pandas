@@ -47,26 +47,26 @@ jobs:
         run: |
           conda build --output-folder conda_pkg conda_pkg
           anaconda upload conda_pkg/linux-64/riip-*.tar.bz2
-  deploy_conda_windows:
-    runs-on: windows-latest
-    strategy:
-      max-parallel: 6
-      matrix:
-        python-version: [3.8, 3.9]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python with Conda ${{ matrix.python-version }}
-        uses: s-weigand/setup-conda@v1
-        with:
-          update-conda: true
-          python-version: ${{ matrix.python-version }}
-          activate-conda: true
-      - name: Install dependencies
-        run: |
-          conda install conda-build conda-verify anaconda-client
-      - name: Build and publish
-        env:
-          ANACONDA_API_TOKEN: ${{ secrets.CONDA_TOKEN }}
-        run: |
-          conda build --output-folder conda_pkg conda_pkg
-          anaconda upload conda_pkg/win-64/riip-*.tar.bz2
+  # deploy_conda_windows:
+  #   runs-on: windows-latest
+  #   strategy:
+  #     max-parallel: 6
+  #     matrix:
+  #       python-version: [3.8, 3.9]
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Set up Python with Conda ${{ matrix.python-version }}
+  #       uses: s-weigand/setup-conda@v1
+  #       with:
+  #         update-conda: true
+  #         python-version: ${{ matrix.python-version }}
+  #         activate-conda: true
+  #     - name: Install dependencies
+  #       run: |
+  #         conda install conda-build conda-verify anaconda-client
+  #     - name: Build and publish
+  #       env:
+  #         ANACONDA_API_TOKEN: ${{ secrets.CONDA_TOKEN }}
+  #       run: |
+  #         conda build --output-folder conda_pkg conda_pkg
+  #         anaconda upload conda_pkg/win-64/riip-*.tar.bz2
