@@ -4,12 +4,9 @@ conda-verify
 anaconda-client
 Cython
 pytest
-pytest-regressions
 pytest-cov
 flake8
 black
 isort
-bump2version
 pydocstyle
 mypy
-pandas-stubs
