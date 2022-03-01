@@ -17,7 +17,7 @@ ext_modules.append(e)
 
 setup(
     name="riip",
-    version="0.6.8",
+    version="0.6.9",
     url="https://github.com/mnishida/RII_Pandas",
     license="MIT",
     author="Munehiro Nishida",
