@@ -9,7 +9,7 @@ source:
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install --use-feature=in-tree-build . -vv"
 
 requirements:
   host:
