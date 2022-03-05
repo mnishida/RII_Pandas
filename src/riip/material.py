@@ -161,7 +161,7 @@ class RiiMaterial(AbstractMaterial):
                     self.raw_data["n"].to_numpy()[:num_n],
                     kind="cubic",
                     bounds_error=False,
-                    fill_value="extrapolate",
+                    fill_value=(self.raw_data["n"][0], self.raw_data["n"][-1]),
                     assume_sorted=True,
                 )
         else:
@@ -183,7 +183,7 @@ class RiiMaterial(AbstractMaterial):
                     self.raw_data["k"].to_numpy()[:num_k],
                     kind="cubic",
                     bounds_error=False,
-                    fill_value="extrapolate",
+                    fill_value=(self.raw_data["k"][0], self.raw_data["k"][-1]),
                     assume_sorted=True,
                 )
         else:
