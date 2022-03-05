@@ -156,12 +156,18 @@ class RiiMaterial(AbstractMaterial):
                 val = np.mean(self.raw_data["n"])
                 return lambda x: val * np.ones_like(x)
             else:
+                wls = self.raw_data["wl_n"].to_numpy()[:num_n]
+                ns = self.raw_data["n"].to_numpy()[:num_n]
+                if wls[0] < wls[-1]:
+                    fill_value = (ns[0], ns[-1])
+                else:
+                    fill_value = (ns[-1], ns[0])
                 return interp1d(
-                    self.raw_data["wl_n"].to_numpy()[:num_n],
-                    self.raw_data["n"].to_numpy()[:num_n],
+                    wls,
+                    ns,
                     kind="cubic",
                     bounds_error=False,
-                    fill_value=(self.raw_data["n"][0], self.raw_data["n"][-1]),
+                    fill_value=fill_value,
                     assume_sorted=True,
                 )
         else:
@@ -178,12 +184,18 @@ class RiiMaterial(AbstractMaterial):
                 val = np.mean(self.raw_data["k"])
                 return lambda x: val * np.ones_like(x)
             else:
+                wls = self.raw_data["wl_k"].to_numpy()[:num_k]
+                ks = self.raw_data["k"].to_numpy()[:num_k]
+                if wls[0] < wls[-1]:
+                    fill_value = (ks[0], ks[-1])
+                else:
+                    fill_value = (ks[-1], ks[0])
                 return interp1d(
-                    self.raw_data["wl_k"].to_numpy()[:num_k],
-                    self.raw_data["k"].to_numpy()[:num_k],
+                    wls,
+                    ks,
                     kind="cubic",
                     bounds_error=False,
-                    fill_value=(self.raw_data["k"][0], self.raw_data["k"][-1]),
+                    fill_value=fill_value,
                     assume_sorted=True,
                 )
         else:
