@@ -121,13 +121,13 @@ class RiiDataFrame:
             logger.warning("Catalog file not found.")
             if not os.path.isfile(os.path.join(self._db_path, "library.yml")):
                 logger.warning("Cloning Repository...")
-                # repo = git.Repo.clone_from(
-                #     _ri_database_repo, self._ri_database, branch="master"
-                # )
-                # repo.git.apply(_ri_database_patch)
-                git.Repo.clone_from(
+                repo = git.Repo.clone_from(
                     _ri_database_repo, self._ri_database, branch="master"
                 )
+                repo.git.apply(_ri_database_patch)
+                # git.Repo.clone_from(
+                #     _ri_database_repo, self._ri_database, branch="master"
+                # )
                 logger.warning("Done.")
             logger.warning("Creating catalog file...")
             catalog = self._add_my_db_to_catalog(self._create_catalog())
@@ -654,7 +654,7 @@ class RiiDataFrame:
             plt.plot(wls, ks, fmt2, label=label, **kwargs)
             plt.ylabel(r"$k$")
         elif comp == "eps":
-            eps_r = ns ** 2 - ks ** 2
+            eps_r = ns**2 - ks**2
             eps_i = 2 * ns * ks
             (line,) = plt.plot(wls, eps_r, fmt1, label=label, **kwargs)
             color = line.get_color()
