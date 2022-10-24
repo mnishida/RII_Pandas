@@ -6,7 +6,7 @@ index dd42b2f9..c2541568 100644
  COMMENTS: "Tellurene. Extraordinary ray (e)."
  DATA:
    - type: tabulated nk
--    data:
+-    data: 
 +    data: |
          0.400 0.85284 2.54422
          0.405 0.87113 2.57785
@@ -19,7 +19,7 @@ index dc269d22..f60cc98e 100644
  COMMENTS: "Tellurene. Ordinary ray (o)."
  DATA:
    - type: tabulated nk
--    data:
+-    data: 
 +    data: |
          0.400 1.06337 2.15703
          0.405 1.08186 2.18582
