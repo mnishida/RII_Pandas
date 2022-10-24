@@ -1,14 +1,26 @@
-diff --git a/database/library.yml b/database/library.yml
-index 4816bdab..91e1078a 100644
---- a/database/library.yml
-+++ b/database/library.yml
-@@ -10941,9 +10941,6 @@
-         - PAGE: Wu-29.9C-o
-           name: "Wu et al. 1993: n(o) 0.4–0.8 µm; 29.9 °C"
-           data: "other/liquid crystals/5CB/Wu-29.9C-o.yml"
--        - PAGE: Wu-29.9C-e
--          name: "Wu et al. 1993: n(e) 0.4–0.8 µm; 29.9 °C"
--          data: "other/liquid crystals/5CB/Wu-29.9C-e.yml"
-         - PAGE: Wu-32.6C-o
-           name: "Wu et al. 1993: n(o) 0.4–0.8 µm; 32.6 °C"
-           data: "other/liquid crystals/5CB/Wu-32.6C-o.yml"
+diff --git a/database/data/main/Te/Guo-e.yml b/database/data/main/Te/Guo-e.yml
+index dd42b2f9..c2541568 100644
+--- a/database/data/main/Te/Guo-e.yml
++++ b/database/data/main/Te/Guo-e.yml
+@@ -6,7 +6,7 @@ REFERENCES: "Z. Guo, H. Gu, M. Fang, L. Yed, S. Liu, Giant in-plane optical and
+ COMMENTS: "Tellurene. Extraordinary ray (e)."
+ DATA:
+   - type: tabulated nk
+-    data:
++    data: |
+         0.400 0.85284 2.54422
+         0.405 0.87113 2.57785
+         0.410 0.88972 2.61141
+diff --git a/database/data/main/Te/Guo-o.yml b/database/data/main/Te/Guo-o.yml
+index dc269d22..f60cc98e 100644
+--- a/database/data/main/Te/Guo-o.yml
++++ b/database/data/main/Te/Guo-o.yml
+@@ -6,7 +6,7 @@ REFERENCES: "Z. Guo, H. Gu, M. Fang, L. Yed, S. Liu, Giant in-plane optical and
+ COMMENTS: "Tellurene. Ordinary ray (o)."
+ DATA:
+   - type: tabulated nk
+-    data:
++    data: |
+         0.400 1.06337 2.15703
+         0.405 1.08186 2.18582
+         0.410 1.10076 2.21468
