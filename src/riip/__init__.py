@@ -7,5 +7,5 @@ from .material import Material
 # ]
 
 __author__ = "Munehiro Nishida"
-__version__ = "0.6.14"
+__version__ = "0.6.15"
 __license__ = "MIT"
