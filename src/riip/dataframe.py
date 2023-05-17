@@ -342,9 +342,14 @@ class RiiDataFrame:
             # For formulas
             elif data_type == "formula":
                 formula = data_set
-                wl_n_min, wl_n_max = [
-                    float(s) for s in data["wavelength_range"].strip().split()
-                ]
+                if "wavelength_range" in data:
+                    wl_n_min, wl_n_max = [
+                        float(s) for s in data["wavelength_range"].strip().split()
+                    ]
+                else:
+                    wl_n_min, wl_n_max = [
+                        float(s) for s in data["range"].strip().split()
+                    ]
                 cs = [float(s) for s in data["coefficients"].strip().split()]
             else:
                 raise Exception("DATA has unknown contents {}".format(data_type))
