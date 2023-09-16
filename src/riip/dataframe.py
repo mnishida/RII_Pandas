@@ -119,7 +119,7 @@ class RiiDataFrame:
         # Create csv files
         if not os.path.isfile(self._catalog_file):
             logger.warning("Catalog file not found.")
-            if not os.path.isfile(os.path.join(self._db_path, "library.yml")):
+            if not os.path.isfile(os.path.join(self._db_path, "catalog-nk.yml")):
                 logger.warning("Cloning Repository...")
                 # repo = git.Repo.clone_from(
                 #     _ri_database_repo, self._ri_database, branch="master"
@@ -163,7 +163,7 @@ class RiiDataFrame:
     def _extract_entry(db_path: str, start_id: int = 0) -> Iterable:
         """Yield a single data set."""
         reference_path = os.path.normpath(db_path)
-        library_file = os.path.join(reference_path, "library.yml")
+        library_file = os.path.join(reference_path, "catalog-nk.yml")
         with open(library_file, "r", encoding="utf-8") as f:
             library = yaml.safe_load(f)
         idx = start_id
@@ -183,7 +183,7 @@ class RiiDataFrame:
                         division = b["DIVIDER"]
                     else:
                         if division is None:
-                            raise Exception("'DIVIDER' is missing in 'library.yml'.")
+                            raise Exception("'DIVIDER' is missing in 'catalog-nk.yml'.")
                         if "DIVIDER" not in b["content"]:
                             section = ""
                         for p in b["content"]:
@@ -198,7 +198,9 @@ class RiiDataFrame:
                                 book_name = b["name"]
                                 page = p["PAGE"]
                                 path = os.path.join(
-                                    reference_path, "data", os.path.normpath(p["data"])
+                                    reference_path,
+                                    "data-nk",
+                                    os.path.normpath(p["data"]),
                                 )
                                 logger.debug("{0} {1} {2}".format(idx, book, page))
                                 row = [idx, shelf, shelf_name, division]
@@ -208,7 +210,7 @@ class RiiDataFrame:
                                 idx += 1
         except Exception as e:
             message = (
-                "There seems to be some inconsistency in the library.yml "
+                "There seems to be some inconsistency in the catalog-nk.yml "
                 + "around id={}, shelf={}, book={}, page={}.".format(
                     idx, shelf, book, page
                 )
@@ -216,7 +218,7 @@ class RiiDataFrame:
             raise Exception(message) from e
 
     def _create_catalog(self) -> DataFrame:
-        """Create catalog DataFrame from library.yml."""
+        """Create catalog DataFrame from catalog-nk.yml."""
         logger.info("Creating catalog...")
         df = DataFrame(
             list(self._extract_entry(self._db_path)),
@@ -484,7 +486,7 @@ class RiiDataFrame:
 
     def update_db(self) -> None:
         """Pull repository and update local database."""
-        if not os.path.isfile(os.path.join(self._db_path, "library.yml")):
+        if not os.path.isfile(os.path.join(self._db_path, "catalog-nk.yml")):
             logger.warning("Cloning Repository.")
             git.Repo.clone_from(_ri_database_repo, self._ri_database, branch="master")
             logger.warning("Done.")

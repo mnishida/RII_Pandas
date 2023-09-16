@@ -1,0 +1,6 @@
+REFERENCES: "T. W. Lee, S. K. Gray. Subwavelength light bending by metal slit structures, <a href=\"https://doi.org/10.1364/OPEX.13.009652\"><i>Opt. Express</i> <b>13</b>, 9652-9659 (2005)</a>"
+COMMENTS: "Fit of the experimental data from several sources to Drude-Lorentz (DL) model"
+DATA:
+  - type: formula 21
+    wavelength_range: 0.25 1.0
+    coefficients: 2.3646 1 0.07489 8.7377 0.079175 0.56 4.3802 0.30542 1.0964 5.183

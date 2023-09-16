@@ -1,0 +1,6 @@
+REFERENCES: "A. Vial, A. Grimault, D. Macías, D. Barchiesi, and M. L. Chapelle. Improved analytical fit of gold dispersion: Application to the modeling of extinction spectra with a finite-difference time-domain method, <a href=\"https://doi.org/10.1103/PhysRevB.71.085416\"><i>Phys. Rev. B</i> <b>71</b>, 085416 (2005)</a>"
+COMMENTS: "Fit of the experimental data from Johnson and Christy to Drude model"
+DATA:
+  - type: formula 21
+    wavelength_range: 0.5 1.0
+    coefficients: 5.9673 1.0 0.0658398 8.74115 0.10311 0.433666 2.68847

@@ -1,0 +1,20 @@
+- SHELF: DL-f21
+  name: "DL - formula 21: Drude Lorentz model"
+  content:
+    - DIVIDER: "Ag - Silver"
+    - BOOK: Ag
+      name: "Ag (Silver)"
+      content:
+        - PAGE: Rakic-DLF
+          name: "Rakić 1998: Drude-Lorentz model"
+          data: "DL/Ag/Rakic.yml"
+- SHELF: BB-f22
+  name: "BB - formula 22: Brendel-Bormann model"
+  content:
+    - DIVIDER: "Ag - Silver"
+    - BOOK: Ag
+      name: "Ag (Silver)"
+      content:
+        - PAGE: Rakic-BBF
+          name: "Rakić 1998: Brendel-Bormann model"
+          data: "BB/Ag/Rakic.yml"

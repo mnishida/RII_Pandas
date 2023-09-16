@@ -1,0 +1,6 @@
+REFERENCES: "A. D. Rakić, A. B. Djurišic, J. M. Elazar, and M. L. Majewski. Optical properties of metallic films for vertical-cavity optoelectronic devices, <a href=\"https://doi.org/10.1364/AO.37.005271\"><i>Appl. Opt.</i> <b>37</b>, 5271-5283 (1998)</a><br>[<a href=\"https://github.com/polyanskiy/refractiveindex.info-scripts/blob/master/scripts/Rakic%201998%20-%20Al%20(BB%20model).py\">Calculation script (Python)</a>]"
+COMMENTS: "Fit of the experimental data from several sources to Brendel-Bormann (BB) model"
+DATA:
+  - type: formula 22
+    wavelength_range: 0.2066 12.40
+    coefficients: 1 0.126 0.067 7.29 0.427 1.877 1.459 0.463 0.218 0.100 2.661 0.506 0.513 0.615 0.805 0.799 0.0002 4.109 19.86 2.854
