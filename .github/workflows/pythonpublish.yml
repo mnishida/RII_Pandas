@@ -45,8 +45,8 @@ jobs:
         env:
           ANACONDA_API_TOKEN: ${{ secrets.CONDA_TOKEN }}
         run: |
+          conda config --set anaconda_upload yes
           conda build --output-folder conda_pkg conda_pkg
-          anaconda upload conda_pkg/linux-64/riip-*.tar.bz2
   # deploy_conda_windows:
   #   runs-on: windows-latest
   #   strategy:
