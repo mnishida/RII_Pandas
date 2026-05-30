@@ -8,7 +8,7 @@ install:
 conda:
 	conda install -c mnishida -c defaults --file conda_pkg/conda_requirements_dev.txt
 	conda install -c mnishida --file conda_pkg/conda_requirements.txt
-	conda build --numpy 1.21 conda_pkg
+	conda build --numpy 2.4.4 conda_pkg
 	conda install --use-local --force-reinstall riip
 	pip install pytest-regressions
 	pip install bump2version

@@ -9,7 +9,6 @@ import numpy as np
 from numpy.typing import ArrayLike
 from pandas import DataFrame, Series
 from scipy.interpolate import interp1d
-from scipy.special import wofz
 
 import riip.dataframe
 
@@ -151,7 +150,8 @@ class RiiMaterial(AbstractMaterial):
         elif "n" in tabulated:
             num_n = self.catalog["num_n"]
             if num_n == 1:
-                return lambda x: self.raw_data["n"] * np.ones_like(x)
+                n = np.asarray(self.raw_data["n"]).ravel()[0].item()
+                return lambda x: n * np.ones_like(x)
             elif num_n < 4:
                 val = np.mean(self.raw_data["n"])
                 return lambda x: val * np.ones_like(x)
@@ -238,7 +238,7 @@ class RiiMaterial(AbstractMaterial):
             return self.formula(_wl)
         n: np.ndarray = self.n(_wl)
         k: np.ndarray = self.k(_wl)
-        eps = n ** 2 - k ** 2 + 2j * n * k
+        eps = n**2 - k**2 + 2j * n * k
         return eps
 
 
@@ -260,13 +260,13 @@ class ConstMaterial(AbstractMaterial):
         """
         if "RI" in params:
             RI: float | complex = params["RI"]
-            self.ce: float | complex = RI ** 2
+            self.ce: float | complex = RI**2
             self.cn = RI.real
             self.ck = RI.imag
             self.label = f"RI: {RI}"
             if "e" in params:
                 e = params["e"]
-                if e != RI ** 2:
+                if e != RI**2:
                     raise ValueError("e must be RI ** 2.")
         elif "e" in params:
             e = params["e"]
@@ -461,7 +461,7 @@ class Material(AbstractMaterial):
                 else:
                     _n = formulas_cython_dict[self.f](w.real, self.cs)
                     _k = self.material.k(2 * np.pi / w.real).item()
-                    self.__e = _n ** 2 - _k ** 2 + 2j * _n * _k
+                    self.__e = _n**2 - _k**2 + 2j * _n * _k
                 if self.__im_factor != 1.0:
                     imag = self.__e.imag * self.__im_factor
                     self.__e = self.__e.real + 1j * imag

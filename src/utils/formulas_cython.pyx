@@ -22,7 +22,7 @@ cdef:
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-def formula_1_cython(cdouble w, double[::1] cs):
+def formula_1_cython(cdouble w, const double[::1] cs):
     cdef:
         int i
         double x_sqr = (2 * M_PI / creal(w)) ** 2
@@ -41,7 +41,7 @@ def formula_1_cython(cdouble w, double[::1] cs):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-def formula_2_cython(cdouble w, double[::1] cs):
+def formula_2_cython(cdouble w, const double[::1] cs):
     cdef:
         int i
         double x_sqr = (2 * M_PI / creal(w)) ** 2
@@ -59,7 +59,7 @@ def formula_2_cython(cdouble w, double[::1] cs):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-def formula_3_cython(cdouble w, double[::1] cs):
+def formula_3_cython(cdouble w, const double[::1] cs):
     cdef:
         int i
         double x = 2 * M_PI / creal(w)
@@ -77,7 +77,7 @@ def formula_3_cython(cdouble w, double[::1] cs):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-def formula_4_cython(cdouble w, double[::1] cs):
+def formula_4_cython(cdouble w, const double[::1] cs):
     cdef:
         int i
         double x = 2 * M_PI / creal(w)
@@ -98,7 +98,7 @@ def formula_4_cython(cdouble w, double[::1] cs):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-def formula_5_cython(cdouble w, double[::1] cs):
+def formula_5_cython(cdouble w, const double[::1] cs):
     cdef:
         int i
         double n = cs[0]
@@ -115,7 +115,7 @@ def formula_5_cython(cdouble w, double[::1] cs):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-def formula_6_cython(cdouble w, double[::1] cs):
+def formula_6_cython(cdouble w, const double[::1] cs):
     cdef:
         int i
         double x_m2 = (creal(w) / (2 * M_PI)) ** 2
@@ -132,7 +132,7 @@ def formula_6_cython(cdouble w, double[::1] cs):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-def formula_7_cython(cdouble w, double[::1] cs):
+def formula_7_cython(cdouble w, const double[::1] cs):
     cdef:
         double x_sqr = (2 * M_PI / creal(w)) ** 2
         double n = (
@@ -149,7 +149,7 @@ def formula_7_cython(cdouble w, double[::1] cs):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-def formula_8_cython(cdouble w, double[::1] cs):
+def formula_8_cython(cdouble w, const double[::1] cs):
     cdef:
         double x_sqr = (2 * M_PI / creal(w)) ** 2
         double a = cs[0] + cs[1] * x_sqr / (x_sqr - cs[2]) + cs[3] * x_sqr
@@ -160,7 +160,7 @@ def formula_8_cython(cdouble w, double[::1] cs):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-def formula_9_cython(cdouble w, double[::1] cs):
+def formula_9_cython(cdouble w, const double[::1] cs):
     cdef:
         double x = 2 * M_PI / creal(w)
         double n_sqr = (
@@ -173,7 +173,7 @@ def formula_9_cython(cdouble w, double[::1] cs):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-def formula_21_cython(cdouble w, double[::1] cs):
+def formula_21_cython(cdouble w, const double[::1] cs):
     cdef:
         int i
         cdouble _w = w * UNIT
@@ -197,7 +197,7 @@ def formula_21_cython(cdouble w, double[::1] cs):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-def formula_22_cython(cdouble w, double[::1] cs):
+def formula_22_cython(cdouble w, const double[::1] cs):
     cdef:
         int i
         cdouble _w = w * UNIT

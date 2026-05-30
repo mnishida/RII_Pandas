@@ -8,5 +8,6 @@ pytest-cov
 flake8
 black
 isort
+virtualenv
 pydocstyle
 mypy

@@ -10,7 +10,7 @@ from riip import Material
 def test_material(num_regression):
 
     w = 2.0 * np.pi
-    data = {
+    data0 = {
         "air": Material({"RI": 1.0})(w),
         "GaN": Material({"book": "GaN", "page": "Barker-o"})(w),
         "W": Material({"book": "W", "page": "Rakic-DLF"})(w),
@@ -23,6 +23,9 @@ def test_material(num_regression):
         ),
         "PEC": Material({"PEC": True})(w),
     }
+    data = {}
+    for key, value in data0.items():
+        data[key] = (value.real, value.imag)
     print(data)
     num_regression.check(data)
 

@@ -122,12 +122,10 @@ class RiiDataFrame:
             if not os.path.isfile(os.path.join(self._db_path, "catalog-nk.yml")):
                 logger.warning("Cloning Repository...")
                 # repo = git.Repo.clone_from(
-                #     _ri_database_repo, self._ri_database, branch="master"
+                #     _ri_database_repo, self._ri_database, branch="main"
                 # )
                 # repo.git.apply(_ri_database_patch)
-                git.Repo.clone_from(
-                    _ri_database_repo, self._ri_database, branch="master"
-                )
+                git.Repo.clone_from(_ri_database_repo, self._ri_database, branch="main")
                 logger.warning("Done.")
             logger.warning("Creating catalog file...")
             catalog = self._add_my_db_to_catalog(self._create_catalog())
@@ -172,6 +170,8 @@ class RiiDataFrame:
         page = "Johnson"
         try:
             for sh in library:
+                if next(iter(sh)) == "DIVIDER":
+                    continue
                 shelf = sh["SHELF"]
                 if shelf == "3d":
                     # This shelf does not seem to contain new data.
@@ -199,7 +199,7 @@ class RiiDataFrame:
                                 page = p["PAGE"]
                                 path = os.path.join(
                                     reference_path,
-                                    "data-nk",
+                                    "data",
                                     os.path.normpath(p["data"]),
                                 )
                                 logger.debug("{0} {1} {2}".format(idx, book, page))
@@ -238,7 +238,7 @@ class RiiDataFrame:
         )
         df = pd.concat([catalog, df], ignore_index=True)
         logger.info("Done.")
-        return df
+        return df.astype(self._catalog_columns)
 
     def _create_book_page_order(self) -> Series:
         """Create [id, book+page string] array used to search id."""
@@ -397,16 +397,16 @@ class RiiDataFrame:
         _ks = np.array(ks + [0.0] * (num - num_k), dtype=np.float64)
 
         # Rewrite catalog with the obtained data
-        catalog.loc[idx, "formula"] = formula
+        catalog.loc[idx, "formula"] = np.int32(formula)
         catalog.loc[idx, "tabulated"] = tabulated
-        catalog.loc[idx, "num_n"] = num_n
-        catalog.loc[idx, "num_k"] = num_k
-        catalog.loc[idx, "wl_n_min"] = wl_n_min
-        catalog.loc[idx, "wl_n_max"] = wl_n_max
-        catalog.loc[idx, "wl_k_min"] = wl_k_min
-        catalog.loc[idx, "wl_k_max"] = wl_k_max
-        catalog.loc[idx, "wl_min"] = wl_min
-        catalog.loc[idx, "wl_max"] = wl_max
+        catalog.loc[idx, "num_n"] = np.int32(num_n)
+        catalog.loc[idx, "num_k"] = np.int32(num_k)
+        catalog.loc[idx, "wl_n_min"] = np.float64(wl_n_min)
+        catalog.loc[idx, "wl_n_max"] = np.float64(wl_n_max)
+        catalog.loc[idx, "wl_k_min"] = np.float64(wl_k_min)
+        catalog.loc[idx, "wl_k_max"] = np.float64(wl_k_max)
+        catalog.loc[idx, "wl_min"] = np.float64(wl_min)
+        catalog.loc[idx, "wl_max"] = np.float64(wl_max)
 
         df = DataFrame(
             {
@@ -477,7 +477,7 @@ class RiiDataFrame:
         df = df.astype(self._grid_data_columns)
         df.to_hdf(
             self._grid_data_file,
-            "grid_data",
+            key="grid_data",
             mode="w",
             data_columns=["id"],
             format="table",
@@ -488,7 +488,7 @@ class RiiDataFrame:
         """Pull repository and update local database."""
         if not os.path.isfile(os.path.join(self._db_path, "catalog-nk.yml")):
             logger.warning("Cloning Repository.")
-            git.Repo.clone_from(_ri_database_repo, self._ri_database, branch="master")
+            git.Repo.clone_from(_ri_database_repo, self._ri_database, branch="main")
             logger.warning("Done.")
         else:
             logger.warning("Pulling Repository...")
