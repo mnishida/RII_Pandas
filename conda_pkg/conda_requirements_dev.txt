@@ -1,6 +1,5 @@
 conda
 conda-build
-conda-verify
 anaconda-client
 Cython
 pytest
