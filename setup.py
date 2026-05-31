@@ -32,7 +32,7 @@ setup(
     package_data={"riip": ["py.typed", "data/riid.patch", "data/my_database"]},
     setup_requires=["Cython", "numpy", "scipy"],
     install_requires=[line.strip() for line in open("requirements.txt").readlines()],
-    python_requires=">=3.8",
+    python_requires=">=3.11",
     classifiers=[
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: MIT License",
