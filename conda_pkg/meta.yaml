@@ -19,6 +19,7 @@ requirements:
     - scipy
     - cython
     - setuptools
+    - virtualenv
   run:
     - gitpython
     - matplotlib
