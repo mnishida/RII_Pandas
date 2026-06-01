@@ -1,7 +1,7 @@
 import os
 
 import numpy as np
-from Cython.Distutils import build_ext
+from Cython.Build import cythonize
 from setuptools import Extension, find_packages, setup
 
 ext_modules = []
@@ -12,7 +12,6 @@ e = Extension(
     include_dirs=[np.get_include(), "."],
     language="c++",
 )
-e.cython_directives = {"language_level": "3"}
 ext_modules.append(e)
 
 setup(
@@ -42,6 +41,5 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Topic :: Scientific/Engineering",
     ],
-    ext_modules=ext_modules,
-    cmdclass={"build_ext": build_ext},
+    ext_modules=cythonize(ext_modules, compiler_directives={"language_level": "3"}),
 )
