@@ -13,7 +13,7 @@ conda-install: conda-build
 	if [ -n "$$PKG_PATH" ]; then \
 		echo "Installing local package: $$PKG_PATH"; \
 		conda install -y "$$PKG_PATH" --force-reinstall; \
-		pip install tables gitpython; \
+		pip install tables; \
 	else \
 		echo "Local package not found in $(CONDA_BLD_DIR)"; \
 		exit 1; \
