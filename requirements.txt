@@ -1,9 +1,0 @@
-numpy>=1.20
-scipy
-pandas
-tables
-pyyaml
-gitpython
-matplotlib
-ipython
-ipykernel

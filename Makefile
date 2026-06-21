@@ -1,20 +1,25 @@
-install:
-	python -m pip install --upgrade pip
-	pip install -r requirements.txt --upgrade
-	pip install -r requirements_dev.txt --upgrade
-	pip install -e . --upgrade
+dev-setup:
+	conda install -y -c defaults python=3.13 numpy=2.2.5 scipy cython setuptools pip conda-build anaconda-client
+	pip install -e .[dev]
 	pre-commit install
 
-conda:
-	conda install -c mnishida -c defaults --file conda_pkg/conda_requirements_dev.txt
-	conda install -c mnishida --file conda_pkg/conda_requirements.txt
-	conda build --numpy 2.4.4 conda_pkg
-	conda install --use-local --force-reinstall riip
-	pip install pytest-regressions
-	pip install bump2version
-	pip install pandas-stubs
-	pip install pre-commit
-	pre-commit install
+CONDA_BLD_DIR := $(shell conda info --base)/conda-bld
+
+conda-build:
+	conda build --no-test -c local -c mnishida -c defaults --numpy 2.2.5 conda_pkg
+
+conda-install: conda-build
+	@PKG_PATH=$$(ls $(CONDA_BLD_DIR)/linux-64/riip-*.conda $(CONDA_BLD_DIR)/linux-64/riip-*.tar.bz2 $(CONDA_BLD_DIR)/noarch/riip-*.conda $(CONDA_BLD_DIR)/noarch/riip-*.tar.bz2 2>/dev/null | head -n 1); \
+	if [ -n "$$PKG_PATH" ]; then \
+		echo "Installing local package: $$PKG_PATH"; \
+		conda install -y "$$PKG_PATH" --force-reinstall; \
+		pip install tables gitpython; \
+	else \
+		echo "Local package not found in $(CONDA_BLD_DIR)"; \
+		exit 1; \
+	fi
+
+conda: conda-install
 
 test:
 	pytest

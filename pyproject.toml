@@ -2,10 +2,72 @@
 requires = ["setuptools", "wheel", "numpy", "Cython", "scipy"]
 build-backend = "setuptools.build_meta"
 
+[project]
+name = "riip"
+version = "0.8.6"
+description = "Python 3 + Pandas wrapper for the refractiveindex.info database"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "Munehiro Nishida", email = "mnishida@hiroshima-u.ac.jp"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+]
+keywords = ["refractive index", "database", "Pandas"]
+
+dependencies = [
+    "numpy>=2.2.3",
+    "scipy>=1.13.0",
+    "ipython",
+    "more_itertools",
+    "pandas",
+    "matplotlib",
+    "pytables",
+    "pyyaml",
+    "gitpython",
+]
+
+[project.urls]
+Homepage = "https://github.com/mnishida/RII_Pandas"
+Repository = "https://github.com/mnishida/RII_Pandas.git"
+Issues = "https://github.com/mnishida/RII_Pandas/issues"
+
+[project.optional-dependencies]
+dev = [
+    "nbsphinx",
+    "ipykernel",
+    "pytest",
+    "pytest-cov",
+    "pytest-regressions",
+    "pre-commit",
+    "flake8",
+    "black",
+    "isort",
+    "doc8",
+    "bump2version",
+    "pydocstyle",
+    "mypy",
+    "pandas-stubs",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages]
+find = {where = ["src"]}
+
+[tool.setuptools.package-data]
+riip = ["py.typed", "data/riid.patch", "data/my_database"]
 
 [tool.black]
 line-length = 88
-target-version = ['py37', 'py38']
+target-version = ['py39', 'py310']
 include = '\.pyi?$'
 exclude = '''
 /(

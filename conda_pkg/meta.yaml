@@ -1,4 +1,11 @@
-{% set version = "0.8.6" %}
+{% set pyproject = load_file_data('../pyproject.toml', from_recipe_dir=True) %}
+{% set version = pyproject.get('project', {}).get('version', '0.8.6') %}
+
+{% set conda_names = {
+    'more_itertools': 'more-itertools',
+    'ray': 'ray-default',
+    'tables': 'pytables',
+} %}
 
 package:
   name: riip
@@ -9,7 +16,7 @@ source:
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --ignore-installed"
 
 requirements:
   host:
@@ -19,17 +26,17 @@ requirements:
     - scipy
     - cython
     - setuptools
-    - virtualenv
   run:
-    - gitpython
-    - matplotlib
-    - numpy
-    - pandas
-    - pytables
     - python
-    - pyyaml
-    - scipy
-    - ipython
+    # conda-forgeの混入を防ぐため、condaの依存関係から除外するパッケージ
+    {% set conda_blacklist = ['pytables', 'tables', 'git', 'gitpython'] %}
+    {% for dep in pyproject.get('project', {}).get('dependencies', []) %}
+      {% set name = dep.split('>=')[0].split('<')[0].split('==')[0].strip() %}
+      {% set conda_name = conda_names[name] if name in conda_names else name | replace('_', '-') %}
+      {% if conda_name not in conda_blacklist %}
+    - {{ conda_name }}
+      {% endif %}
+    {% endfor %}
 
 test:
   imports:
