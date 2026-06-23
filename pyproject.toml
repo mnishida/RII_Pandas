@@ -27,6 +27,7 @@ dependencies = [
     "ipython",
     "more_itertools",
     "pandas",
+    "pyarrow",
     "matplotlib",
     "pytables",
     "pyyaml",
