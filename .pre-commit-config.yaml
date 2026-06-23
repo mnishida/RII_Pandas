@@ -19,16 +19,17 @@ repos:
         # files: "pp/.*"
         # args: ["--profile", "black", "--filter-files"]
 
-  - repo: https://github.com/psf/black
-    rev: "26.5.1"
+  - repo: https://github.com/google/yapf
+    rev: "v0.40.2"
     hooks:
-      - id: black
+      - id: yapf
+        additional_dependencies: [toml]
 
   - repo: https://github.com/PyCQA/flake8
     rev: "7.3.0"
     hooks:
       - id: flake8
-        args: ["--ignore=F401 src/riip/__init__.py"]
+        args: [--config=.flake8]
   # - repo: https://github.com/kynan/nbstripout
   #   rev: "0.5.0"
   #   hooks:

@@ -5,7 +5,6 @@ from __future__ import annotations
 import os
 import unittest
 from filecmp import cmp
-from operator import index
 
 import pandas as pd
 from numpy.testing import assert_allclose
@@ -14,6 +13,7 @@ import riip
 
 
 class KnownValues(unittest.TestCase):
+
     def setUp(self):
         dirname = os.path.dirname(__file__)
         self.db_directory = os.path.join(dirname, "data")
@@ -35,12 +35,8 @@ class KnownValues(unittest.TestCase):
     def test_catalog(self):
         """Check if the catalog is created as expected."""
         dirname = os.path.dirname(__file__)
-        catalog = pd.read_csv(
-            self.catalog_file, dtype=self.ri._catalog_columns, index_col="id"
-        )
-        catalog_known = pd.read_csv(
-            self.catalog_file_known, dtype=self.ri._catalog_columns, index_col="id"
-        )
+        catalog = pd.read_csv(self.catalog_file, dtype=self.ri._catalog_columns, index_col="id")
+        catalog_known = pd.read_csv(self.catalog_file_known, dtype=self.ri._catalog_columns, index_col="id")
         for ind in catalog_known.index:
             path = catalog_known.loc[ind, "path"].replace("/", os.sep)
             catalog_known.loc[ind, "path"] = dirname + path

@@ -19,7 +19,6 @@ import riip.material
 
 # from numpy.typing import ArrayLike
 
-
 logger = getLogger(__package__)
 _dirname = os.path.dirname(__file__)
 _ri_database = os.path.join(_dirname, "data", "refractiveindex.info-database")
@@ -28,9 +27,7 @@ _my_db_directory = os.path.join(_dirname, "data", "my_database")
 _catalog_file = os.path.join(_dirname, "data", "catalog.csv")
 _raw_data_file = os.path.join(_dirname, "data", "raw_data.csv")
 _grid_data_file = os.path.join(_dirname, "data", "grid_data.h5")
-_ri_database_repo = (
-    "https://github.com/polyanskiy/" + "refractiveindex.info-database.git"
-)
+_ri_database_repo = ("https://github.com/polyanskiy/" + "refractiveindex.info-database.git")
 _ri_database_patch = os.path.join(_dirname, "data", "riid.patch")
 
 
@@ -48,44 +45,39 @@ class RiiDataFrame:
 
     """
 
-    _catalog_columns: ClassVar[OrderedDict] = OrderedDict(
-        (
-            ("id", np.int32),
-            ("shelf", str),
-            ("shelf_name", str),
-            ("division", str),
-            ("book", str),
-            ("book_name", str),
-            ("section", str),
-            ("page", str),
-            ("path", str),
-            ("formula", np.int32),
-            ("tabulated", str),
-            ("num_n", np.int32),
-            ("num_k", np.int32),
-            ("wl_n_min", np.float64),
-            ("wl_n_max", np.float64),
-            ("wl_k_min", np.float64),
-            ("wl_k_max", np.float64),
-            ("wl_min", np.float64),
-            ("wl_max", np.float64),
-        )
-    )
+    _catalog_columns: ClassVar[OrderedDict] = OrderedDict((
+        ("id", np.int32),
+        ("shelf", str),
+        ("shelf_name", str),
+        ("division", str),
+        ("book", str),
+        ("book_name", str),
+        ("section", str),
+        ("page", str),
+        ("path", str),
+        ("formula", np.int32),
+        ("tabulated", str),
+        ("num_n", np.int32),
+        ("num_k", np.int32),
+        ("wl_n_min", np.float64),
+        ("wl_n_max", np.float64),
+        ("wl_k_min", np.float64),
+        ("wl_k_max", np.float64),
+        ("wl_min", np.float64),
+        ("wl_max", np.float64),
+    ))
 
-    _raw_data_columns: ClassVar[OrderedDict] = OrderedDict(
-        (
-            ("id", np.int32),
-            ("c", np.float64),
-            ("wl_n", np.float64),
-            ("n", np.float64),
-            ("wl_k", np.float64),
-            ("k", np.float64),
-        )
-    )
+    _raw_data_columns: ClassVar[OrderedDict] = OrderedDict((
+        ("id", np.int32),
+        ("c", np.float64),
+        ("wl_n", np.float64),
+        ("n", np.float64),
+        ("wl_k", np.float64),
+        ("k", np.float64),
+    ))
 
     _grid_data_columns: ClassVar[OrderedDict] = OrderedDict(
-        (("id", np.int32), ("wl", np.float64), ("n", np.float64), ("k", np.float64))
-    )
+        (("id", np.int32), ("wl", np.float64), ("n", np.float64), ("k", np.float64)))
 
     def __init__(
         self,
@@ -209,12 +201,8 @@ class RiiDataFrame:
                                 yield row
                                 idx += 1
         except Exception as e:
-            message = (
-                "There seems to be some inconsistency in the catalog-nk.yml "
-                + "around id={}, shelf={}, book={}, page={}.".format(
-                    idx, shelf, book, page
-                )
-            )
+            message = ("There seems to be some inconsistency in the catalog-nk.yml " +
+                       "around id={}, shelf={}, book={}, page={}.".format(idx, shelf, book, page))
             raise Exception(message) from e
 
     def _create_catalog(self) -> DataFrame:
@@ -243,9 +231,7 @@ class RiiDataFrame:
     def _create_book_page_order(self) -> Series:
         """Create [id, book+page string] array used to search id."""
         cl = self.catalog
-        book_page = {
-            idx: f"{cl.loc[idx, 'book']}{cl.loc[idx, 'page']}" for idx in cl.index
-        }
+        book_page = {idx: f"{cl.loc[idx, 'book']}{cl.loc[idx, 'page']}" for idx in cl.index}
         return Series(book_page).sort_values()
 
     def book_page_to_id(self, params: dict) -> int:
@@ -255,9 +241,7 @@ class RiiDataFrame:
             raise ValueError(bp + " could not be found")
         return self.__book_page_order.index[ind]
 
-    def _extract_raw_data(
-        self, idx: int, catalog: DataFrame
-    ) -> tuple[DataFrame, DataFrame]:
+    def _extract_raw_data(self, idx: int, catalog: DataFrame) -> tuple[DataFrame, DataFrame]:
         """Yield a single raw data set.
 
         Some data are inserted into the catalog.
@@ -287,10 +271,7 @@ class RiiDataFrame:
                 if data_set == "nk":
                     tabulated += data_set
                     wls_n, ns, ks = np.array(
-                        [
-                            line.strip().split()
-                            for line in data["data"].strip().split("\n")
-                        ],
+                        [line.strip().split() for line in data["data"].strip().split("\n")],
                         dtype=float,
                     ).T
                     wls_n, inds = np.unique(wls_n, return_index=True)
@@ -308,10 +289,7 @@ class RiiDataFrame:
                 elif data_set == "n":
                     tabulated += data_set
                     wls_n, ns = np.array(
-                        [
-                            line.strip().split()
-                            for line in data["data"].strip().split("\n")
-                        ],
+                        [line.strip().split() for line in data["data"].strip().split("\n")],
                         dtype=float,
                     ).T
                     wls_n, inds = np.unique(wls_n, return_index=True)
@@ -325,10 +303,7 @@ class RiiDataFrame:
                 elif data_set == "k":
                     tabulated += data_set
                     wls_k, ks = np.array(
-                        [
-                            line.strip().split()
-                            for line in data["data"].strip().split("\n")
-                        ],
+                        [line.strip().split() for line in data["data"].strip().split("\n")],
                         dtype=float,
                     ).T
                     wls_k, inds = np.unique(wls_k, return_index=True)
@@ -345,13 +320,9 @@ class RiiDataFrame:
             elif data_type == "formula":
                 formula = data_set
                 if "wavelength_range" in data:
-                    wl_n_min, wl_n_max = [
-                        float(s) for s in data["wavelength_range"].strip().split()
-                    ]
+                    wl_n_min, wl_n_max = [float(s) for s in data["wavelength_range"].strip().split()]
                 else:
-                    wl_n_min, wl_n_max = [
-                        float(s) for s in data["range"].strip().split()
-                    ]
+                    wl_n_min, wl_n_max = [float(s) for s in data["range"].strip().split()]
                 cs = [float(s) for s in data["coefficients"].strip().split()]
             else:
                 raise Exception("DATA has unknown contents {}".format(data_type))
@@ -408,21 +379,15 @@ class RiiDataFrame:
         catalog.loc[idx, "wl_min"] = np.float64(wl_min)
         catalog.loc[idx, "wl_max"] = np.float64(wl_max)
 
-        df = DataFrame(
-            {
-                key: val
-                for key, val in zip(
-                    self._raw_data_columns.keys(), [idx, _cs, _wls_n, _ns, _wls_k, _ks]
-                )
-            }
-        )
+        df = DataFrame({
+            key: val
+            for key, val in zip(self._raw_data_columns.keys(), [idx, _cs, _wls_n, _ns, _wls_k, _ks])
+        })
         # Arrange the columns according to the order of _raw_data_columns
         df = df.loc[:, self._raw_data_columns.keys()].astype(self._raw_data_columns)
         return df, catalog
 
-    def _create_raw_data_and_modify_catalog(
-        self, catalog: DataFrame
-    ) -> tuple[DataFrame, DataFrame]:
+    def _create_raw_data_and_modify_catalog(self, catalog: DataFrame) -> tuple[DataFrame, DataFrame]:
         """Create a DataFrame for experimental data."""
         logger.info("Creating raw data...")
         df = DataFrame(columns=self._raw_data_columns)
@@ -507,7 +472,6 @@ class RiiDataFrame:
         self._create_grid_data(self.catalog, self.raw_data)
         logger.warning("Done.")
         logger.warning("All Done.")
-
         """."""
 
     def search(self, name: str) -> DataFrame:
@@ -528,18 +492,9 @@ class RiiDataFrame:
             "wl_min",
             "wl_max",
         ]
-        df = self.catalog[
-            (
-                (self.catalog["book"].str.contains(name))
-                | (
-                    self.catalog["book_name"]
-                    .str.replace("<sub>", "")
-                    .str.replace("</sub>", "")
-                    .str.lower()
-                    .str.contains(name.lower())
-                )
-            )
-        ]
+        df = self.catalog[((self.catalog["book"].str.contains(name))
+                           | (self.catalog["book_name"].str.replace("<sub>", "").str.replace(
+                               "</sub>", "").str.lower().str.contains(name.lower())))]
         return df.loc[:, columns]
 
     def select(self, cond: str) -> DataFrame:
@@ -663,7 +618,7 @@ class RiiDataFrame:
         elif comp == "eps":
             eps_r = ns**2 - ks**2
             eps_i = 2 * ns * ks
-            (line,) = plt.plot(wls, eps_r, fmt1, label=label, **kwargs)
+            (line, ) = plt.plot(wls, eps_r, fmt1, label=label, **kwargs)
             color = line.get_color()
             plt.plot(wls, eps_i, fmt2, color=color, **kwargs)
             plt.ylabel(r"$\varepsilon$")

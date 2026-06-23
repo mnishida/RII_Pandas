@@ -48,7 +48,8 @@ dev = [
     "pytest-regressions",
     "pre-commit",
     "flake8",
-    "black",
+    "yapf",
+    "toml",
     "isort",
     "doc8",
     "bump2version",
@@ -66,20 +67,6 @@ find = {where = ["src"]}
 [tool.setuptools.package-data]
 riip = ["py.typed", "data/riid.patch", "data/my_database"]
 
-[tool.black]
-line-length = 88
-target-version = ['py39', 'py310']
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.venv
-  | _build
-  | buck-out
-  | build
-  | dist
-)/
-'''
+[tool.yapf]
+based_on_style = "pep8"
+column_limit = 119

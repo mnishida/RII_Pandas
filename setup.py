@@ -14,6 +14,4 @@ e = Extension(
 )
 ext_modules.append(e)
 
-setup(
-    ext_modules=cythonize(ext_modules, compiler_directives={"language_level": "3"}),
-)
+setup(ext_modules=cythonize(ext_modules, compiler_directives={"language_level": "3"}), )

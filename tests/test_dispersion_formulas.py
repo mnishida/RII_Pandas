@@ -46,9 +46,9 @@ class KnownValues(unittest.TestCase):
             7,
             [1.0 for _ in range(6)],
             np.sqrt(1.028),
-            3 + 1.028 + 1.028 ** 2 + 1.028 ** 3,
+            3 + 1.028 + 1.028**2 + 1.028**3,
         ),
-        (7, [1.0, 0, 0, 0.5, 0.5, 0.5], 0.5, 1 + 21 / 2 ** 7),
+        (7, [1.0, 0, 0, 0.5, 0.5, 0.5], 0.5, 1 + 21 / 2**7),
         (8, [0.0 for _ in range(4)], 0.5, 1.0),
         (8, [0.1 for _ in range(4)], np.sqrt(0.2), np.sqrt(1.64 / 0.68)),
         (8, [0.2, 0, 0, 0.2], 0.5, np.sqrt(1.5 / 0.75)),
@@ -71,18 +71,16 @@ class KnownValues(unittest.TestCase):
     def test_dispersion_formula_known_values(self):
         """dispersion_formula should return function."""
         for i, (formula, cs, wl, result) in enumerate(self.known_values):
-            catalog = pd.DataFrame(
-                {
-                    "book": "",
-                    "page": "",
-                    "formula": [formula],
-                    "tabulated": [""],
-                    "wl_n_min": [0.25],
-                    "wl_n_max": [2.0],
-                    "wl_k_min": [0.25],
-                    "wl_k_max": [2.0],
-                }
-            )
+            catalog = pd.DataFrame({
+                "book": "",
+                "page": "",
+                "formula": [formula],
+                "tabulated": [""],
+                "wl_n_min": [0.25],
+                "wl_n_max": [2.0],
+                "wl_k_min": [0.25],
+                "wl_k_max": [2.0],
+            })
             print(cs)
             data = pd.DataFrame({"id": 0, "c": cs}).set_index("id")
             material = RiiMaterial(0, catalog, data)
@@ -91,48 +89,40 @@ class KnownValues(unittest.TestCase):
 
     def test_dispersion_formula_for_tabulated(self):
         """dispersion_formula should return function."""
-        for i, (formula, wlnk, wl, result) in enumerate(
-            self.known_values_for_tabulated
-        ):
+        for i, (formula, wlnk, wl, result) in enumerate(self.known_values_for_tabulated):
             _wlnk = np.asarray(wlnk)
             wls = _wlnk[:, 0]
             ns = _wlnk[:, 1]
             ks = _wlnk[:, 2]
-            catalog = pd.DataFrame(
-                {
-                    "book": "",
-                    "page": "",
-                    "formula": [formula],
-                    "tabulated": ["nk"],
-                    "num_n": 100,
-                    "num_k": 100,
-                    "wl_n_min": [0.25],
-                    "wl_n_max": [2.0],
-                    "wl_k_min": [0.25],
-                    "wl_k_max": [2.0],
-                }
-            )
-            data = pd.DataFrame(
-                {"id": 0, "wl_n": wls, "n": ns, "wl_k": wls, "k": ks}
-            ).set_index("id")
+            catalog = pd.DataFrame({
+                "book": "",
+                "page": "",
+                "formula": [formula],
+                "tabulated": ["nk"],
+                "num_n": 100,
+                "num_k": 100,
+                "wl_n_min": [0.25],
+                "wl_n_max": [2.0],
+                "wl_k_min": [0.25],
+                "wl_k_max": [2.0],
+            })
+            data = pd.DataFrame({"id": 0, "wl_n": wls, "n": ns, "wl_k": wls, "k": ks}).set_index("id")
             material = RiiMaterial(0, catalog, data)
             print(material.n(wl), material.k(wl), result)
             self.assertAlmostEqual(material.n(wl).item(), result[0])
             self.assertAlmostEqual(material.k(wl).item(), result[1])
 
     def test_dispersion_formula_exception(self):
-        catalog = pd.DataFrame(
-            {
-                "book": "",
-                "page": "",
-                "formula": [1],
-                "tabulated": [""],
-                "wl_n_min": [0.25],
-                "wl_n_max": [2.0],
-                "wl_k_min": [0.25],
-                "wl_k_max": [2.0],
-            }
-        )
+        catalog = pd.DataFrame({
+            "book": "",
+            "page": "",
+            "formula": [1],
+            "tabulated": [""],
+            "wl_n_min": [0.25],
+            "wl_n_max": [2.0],
+            "wl_k_min": [0.25],
+            "wl_k_max": [2.0],
+        })
         data = pd.DataFrame({"id": 0, "c": list(range(17))}).set_index("id")
         material = RiiMaterial(0, catalog, data)
         with self.assertRaises(ValueError):

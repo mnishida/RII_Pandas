@@ -78,7 +78,7 @@ class AbstractMaterial(metaclass=abc.ABCMeta):
             plt.ylabel(r"$k$")
         elif comp == "eps":
             eps = self.eps(wls)
-            (line,) = plt.plot(wls, eps.real, fmt1, label=self.label, **kwargs)
+            (line, ) = plt.plot(wls, eps.real, fmt1, label=self.label, **kwargs)
             color = line.get_color()
             plt.plot(wls, eps.imag, fmt2, color=color, **kwargs)
             plt.ylabel(r"$\varepsilon$")
@@ -94,9 +94,7 @@ class RiiMaterial(AbstractMaterial):
         raw_data: The experimental data set.
     """
 
-    def __init__(
-        self, id: int, catalog: DataFrame, raw_data: DataFrame, bound_check: bool = True
-    ) -> None:
+    def __init__(self, id: int, catalog: DataFrame, raw_data: DataFrame, bound_check: bool = True) -> None:
         """Initialize RiiMaterial
 
         Args:
@@ -136,9 +134,7 @@ class RiiMaterial(AbstractMaterial):
         x_min = min(_x)
         x_max = max(_x)
         if x_min < wl_min or x_max > wl_max:
-            raise ValueError(
-                f"Wavelength [{x_min} {x_max}] is out of bounds [{wl_min} {wl_max}][um]"
-            )
+            raise ValueError(f"Wavelength [{x_min} {x_max}] is out of bounds [{wl_min} {wl_max}][um]")
 
     def _func_n(self) -> Callable:
         tabulated = self.catalog["tabulated"]
@@ -311,9 +307,7 @@ class PEC(ConstMaterial):
         label ('PEC': str): A label used in plot
     """
 
-    def __init__(
-        self,
-    ) -> None:
+    def __init__(self, ) -> None:
         """Initialize Material
 
         Args:
@@ -335,9 +329,7 @@ class Material(AbstractMaterial):
         AbstractMaterial ([type]): [description]
     """
 
-    def __init__(
-        self, params: dict, rid: Optional[riip.dataframe.RiiDataFrame] = None
-    ) -> None:
+    def __init__(self, params: dict, rid: Optional[riip.dataframe.RiiDataFrame] = None) -> None:
         """Initialize Material
 
         Args:
@@ -362,9 +354,7 @@ class Material(AbstractMaterial):
             self.__ce0 = self.material.ce
             self.f = 0
         elif "id" not in params and ("book" not in params or "page" not in params):
-            raise ValueError(
-                "'PEC', 'RI', 'e', 'id', or 'book'-'page' pair must be specified"
-            )
+            raise ValueError("'PEC', 'RI', 'e', 'id', or 'book'-'page' pair must be specified")
         else:
             if rid is None:
                 rid = riip.dataframe.RiiDataFrame()
@@ -372,14 +362,10 @@ class Material(AbstractMaterial):
                 idx = rid.book_page_to_id(params)
                 if "id" in "params":
                     idx != params["id"]
-                    raise ValueError(
-                        "There is an inconsistency between 'id' and 'book'-'page' pair"
-                    )
+                    raise ValueError("There is an inconsistency between 'id' and 'book'-'page' pair")
                 else:
                     params["id"] = idx
-            self.material = RiiMaterial(
-                params["id"], rid.catalog, rid.raw_data, params.get("bound_check", True)
-            )
+            self.material = RiiMaterial(params["id"], rid.catalog, rid.raw_data, params.get("bound_check", True))
             self.catalog = self.material.catalog
             self.wl_max = self.catalog["wl_max"]
             self.wl_min = self.catalog["wl_min"]
@@ -452,9 +438,7 @@ class Material(AbstractMaterial):
         if self.__w is None or w != self.__w:
             wl = 2 * np.pi / w.real
             if self.bound_check_flag and (wl < self.wl_min or wl > self.wl_max):
-                raise ValueError(
-                    f"Wavelength {wl} is out of bounds [{self.wl_min} {self.wl_max}][um]"
-                )
+                raise ValueError(f"Wavelength {wl} is out of bounds [{self.wl_min} {self.wl_max}][um]")
             if self.f > 0:
                 if self.f > 20:
                     self.__e = formulas_cython_dict[self.f](w, self.cs)
