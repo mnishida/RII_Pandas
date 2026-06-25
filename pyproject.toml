@@ -7,7 +7,7 @@ name = "riip"
 version = "0.8.6"
 description = "Python 3 + Pandas wrapper for the refractiveindex.info database"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.13"
 license = {text = "MIT"}
 authors = [
     {name = "Munehiro Nishida", email = "mnishida@hiroshima-u.ac.jp"}
@@ -48,7 +48,6 @@ dev = [
     "pytest-regressions",
     "pre-commit",
     "flake8",
-    "yapf",
     "toml",
     "isort",
     "doc8",
@@ -56,6 +55,8 @@ dev = [
     "pydocstyle",
     "mypy",
     "pandas-stubs",
+    "basedpyright",
+    "ruff",
 ]
 
 [tool.setuptools]
@@ -67,6 +68,40 @@ find = {where = ["src"]}
 [tool.setuptools.package-data]
 riip = ["py.typed", "data/riid.patch", "data/my_database"]
 
-[tool.yapf]
-based_on_style = "pep8"
-column_limit = 119
+# ----------------------------------------------------
+# Ruff（フォーマッター & リンター）の設定
+# ----------------------------------------------------
+[tool.ruff]
+target-version = "py313"
+line-length = 88 # 1行の最大文字数（Blackの標準に準拠）
+
+[tool.ruff.lint]
+# 有効にするルールのカテゴリを指定
+select = [
+    "E",   # pycodestyle（標準的なスタイル違反）
+    "W",   # pycodestyle（警告）
+    "F",   # Pyflakes（論理的なバグ・未使用のインポートなど）
+    "I",   # isort（インポート文の自動並べ替え）
+    "B",   # flake8-bugbear（バグを未然に防ぐルール）
+    "UP",  # pyupgrade（古いPython構文を自動で新しくする）
+]
+
+# 無視したい特定のルール（必要に応じて追加）
+ignore = []
+
+[tool.ruff.lint.isort]
+# import文の自動整理で、特定のグループを最上部に固定するなどの設定
+combine-as-imports = true
+
+# ----------------------------------------------------
+# BasedPyright（型チェック・エラー検出しきい値）の設定
+# ----------------------------------------------------
+[tool.basedpyright]
+typeCheckingMode = "standard" # standard / strict（厳格）/ off から選択
+
+# 特定のファイルをチェック対象外にしたい場合
+exclude = [
+    "**/node_modules",
+    "**/__pycache__",
+    ".venv"
+]

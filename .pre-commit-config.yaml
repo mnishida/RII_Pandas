@@ -11,25 +11,23 @@ repos:
   #   hooks:
   #       - id: unimport
   #         args: [--remove, --requirements, --include-star-import]
-  - repo: https://github.com/pycqa/isort
-    rev: "8.0.1"
-    hooks:
-      - id: isort
-        name: isort (python)
-        # files: "pp/.*"
-        # args: ["--profile", "black", "--filter-files"]
-
-  - repo: https://github.com/google/yapf
-    rev: "v0.40.2"
-    hooks:
-      - id: yapf
-        additional_dependencies: [toml]
-
-  - repo: https://github.com/PyCQA/flake8
-    rev: "7.3.0"
-    hooks:
-      - id: flake8
-        args: [--config=.flake8]
+  # - repo: https://github.com/pycqa/isort
+  #   rev: "8.0.1"
+  #   hooks:
+  #     - id: isort
+  #       name: isort (python)
+  #       # files: "pp/.*"
+  #       # args: ["--profile", "black", "--filter-files"]
+  # # - repo: https://github.com/google/yapf
+  #   rev: "v0.40.2"
+  #   hooks:
+  #     - id: yapf
+  #       additional_dependencies: [toml]
+  # - repo: https://github.com/PyCQA/flake8
+  #   rev: "7.3.0"
+  #   hooks:
+  #     - id: flake8
+  #       args: [--config=.flake8]
   # - repo: https://github.com/kynan/nbstripout
   #   rev: "0.5.0"
   #   hooks:
@@ -44,3 +42,30 @@ repos:
   #   rev: ""
   #   hooks:
   #       - id: pydocstyle
+repos:
+  # ----------------------------------------------------
+  # 1. Ruff (リモートの公式リポジトリから高速に実行)
+  # ----------------------------------------------------
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.19  # 使用したいRuffのバージョンを指定
+    hooks:
+      # リンターの実行（自動修正も有効化）
+      - id: ruff-check
+        args: [--fix]
+      # フォーマッターの実行（コード整形）
+      - id: ruff-format
+
+  # ----------------------------------------------------
+  # 2. BasedPyright (ローカルの仮想環境を使って正確に型チェック)
+  # ----------------------------------------------------
+  - repo: local
+    hooks:
+      - id: basedpyright
+        name: basedpyright
+        # あなたの環境に合わせて実行コマンドを選んでください
+        entry: poetry run basedpyright      # Poetryの場合
+        # entry: uv run basedpyright         # uvの場合
+        # entry: .venv/bin/basedpyright     # 標準の .venv の場合
+        language: system
+        types: [python]
+        pass_filenames: true
