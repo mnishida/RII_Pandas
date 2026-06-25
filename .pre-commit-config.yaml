@@ -56,16 +56,10 @@ repos:
       - id: ruff-format
 
   # ----------------------------------------------------
-  # 2. BasedPyright (ローカルの仮想環境を使って正確に型チェック)
+  # 2. Pyrefly (リモートリポジトリから実行)
   # ----------------------------------------------------
-  - repo: local
+  - repo: https://github.com/facebook/pyrefly-pre-commit
+    rev: 1.0.0
     hooks:
-      - id: basedpyright
-        name: basedpyright
-        # あなたの環境に合わせて実行コマンドを選んでください
-        entry: poetry run basedpyright      # Poetryの場合
-        # entry: uv run basedpyright         # uvの場合
-        # entry: .venv/bin/basedpyright     # 標準の .venv の場合
-        language: system
-        types: [python]
-        pass_filenames: true
+      - id: pyrefly-check
+        pass_filenames: false

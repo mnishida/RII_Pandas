@@ -55,7 +55,7 @@ dev = [
     "pydocstyle",
     "mypy",
     "pandas-stubs",
-    "basedpyright",
+    "pyrefly",
     "ruff",
 ]
 
@@ -73,7 +73,7 @@ riip = ["py.typed", "data/riid.patch", "data/my_database"]
 # ----------------------------------------------------
 [tool.ruff]
 target-version = "py313"
-line-length = 88 # 1行の最大文字数（Blackの標準に準拠）
+line-length = 120 # 1行の最大文字数（Blackの標準に準拠）
 
 [tool.ruff.lint]
 # 有効にするルールのカテゴリを指定
@@ -93,15 +93,13 @@ ignore = []
 # import文の自動整理で、特定のグループを最上部に固定するなどの設定
 combine-as-imports = true
 
-# ----------------------------------------------------
-# BasedPyright（型チェック・エラー検出しきい値）の設定
-# ----------------------------------------------------
-[tool.basedpyright]
-typeCheckingMode = "standard" # standard / strict（厳格）/ off から選択
-
-# 特定のファイルをチェック対象外にしたい場合
-exclude = [
-    "**/node_modules",
-    "**/__pycache__",
-    ".venv"
+[tool.pyrefly]
+project-includes = [
+    "**/*.py*",
+    "**/*.ipynb",
 ]
+
+# ----------------------------------------------------
+# Pyreflyの設定
+# ----------------------------------------------------
+# 後ほど `pyrefly init` 等のコマンドで設定を生成できます。

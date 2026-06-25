@@ -152,3 +152,5 @@ cython_debug/
 .idea/
 src/utils/formulas_cython.cpp
 .vscode/settings.json
+
+pyrefly.toml
