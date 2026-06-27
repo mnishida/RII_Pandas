@@ -29,7 +29,10 @@ $(CONDA_BUILD_CONFIG): Makefile
 	@printf "python:\n  - %s\nnumpy:\n  - %s\n" "$(PYTHON_VERSION)" "$(NUMPY_VERSION)" > $@
 
 conda-build: $(CONDA_BUILD_CONFIG)
-	conda build --no-test -c local -c mnishida -c defaults conda_pkg
+	@tmp_src="$$(mktemp -d)"; \
+	trap 'rm -rf "$$tmp_src"' EXIT; \
+	tar --exclude='./.git' -cf - . | tar -xf - -C "$$tmp_src"; \
+	cd "$$tmp_src" && conda build --no-test -c local -c mnishida -c defaults conda_pkg
 
 conda-install: conda-build
 	@if find "$(CONDA_BLD_DIR)" -maxdepth 2 -type f \( -name 'riip-*.conda' -o -name 'riip-*.tar.bz2' \) | grep -q .; then \
