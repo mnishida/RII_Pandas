@@ -62,6 +62,7 @@ typecheck = [
     "pyrefly",
     "pandas-stubs",
     "scipy-stubs",
+    "line_profiler",
 ]
 
 docs = [
