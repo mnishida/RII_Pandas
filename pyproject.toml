@@ -59,6 +59,7 @@ test = [
 typecheck = [
     "pyrefly",
     "pandas-stubs",
+    "scipy-stubs",
 ]
 
 docs = [

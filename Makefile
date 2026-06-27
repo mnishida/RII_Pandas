@@ -13,9 +13,14 @@ RUNTIME_PIP_PACKAGES := tables pytest-regressions
 
 dev-setup:
 	conda install -y -c defaults $(CONDA_DEV_PACKAGES)
-	pip install -e '.[dev,typecheck]'
-	$(MAKE) typecheck-setup
+	pip install -e '.[dev]'
 	pre-commit install
+
+typecheck-env-setup:
+	conda install -n $(PYREFLY_ENV) -y -c defaults $(CONDA_DEV_PACKAGES)
+	conda run -n $(PYREFLY_ENV) python -m pip install -e '.[dev]'
+	conda run -n $(PYREFLY_ENV) python -m pip install -e '.[typecheck]'
+	$(MAKE) typecheck-setup
 
 CONDA_BLD_DIR := $(shell conda info --base)/conda-bld
 
