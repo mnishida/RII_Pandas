@@ -1,5 +1,6 @@
 PYTHON_VERSION ?= 3.14
 NUMPY_VERSION ?= 2.4.6
+PYREFLY_ENV ?= kkr-typecheck
 CONDA_BUILD_CONFIG := conda_pkg/conda_build_config.yaml
 CONDA_DEV_PACKAGES := python=$(PYTHON_VERSION) numpy=$(NUMPY_VERSION) scipy cython setuptools pip conda-build
 RUNTIME_PIP_PACKAGES := tables
@@ -7,6 +8,7 @@ RUNTIME_PIP_PACKAGES := tables
 dev-setup:
 	conda install -y -c defaults $(CONDA_DEV_PACKAGES)
 	pip install -e '.[dev,test,typecheck]'
+	$(MAKE) typecheck-setup
 	pre-commit install
 
 CONDA_BLD_DIR := $(shell conda info --base)/conda-bld
@@ -37,8 +39,11 @@ test:
 cov:
 	pytest --cov riip
 
-typecheck:
-	pyrefly check .
+typecheck-setup:
+	@conda run -n $(PYREFLY_ENV) python -c 'import sys; print(f"python-interpreter-path = \"{sys.executable}\"")' > pyrefly.toml
+
+typecheck: typecheck-setup
+	conda run -n $(PYREFLY_ENV) pyrefly check .
 
 lint:
 	ruff check .
