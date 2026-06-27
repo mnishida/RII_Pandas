@@ -1,7 +1,7 @@
 PYTHON_VERSION ?= 3.14
 NUMPY_VERSION ?= 2.4.6
 PYREFLY_ENV ?= kkr-typecheck
-CONDA_TARGET_ENV ?=
+CONDA_TARGET_ENV ?= $(CONDA_DEFAULT_ENV)
 CONDA_ENV_ARGS := $(if $(CONDA_TARGET_ENV),-n $(CONDA_TARGET_ENV),)
 PIP_INSTALL_CMD := $(if $(CONDA_TARGET_ENV),conda run -n $(CONDA_TARGET_ENV) python -m pip install,python -m pip install)
 CONDA_BUILD_CONFIG := conda_pkg/conda_build_config.yaml
