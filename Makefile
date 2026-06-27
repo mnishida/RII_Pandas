@@ -13,7 +13,7 @@ RUNTIME_PIP_PACKAGES := tables pytest-regressions
 
 dev-setup:
 	conda install -y -c defaults $(CONDA_DEV_PACKAGES)
-	pip install -e '.[dev,test,typecheck]'
+	pip install -e '.[dev,typecheck]'
 	$(MAKE) typecheck-setup
 	pre-commit install
 
