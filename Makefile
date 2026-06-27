@@ -28,8 +28,7 @@ dev-sync:
 	$(PIP_INSTALL_NO_DEPS_CMD) -e .
 
 typecheck-env-setup:
-	$(MAKE) conda-install
-	$(PIP_INSTALL_NO_DEPS_CMD) -e .
+	$(MAKE) conda-install CONDA_TARGET_ENV=$(PYREFLY_ENV)
 	conda install -n $(PYREFLY_ENV) -y -c defaults $(TYPECHECK_CONDA_PACKAGES)
 	@if [ -n "$(strip $(TYPECHECK_PIP_PACKAGES))" ]; then \
 		conda run -n $(PYREFLY_ENV) python -m pip install $(TYPECHECK_PIP_PACKAGES); \
