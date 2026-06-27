@@ -6,6 +6,7 @@ CONDA_ACTIVE_ENV_FROM_PREFIX := $(notdir $(CONDA_PREFIX))
 CONDA_TARGET_ENV ?= $(if $(CONDA_DEFAULT_ENV),$(CONDA_DEFAULT_ENV),$(if $(CONDA_ACTIVE_ENV_FROM_PREFIX),$(CONDA_ACTIVE_ENV_FROM_PREFIX),$(CONDA_ACTIVE_ENV_FROM_INFO)))
 CONDA_ENV_ARGS := $(if $(CONDA_TARGET_ENV),-n $(CONDA_TARGET_ENV),)
 PIP_INSTALL_CMD := $(if $(CONDA_TARGET_ENV),conda run -n $(CONDA_TARGET_ENV) python -m pip install,python -m pip install)
+PYTEST_RUN_CMD := $(if $(CONDA_TARGET_ENV),conda run -n $(CONDA_TARGET_ENV) pytest,pytest)
 CONDA_BUILD_CONFIG := conda_pkg/conda_build_config.yaml
 CONDA_DEV_PACKAGES := python=$(PYTHON_VERSION) numpy=$(NUMPY_VERSION) scipy cython setuptools pip conda-build
 RUNTIME_PIP_PACKAGES := tables
@@ -39,10 +40,10 @@ conda-install: conda-build
 conda: conda-install
 
 test:
-	pytest
+	$(PYTEST_RUN_CMD)
 
 cov:
-	pytest --cov riip
+	$(PYTEST_RUN_CMD) --cov riip
 
 typecheck-setup:
 	@conda run -n $(PYREFLY_ENV) python -c 'import sys; print(f"python-interpreter-path = \"{sys.executable}\"")' > pyrefly.toml
