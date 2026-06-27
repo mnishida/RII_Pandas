@@ -29,6 +29,17 @@ $ pip install -U riip
 $ conda install -c mnishida riip
 ```
 
+#### Development install from local build
+For local member testing, prefer the Makefile target with an explicit conda environment.
+
+```bash
+make conda-install CONDA_TARGET_ENV=kkr_test
+```
+
+Notes:
+- `CONDA_TARGET_ENV` is recommended to avoid installing into the active shell environment by mistake.
+- The install target removes an existing `riip` package first, then installs from the local conda channel so dependencies are re-solved correctly.
+
 ## Usage
 ```
 >>> import riip

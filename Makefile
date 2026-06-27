@@ -1,6 +1,9 @@
 PYTHON_VERSION ?= 3.14
 NUMPY_VERSION ?= 2.4.6
 PYREFLY_ENV ?= kkr-typecheck
+CONDA_TARGET_ENV ?=
+CONDA_ENV_ARGS := $(if $(CONDA_TARGET_ENV),-n $(CONDA_TARGET_ENV),)
+PIP_INSTALL_CMD := $(if $(CONDA_TARGET_ENV),conda run -n $(CONDA_TARGET_ENV) python -m pip install,python -m pip install)
 CONDA_BUILD_CONFIG := conda_pkg/conda_build_config.yaml
 CONDA_DEV_PACKAGES := python=$(PYTHON_VERSION) numpy=$(NUMPY_VERSION) scipy cython setuptools pip conda-build
 RUNTIME_PIP_PACKAGES := tables
@@ -21,11 +24,11 @@ conda-build: $(CONDA_BUILD_CONFIG)
 	conda build --no-test -c local -c mnishida -c defaults conda_pkg
 
 conda-install: conda-build
-	@PKG_PATH=$$(ls $(CONDA_BLD_DIR)/linux-64/riip-*.conda $(CONDA_BLD_DIR)/linux-64/riip-*.tar.bz2 $(CONDA_BLD_DIR)/noarch/riip-*.conda $(CONDA_BLD_DIR)/noarch/riip-*.tar.bz2 2>/dev/null | head -n 1); \
-	if [ -n "$$PKG_PATH" ]; then \
-		echo "Installing local package: $$PKG_PATH"; \
-		conda install -y "$$PKG_PATH" --force-reinstall; \
-		pip install $(RUNTIME_PIP_PACKAGES); \
+	@if find "$(CONDA_BLD_DIR)" -maxdepth 2 -type f \( -name 'riip-*.conda' -o -name 'riip-*.tar.bz2' \) | grep -q .; then \
+		echo "Installing local package: riip (channel: local)"; \
+		conda remove $(CONDA_ENV_ARGS) -y riip >/dev/null 2>&1 || true; \
+		conda install $(CONDA_ENV_ARGS) -y -c local -c mnishida -c defaults riip --force-reinstall; \
+		$(PIP_INSTALL_CMD) $(RUNTIME_PIP_PACKAGES); \
 	else \
 		echo "Local package not found in $(CONDA_BLD_DIR)"; \
 		exit 1; \

@@ -5,44 +5,6 @@ repos:
       # - id: check-yaml
       - id: end-of-file-fixer
       - id: trailing-whitespace
-
-  # - repo: https://github.com/hakancelik96/unimport
-  #   rev: "0.8.4"
-  #   hooks:
-  #       - id: unimport
-  #         args: [--remove, --requirements, --include-star-import]
-  # - repo: https://github.com/pycqa/isort
-  #   rev: "8.0.1"
-  #   hooks:
-  #     - id: isort
-  #       name: isort (python)
-  #       # files: "pp/.*"
-  #       # args: ["--profile", "black", "--filter-files"]
-  # # - repo: https://github.com/google/yapf
-  #   rev: "v0.40.2"
-  #   hooks:
-  #     - id: yapf
-  #       additional_dependencies: [toml]
-  # - repo: https://github.com/PyCQA/flake8
-  #   rev: "7.3.0"
-  #   hooks:
-  #     - id: flake8
-  #       args: [--config=.flake8]
-  # - repo: https://github.com/kynan/nbstripout
-  #   rev: "0.5.0"
-  #   hooks:
-  #     - id: nbstripout
-  #       # files: ".ipynb"
-  # - repo: https://github.com/pre-commit/mirrors-mypy
-  #   rev: ""
-  #   hooks:
-  #       - id: mypy
-  #         exclude: ^(docs/|example-plugin/|tests/fixtures)
-  # - repo: https://github.com/pycqa/pydocstyle
-  #   rev: ""
-  #   hooks:
-  #       - id: pydocstyle
-repos:
   # ----------------------------------------------------
   # 1. Ruff (リモートの公式リポジトリから高速に実行)
   # ----------------------------------------------------
