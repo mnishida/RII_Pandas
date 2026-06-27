@@ -41,22 +41,24 @@ Issues = "https://github.com/mnishida/RII_Pandas/issues"
 
 [project.optional-dependencies]
 dev = [
-    "nbsphinx",
     "ipykernel",
+    "pre-commit",
+    "ruff",
+]
+
+test = [
     "pytest",
     "pytest-cov",
     "pytest-regressions",
-    "pre-commit",
-    "flake8",
-    "toml",
-    "isort",
-    "doc8",
-    "bump2version",
-    "pydocstyle",
-    "mypy",
-    "pandas-stubs",
+]
+
+typecheck = [
     "pyrefly",
-    "ruff",
+    "pandas-stubs",
+]
+
+docs = [
+    "nbsphinx",
 ]
 
 [tool.setuptools]

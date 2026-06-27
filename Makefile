@@ -1,19 +1,29 @@
+PYTHON_VERSION ?= 3.14
+NUMPY_VERSION ?= 2.4.6
+CONDA_BUILD_CONFIG := conda_pkg/conda_build_config.yaml
+CONDA_DEV_PACKAGES := python=$(PYTHON_VERSION) numpy=$(NUMPY_VERSION) scipy cython setuptools pip conda-build
+RUNTIME_PIP_PACKAGES := tables
+
 dev-setup:
-	conda install -y -c defaults python=3.14 numpy=2.4.6 scipy cython setuptools pip conda-build anaconda-client
-	pip install -e .[dev]
+	conda install -y -c defaults $(CONDA_DEV_PACKAGES)
+	pip install -e '.[dev,test,typecheck]'
 	pre-commit install
 
 CONDA_BLD_DIR := $(shell conda info --base)/conda-bld
 
-conda-build:
-	conda build --no-test -c local -c mnishida -c defaults --numpy 2.4.6 conda_pkg
+$(CONDA_BUILD_CONFIG): Makefile
+	@mkdir -p conda_pkg
+	@printf "python:\n  - %s\nnumpy:\n  - %s\n" "$(PYTHON_VERSION)" "$(NUMPY_VERSION)" > $@
+
+conda-build: $(CONDA_BUILD_CONFIG)
+	conda build --no-test -c local -c mnishida -c defaults conda_pkg
 
 conda-install: conda-build
 	@PKG_PATH=$$(ls $(CONDA_BLD_DIR)/linux-64/riip-*.conda $(CONDA_BLD_DIR)/linux-64/riip-*.tar.bz2 $(CONDA_BLD_DIR)/noarch/riip-*.conda $(CONDA_BLD_DIR)/noarch/riip-*.tar.bz2 2>/dev/null | head -n 1); \
 	if [ -n "$$PKG_PATH" ]; then \
 		echo "Installing local package: $$PKG_PATH"; \
 		conda install -y "$$PKG_PATH" --force-reinstall; \
-		pip install tables; \
+		pip install $(RUNTIME_PIP_PACKAGES); \
 	else \
 		echo "Local package not found in $(CONDA_BLD_DIR)"; \
 		exit 1; \
@@ -27,14 +37,14 @@ test:
 cov:
 	pytest --cov riip
 
-mypy:
-	mypy . --ignore-missing-imports
+typecheck:
+	pyrefly check .
 
 lint:
-	flake8
+	ruff check .
 
-lintd2:
-	flake8 --select RST
+format:
+	ruff format .
 
-lintd:
-	pydocstyle --convention google riip
+docs:
+	pip install -e '.[docs]'
