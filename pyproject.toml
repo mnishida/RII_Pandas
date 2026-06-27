@@ -46,6 +46,8 @@ Issues = "https://github.com/mnishida/RII_Pandas/issues"
 
 [project.optional-dependencies]
 dev = [
+    "ipython",
+    "line_profiler",
     "pre-commit",
     "ruff",
 ]

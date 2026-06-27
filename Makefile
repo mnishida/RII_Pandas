@@ -5,6 +5,10 @@ CONDA_ACTIVE_ENV_FROM_INFO := $(shell conda info --json 2>/dev/null | python -c 
 CONDA_ACTIVE_ENV_FROM_PREFIX := $(notdir $(CONDA_PREFIX))
 CONDA_TARGET_ENV ?= $(if $(CONDA_DEFAULT_ENV),$(CONDA_DEFAULT_ENV),$(if $(CONDA_ACTIVE_ENV_FROM_PREFIX),$(CONDA_ACTIVE_ENV_FROM_PREFIX),$(CONDA_ACTIVE_ENV_FROM_INFO)))
 CONDA_ENV_ARGS := $(if $(CONDA_TARGET_ENV),-n $(CONDA_TARGET_ENV),)
+# Pre-remove mode before conda install:
+# - none  : keep existing environment graph (default)
+# - force : remove only the target package with dependency checks disabled
+CONDA_PRE_REMOVE_MODE ?= none
 PIP_INSTALL_CMD := $(if $(CONDA_TARGET_ENV),conda run -n $(CONDA_TARGET_ENV) python -m pip install,python -m pip install)
 PYTEST_RUN_CMD := $(if $(CONDA_TARGET_ENV),conda run -n $(CONDA_TARGET_ENV) pytest,pytest)
 CONDA_BUILD_CONFIG := conda_pkg/conda_build_config.yaml
@@ -37,8 +41,8 @@ conda-build: $(CONDA_BUILD_CONFIG)
 conda-install: conda-build
 	@if find "$(CONDA_BLD_DIR)" -maxdepth 2 -type f \( -name 'riip-*.conda' -o -name 'riip-*.tar.bz2' \) | grep -q .; then \
 		echo "Installing local package: riip (channel: local)"; \
-		conda remove $(CONDA_ENV_ARGS) -y riip >/dev/null 2>&1 || true; \
-		conda install $(CONDA_ENV_ARGS) -y -c local -c mnishida -c defaults riip --force-reinstall; \
+		if [ "$(CONDA_PRE_REMOVE_MODE)" = "force" ]; then conda remove $(CONDA_ENV_ARGS) -y --force riip >/dev/null 2>&1 || true; fi; \
+		conda install $(CONDA_ENV_ARGS) -y -c local -c mnishida -c defaults riip --force-reinstall --update-deps; \
 		$(PIP_INSTALL_CMD) $(RUNTIME_PIP_PACKAGES); \
 	else \
 		echo "Local package not found in $(CONDA_BLD_DIR)"; \
