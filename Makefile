@@ -9,7 +9,7 @@ PIP_INSTALL_CMD := $(if $(CONDA_TARGET_ENV),conda run -n $(CONDA_TARGET_ENV) pyt
 PYTEST_RUN_CMD := $(if $(CONDA_TARGET_ENV),conda run -n $(CONDA_TARGET_ENV) pytest,pytest)
 CONDA_BUILD_CONFIG := conda_pkg/conda_build_config.yaml
 CONDA_DEV_PACKAGES := python=$(PYTHON_VERSION) numpy=$(NUMPY_VERSION) scipy cython setuptools pip conda-build
-RUNTIME_PIP_PACKAGES := tables
+RUNTIME_PIP_PACKAGES := tables pytest-regressions
 
 dev-setup:
 	conda install -y -c defaults $(CONDA_DEV_PACKAGES)

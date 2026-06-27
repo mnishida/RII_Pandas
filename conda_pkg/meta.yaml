@@ -30,7 +30,7 @@ requirements:
     - python
     - {{ pin_compatible('numpy') }}
     # conda-forgeの混入を防ぐため、condaの依存関係から除外するパッケージ
-    {% set conda_blacklist = ['pytables', 'tables'] %}
+    {% set conda_blacklist = ['pytables', 'tables', 'pytest-regressions'] %}
     {% for dep in pyproject.get('project', {}).get('dependencies', []) %}
       {% set name = dep.split('>=')[0].split('<')[0].split('==')[0].strip() %}
       {% set conda_name = conda_names[name] if name in conda_names else name | replace('_', '-') %}

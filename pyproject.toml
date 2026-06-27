@@ -24,6 +24,9 @@ keywords = ["refractive index", "database", "Pandas"]
 dependencies = [
     "numpy>=2.2.3",
     "scipy>=1.13.0",
+    "pytest",
+    "pytest-cov",
+    "pytest-regressions",
     "ipython",
     "more_itertools",
     "pandas",
