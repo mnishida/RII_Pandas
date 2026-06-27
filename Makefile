@@ -15,6 +15,7 @@ PYTEST_RUN_CMD := $(if $(CONDA_TARGET_ENV),conda run -n $(CONDA_TARGET_ENV) pyte
 CONDA_BUILD_CONFIG := conda_pkg/conda_build_config.yaml
 CONDA_DEV_PACKAGES := python=$(PYTHON_VERSION) numpy=$(NUMPY_VERSION) scipy cython setuptools pip conda-build
 TYPECHECK_CONDA_PACKAGES := python=$(PYTHON_VERSION) pip
+DEV_PIP_PACKAGES ?= $(shell python -c 'import tomllib,pathlib; d=tomllib.loads(pathlib.Path("pyproject.toml").read_text()); print(" ".join(d.get("project",{}).get("optional-dependencies",{}).get("dev",[])))')
 TYPECHECK_PIP_PACKAGES ?= $(shell python -c 'import tomllib,pathlib; d=tomllib.loads(pathlib.Path("pyproject.toml").read_text()); print(" ".join(d.get("project",{}).get("optional-dependencies",{}).get("typecheck",[])))')
 RUNTIME_PIP_PACKAGES := tables pytest-regressions
 
@@ -29,7 +30,11 @@ dev-sync:
 
 typecheck-env-setup:
 	$(MAKE) conda-install CONDA_TARGET_ENV=$(PYREFLY_ENV)
+	conda install -n $(PYREFLY_ENV) -y -c defaults $(CONDA_DEV_PACKAGES)
 	conda install -n $(PYREFLY_ENV) -y -c defaults $(TYPECHECK_CONDA_PACKAGES)
+	@if [ -n "$(strip $(DEV_PIP_PACKAGES))" ]; then \
+		conda run -n $(PYREFLY_ENV) python -m pip install $(DEV_PIP_PACKAGES); \
+	fi
 	@if [ -n "$(strip $(TYPECHECK_PIP_PACKAGES))" ]; then \
 		conda run -n $(PYREFLY_ENV) python -m pip install $(TYPECHECK_PIP_PACKAGES); \
 	else \
