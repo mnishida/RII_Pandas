@@ -10,9 +10,12 @@ CONDA_ENV_ARGS := $(if $(CONDA_TARGET_ENV),-n $(CONDA_TARGET_ENV),)
 # - force : remove only the target package with dependency checks disabled
 CONDA_PRE_REMOVE_MODE ?= none
 PIP_INSTALL_CMD := $(if $(CONDA_TARGET_ENV),conda run -n $(CONDA_TARGET_ENV) python -m pip install,python -m pip install)
+PIP_INSTALL_NO_DEPS_CMD := $(if $(CONDA_TARGET_ENV),conda run -n $(CONDA_TARGET_ENV) python -m pip install --no-deps,pip install --no-deps)
 PYTEST_RUN_CMD := $(if $(CONDA_TARGET_ENV),conda run -n $(CONDA_TARGET_ENV) pytest,pytest)
 CONDA_BUILD_CONFIG := conda_pkg/conda_build_config.yaml
 CONDA_DEV_PACKAGES := python=$(PYTHON_VERSION) numpy=$(NUMPY_VERSION) scipy cython setuptools pip conda-build
+TYPECHECK_CONDA_PACKAGES := python=$(PYTHON_VERSION) pip
+TYPECHECK_PIP_PACKAGES ?= $(shell python -c 'import tomllib,pathlib; d=tomllib.loads(pathlib.Path("pyproject.toml").read_text()); print(" ".join(d.get("project",{}).get("optional-dependencies",{}).get("typecheck",[])))')
 RUNTIME_PIP_PACKAGES := tables pytest-regressions
 
 dev-setup:
@@ -20,10 +23,18 @@ dev-setup:
 	pip install -e '.[dev]'
 	pre-commit install
 
+dev-sync:
+	$(MAKE) conda-install
+	$(PIP_INSTALL_NO_DEPS_CMD) -e .
+
 typecheck-env-setup:
-	conda install -n $(PYREFLY_ENV) -y -c defaults $(CONDA_DEV_PACKAGES)
-	conda run -n $(PYREFLY_ENV) python -m pip install -e '.[dev]'
-	conda run -n $(PYREFLY_ENV) python -m pip install -e '.[typecheck]'
+	conda install -n $(PYREFLY_ENV) -y -c defaults $(TYPECHECK_CONDA_PACKAGES)
+	@if [ -n "$(strip $(TYPECHECK_PIP_PACKAGES))" ]; then \
+		conda run -n $(PYREFLY_ENV) python -m pip install $(TYPECHECK_PIP_PACKAGES); \
+	else \
+		echo "No typecheck packages found in pyproject.toml [project.optional-dependencies].typecheck"; \
+		exit 1; \
+	fi
 	$(MAKE) typecheck-setup
 
 CONDA_BLD_DIR := $(shell conda info --base)/conda-bld
