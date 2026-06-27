@@ -49,7 +49,8 @@ For the regular `kkr` development environment, steps 1 and 2 are performed in `R
 
 For the lightweight `kkr-typecheck` environment:
 1. `make typecheck-env-setup`
-2. `make typecheck`
+2. `make typecheck-setup`
+3. `make typeckeck`
 
 ## Usage
 ```
