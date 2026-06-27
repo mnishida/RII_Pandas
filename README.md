@@ -40,12 +40,15 @@ Notes:
 - `CONDA_TARGET_ENV` is recommended to avoid installing into the active shell environment by mistake.
 - The install target removes an existing `riip` package first, then installs from the local conda channel so dependencies are re-solved correctly.
 
-#### Recommended setup order
-For the regular `kkr` development environment, steps 1 and 2 are performed in `RII_Pandas`:
-1. In `RII_Pandas`: `make dev-setup`
-2. In `RII_Pandas`: `make dev-sync`
-3. In `fmm_rcwa`: `make dev-sync`
-4. In `CylKKR`: `make dev-sync`
+#### Preferred shared environment flow
+For the regular `kkr` development environment, create or refresh the shared base environment from `environment.dev.yml`, then sync local packages:
+1. In any repository root: `conda env update -n kkr -f environment.dev.yml --prune`
+2. `conda activate kkr`
+3. In `RII_Pandas`: `make dev-sync`
+4. In `fmm_rcwa`: `make dev-sync`
+5. In `CylKKR`: `make dev-sync`
+
+`make dev-setup` now uses `environment.dev.yml` as the preferred base environment definition.
 
 For the lightweight `kkr-typecheck` environment:
 1. `make typecheck-env-setup`

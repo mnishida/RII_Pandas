@@ -1,0 +1,32 @@
+channels:
+  - defaults
+
+dependencies:
+  - python=3.14
+  - numpy=2.4.6
+  - scipy
+  - cython
+  - setuptools
+  - pip
+  - conda-build
+  - pytest
+  - pytest-cov
+  - pytest-regressions
+  - ipython
+  - more-itertools
+  - pandas
+  - pyarrow
+  - matplotlib
+  - joblib
+  - threadpoolctl
+  - psutil
+  - gitpython
+  - ipykernel>=6.31,<8
+  - ipywidgets>=8.1.7,<9
+  - line_profiler
+  - pre-commit
+  - ruff
+  - tables
+  - pyyaml
+  - mkl
+  - mkl-include
