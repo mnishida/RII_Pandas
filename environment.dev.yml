@@ -25,7 +25,6 @@ dependencies:
   - line_profiler
   - pre-commit
   - ruff
-  - tables
   - pyyaml
   - mkl
   - mkl-include
