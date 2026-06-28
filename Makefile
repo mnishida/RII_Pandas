@@ -1,6 +1,5 @@
 PYTHON_VERSION ?= 3.14
 NUMPY_VERSION ?= 2.4.6
-PYREFLY_ENV ?= kkr-typecheck
 # Keep conda behavior stable even when shell startup leaks CONDA_ENVS_PATH.
 CONDA_BASE_PREFIX := $(shell env -u CONDA_ENVS_PATH conda info --base)
 CONDA_EXEC := env -u CONDA_ENVS_PATH $(CONDA_BASE_PREFIX)/bin/conda
@@ -14,17 +13,10 @@ DEV_ENV_NAME ?= kkr
 DEV_ENV_ARGS := $(if $(CONDA_TARGET_ENV),$(CONDA_TARGET_ENV_ARGS),-n $(DEV_ENV_NAME))
 DEV_ENV_FILE ?= environment.dev.yml
 CONDA_RUN_TARGET := $(CONDA_EXEC) run $(CONDA_TARGET_ENV_ARGS)
-PYREFLY_ENV_PREFIX := $(CONDA_ROOT_PREFIX)/envs/$(PYREFLY_ENV)
-PYREFLY_ENV_ARGS := -p $(PYREFLY_ENV_PREFIX)
-CONDA_RUN_PYREFLY := $(CONDA_EXEC) run $(PYREFLY_ENV_ARGS)
 # Pre-remove mode before conda install:
 # - none  : keep existing environment graph (default)
 # - force : remove only the target package with dependency checks disabled
 CONDA_PRE_REMOVE_MODE ?= none
-PIP_INSTALL_CMD := $(if $(CONDA_TARGET_ENV),$(CONDA_RUN_TARGET) python -m pip install,python -m pip install)
-PIP_INSTALL_NO_DEPS_CMD := $(if $(CONDA_TARGET_ENV),$(CONDA_RUN_TARGET) python -m pip install --no-deps,pip install --no-deps)
-PRE_COMMIT_INSTALL_CMD := $(if $(CONDA_TARGET_ENV),$(CONDA_RUN_TARGET) pre-commit install,pre-commit install)
-PYTEST_RUN_CMD := $(if $(CONDA_TARGET_ENV),$(CONDA_RUN_TARGET) pytest,pytest)
 CONDA_BUILD_CONFIG := conda_pkg/conda_build_config.yaml
 TYPECHECK_PIP_PACKAGES ?= $(shell python -c 'import tomllib,pathlib; d=tomllib.loads(pathlib.Path("pyproject.toml").read_text()); print(" ".join(d.get("project",{}).get("optional-dependencies",{}).get("typecheck",[])))')
 RUNTIME_PIP_PACKAGES := tables pytest-regressions
@@ -33,23 +25,18 @@ dev-env-update:
 	$(CONDA_EXEC) env update $(DEV_ENV_ARGS) --file $(DEV_ENV_FILE) --prune
 
 dev-setup: dev-env-update
-	$(PIP_INSTALL_NO_DEPS_CMD) -e .
-	$(PRE_COMMIT_INSTALL_CMD)
+	$(CONDA_RUN_TARGET) python -m pip install --no-deps -e .
+	@if [ -n "$(strip $(TYPECHECK_PIP_PACKAGES))" ]; then \
+		$(CONDA_RUN_TARGET) python -m pip install --no-deps $(TYPECHECK_PIP_PACKAGES); \
+	fi
+	$(CONDA_RUN_TARGET) pre-commit install
 
 dev-sync:
 	$(MAKE) conda-install
-	$(PIP_INSTALL_NO_DEPS_CMD) -e .
-
-typecheck-env-setup:
-	$(MAKE) conda-install CONDA_TARGET_ENV=$(PYREFLY_ENV_PREFIX)
-	$(CONDA_EXEC) env update -p $(PYREFLY_ENV_PREFIX) -f $(DEV_ENV_FILE) --prune
+	$(CONDA_RUN_TARGET) python -m pip install --no-deps -e .
 	@if [ -n "$(strip $(TYPECHECK_PIP_PACKAGES))" ]; then \
-		$(CONDA_RUN_PYREFLY) python -m pip install $(TYPECHECK_PIP_PACKAGES); \
-	else \
-		echo "No typecheck packages found in pyproject.toml [project.optional-dependencies].typecheck"; \
-		exit 1; \
+		$(CONDA_RUN_TARGET) python -m pip install --no-deps $(TYPECHECK_PIP_PACKAGES); \
 	fi
-	$(MAKE) typecheck-setup
 
 CONDA_BLD_DIR := $(shell $(CONDA_EXEC) info --base)/conda-bld
 
@@ -68,7 +55,7 @@ conda-install: conda-build
 		echo "Installing local package: riip (channel: local)"; \
 		if [ "$(CONDA_PRE_REMOVE_MODE)" = "force" ]; then $(CONDA_EXEC) remove $(CONDA_TARGET_ENV_ARGS) -y --force riip >/dev/null 2>&1 || true; fi; \
 		$(CONDA_EXEC) install $(CONDA_TARGET_ENV_ARGS) -y -c local -c mnishida -c defaults riip --force-reinstall --update-deps; \
-		$(PIP_INSTALL_CMD) $(RUNTIME_PIP_PACKAGES); \
+		$(CONDA_RUN_TARGET) python -m pip install $(RUNTIME_PIP_PACKAGES); \
 	else \
 		echo "Local package not found in $(CONDA_BLD_DIR)"; \
 		exit 1; \
@@ -77,16 +64,16 @@ conda-install: conda-build
 conda: conda-install
 
 test:
-	$(PYTEST_RUN_CMD)
+	$(CONDA_RUN_TARGET) pytest
 
 cov:
-	$(PYTEST_RUN_CMD) --cov riip
+	$(CONDA_RUN_TARGET) pytest --cov riip
 
 typecheck-setup:
-	@$(CONDA_RUN_PYREFLY) python -c 'import sys; print(f"python-interpreter-path = \"{sys.executable}\"")' > pyrefly.toml
+	@$(CONDA_RUN_TARGET) python -c 'import sys; print(f"python-interpreter-path = \"{sys.executable}\"")' > pyrefly.toml
 
 typecheck: typecheck-setup
-	$(CONDA_RUN_PYREFLY) pyrefly check .
+	$(CONDA_RUN_TARGET) pyrefly check .
 
 lint:
 	ruff check .

@@ -52,8 +52,7 @@ For the regular `kkr` development environment, create or refresh the shared base
 
 For the lightweight `kkr-typecheck` environment:
 1. `make typecheck-env-setup`
-2. `make typecheck-setup`
-3. `make typeckeck`
+2. `make typeckeck`
 
 ## Usage
 ```
