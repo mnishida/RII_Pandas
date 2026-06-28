@@ -45,19 +45,6 @@ Repository = "https://github.com/mnishida/RII_Pandas.git"
 Issues = "https://github.com/mnishida/RII_Pandas/issues"
 
 [project.optional-dependencies]
-dev = [
-    "ipython",
-    "line_profiler",
-    "pre-commit",
-    "ruff",
-]
-
-test = [
-    "pytest",
-    "pytest-cov",
-    "pytest-regressions",
-]
-
 typecheck = [
     "pyrefly",
     "pandas-stubs",
